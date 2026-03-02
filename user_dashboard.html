@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Il mio porto — HullID</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#0d1b2a; --navy-mid:#1a2f45; --navy-light:#2a4a6b;
+  --gold:#c9a84c; --gold-light:#e8c97a; --gold-dim:rgba(201,168,76,0.12);
+  --white:#f5f2ee; --white-pure:#ffffff;
+  --gray:#8a9aaa; --gray-light:#d4dde5; --gray-bg:#f0f3f6;
+  --green:#2d8a5e; --green-light:#4caf89; --green-bg:rgba(76,175,137,0.1);
+  --orange:#c47a2a; --orange-bg:rgba(196,122,42,0.1);
+  --red:#c0392b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--gray-bg);color:var(--navy);min-height:100vh;}
+
+/* ── TOP HEADER BAR ── */
+.header {
+  background:var(--navy);
+  border-bottom:1px solid rgba(201,168,76,0.15);
+  height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;
+  position:sticky;top:0;z-index:100;
+}
+.header-logo {
+  font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:600;
+  color:var(--white-pure);text-decoration:none;
+}
+.header-logo span{color:var(--gold);}
+.header-center {
+  display:flex;align-items:center;gap:8px;
+  font-family:'DM Mono',monospace;font-size:0.6rem;
+  letter-spacing:0.12em;color:var(--gray);text-transform:uppercase;
+}
+.header-dot{width:6px;height:6px;border-radius:50%;background:var(--green-light);}
+.header-right{display:flex;align-items:center;gap:16px;}
+.notif-btn {
+  width:36px;height:36px;border-radius:0;background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);color:var(--gray-light);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  font-size:1rem;position:relative;transition:all 0.2s;
+}
+.notif-btn:hover{background:rgba(255,255,255,0.1);color:white;}
+.notif-dot{
+  position:absolute;top:5px;right:5px;width:7px;height:7px;
+  border-radius:50%;background:var(--gold);border:1px solid var(--navy);
+}
+.user-chip {
+  display:flex;align-items:center;gap:10px;cursor:pointer;
+  padding:6px 12px 6px 6px;
+  border:1px solid rgba(255,255,255,0.1);
+  transition:border-color 0.2s;
+}
+.user-chip:hover{border-color:rgba(201,168,76,0.4);}
+.user-avatar {
+  width:32px;height:32px;background:var(--gold-dim);
+  border:1px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--gold);font-weight:500;
+}
+.user-name{font-size:0.8rem;color:var(--white-pure);}
+.user-role{font-size:0.6rem;color:var(--gold);font-family:'DM Mono',monospace;letter-spacing:0.06em;}
+
+/* ── LAYOUT ── */
+.layout {display:flex;min-height:calc(100vh - 64px);}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width:220px;flex-shrink:0;
+  background:var(--white-pure);
+  border-right:1px solid var(--gray-light);
+  padding:28px 0;
+  display:flex;flex-direction:column;
+  position:sticky;top:64px;height:calc(100vh - 64px);
+  overflow-y:auto;
+}
+.nav-group{margin-bottom:8px;}
+.nav-group-title {
+  font-family:'DM Mono',monospace;font-size:0.52rem;letter-spacing:0.2em;
+  color:var(--gray);text-transform:uppercase;padding:8px 24px 4px;
+}
+.nav-link {
+  display:flex;align-items:center;gap:10px;
+  padding:9px 24px;font-size:0.82rem;color:var(--gray);
+  cursor:pointer;transition:all 0.15s;border-left:2px solid transparent;
+  text-decoration:none;
+}
+.nav-link:hover{color:var(--navy);background:rgba(13,27,42,0.03);}
+.nav-link.active{color:var(--navy);font-weight:500;border-left-color:var(--gold);background:rgba(201,168,76,0.06);}
+.nav-link .icon{font-size:0.95rem;width:18px;text-align:center;}
+.nav-link .badge{margin-left:auto;background:var(--gold);color:var(--navy);font-size:0.52rem;font-weight:700;padding:1px 6px;font-family:'DM Mono',monospace;}
+.sidebar-footer{margin-top:auto;padding:20px 24px;border-top:1px solid var(--gray-light);}
+.back-link{display:flex;align-items:center;gap:6px;font-size:0.74rem;color:var(--gray);text-decoration:none;transition:color 0.2s;margin-bottom:6px;}
+.back-link:hover{color:var(--navy);}
+
+/* ── MAIN ── */
+.main{flex:1;padding:36px 40px;max-width:1100px;}
+
+/* ── WELCOME BAND ── */
+.welcome-band {
+  background:var(--navy);padding:28px 36px;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:28px;border-bottom:2px solid var(--gold);
+  position:relative;overflow:hidden;
+}
+.welcome-band::after {
+  content:'';position:absolute;right:-40px;top:-40px;
+  width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(201,168,76,0.07) 0%,transparent 70%);
+  pointer-events:none;
+}
+.welcome-greeting{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gray);text-transform:uppercase;margin-bottom:6px;}
+.welcome-name{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--white-pure);line-height:1;}
+.welcome-name em{color:var(--gold);font-style:italic;}
+.welcome-meta{font-size:0.78rem;color:var(--gray);margin-top:6px;}
+.welcome-stats{display:flex;gap:32px;}
+.wstat{text-align:right;}
+.wstat-num{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--gold);line-height:1;}
+.wstat-label{font-size:0.58rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gray);margin-top:3px;}
+
+/* ── SECTION ── */
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.section-eyebrow{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;margin-bottom:4px;}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-weight:400;color:var(--navy);}
+.section-block{margin-bottom:36px;}
+
+/* ── BTN ── */
+.btn{padding:9px 20px;font-family:'DM Sans',sans-serif;font-size:0.76rem;font-weight:500;letter-spacing:0.05em;cursor:pointer;border:none;transition:all 0.2s;text-transform:uppercase;}
+.btn-primary{background:var(--gold);color:var(--navy);}
+.btn-primary:hover{background:var(--gold-light);}
+.btn-outline{background:transparent;color:var(--navy);border:1px solid var(--gray-light);}
+.btn-outline:hover{border-color:var(--navy);}
+.btn-ghost{background:transparent;color:var(--gray);border:1px solid var(--gray-light);font-size:0.7rem;padding:6px 14px;}
+.btn-ghost:hover{color:var(--navy);border-color:var(--navy);}
+.btn-sm{padding:6px 14px;font-size:0.7rem;}
+.btn-danger{background:rgba(192,57,43,0.08);color:var(--red);border:1px solid rgba(192,57,43,0.2);}
+
+/* ── BOAT CARDS ── */
+.boats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px;}
+.boat-card {
+  background:var(--white-pure);border:1px solid var(--gray-light);
+  overflow:hidden;transition:border-color 0.2s,box-shadow 0.2s,transform 0.2s;
+}
+.boat-card:hover{border-color:var(--gold);box-shadow:0 6px 24px rgba(201,168,76,0.1);transform:translateY(-2px);}
+.boat-card-photo {
+  height:180px;background:var(--navy-mid);position:relative;overflow:hidden;
+}
+.boat-card-photo-placeholder {
+  height:100%;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-light) 100%);
+}
+.boat-card-hull-icon {
+  opacity:0.15;
+}
+.boat-status-pill{
+  position:absolute;top:12px;left:12px;
+  font-size:0.58rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;
+}
+.pill-felice{background:rgba(42,74,107,0.9);color:white;}
+.pill-vendita{background:var(--gold);color:var(--navy);}
+.pill-refit{background:rgba(45,138,94,0.9);color:white;}
+.hullid-badge {
+  position:absolute;bottom:10px;right:10px;
+  background:rgba(13,27,42,0.85);color:var(--gold);
+  font-family:'DM Mono',monospace;font-size:0.55rem;letter-spacing:0.1em;
+  padding:3px 8px;border:1px solid rgba(201,168,76,0.4);
+}
+.boat-card-body{padding:18px 20px;}
+.boat-card-name{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400;color:var(--navy);margin-bottom:2px;}
+.boat-card-sub{font-size:0.72rem;color:var(--gray);margin-bottom:14px;}
+.boat-specs-row{display:flex;gap:16px;flex-wrap:wrap;padding:12px 0;border-top:1px solid var(--gray-light);border-bottom:1px solid var(--gray-light);margin-bottom:14px;}
+.spec-item{}
+.spec-val{font-size:0.82rem;font-weight:500;color:var(--navy);}
+.spec-key{font-size:0.55rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray);margin-top:1px;}
+.boat-card-actions{display:flex;gap:8px;align-items:center;justify-content:space-between;}
+.broker-linked{display:flex;align-items:center;gap:6px;font-size:0.68rem;color:var(--green);font-weight:500;}
+.broker-linked-dot{width:6px;height:6px;border-radius:50%;background:var(--green-light);}
+
+/* ADD BOAT CARD */
+.boat-card-add {
+  background:white;border:2px dashed var(--gray-light);
+  min-height:320px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:12px;
+  cursor:pointer;transition:all 0.2s;
+}
+.boat-card-add:hover{border-color:var(--gold);background:rgba(201,168,76,0.03);}
+.add-icon{font-size:2rem;opacity:0.25;}
+.add-label{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gray);}
+.add-sub{font-size:0.72rem;color:var(--gray-light);text-align:center;max-width:180px;}
+
+/* ── TIMELINE PREVIEW ── */
+.timeline-preview{display:flex;flex-direction:column;gap:0;}
+.tl-item-preview{
+  display:flex;gap:20px;padding:16px 0;
+  border-bottom:1px solid var(--gray-light);
+  transition:background 0.15s;cursor:pointer;
+}
+.tl-item-preview:hover{background:rgba(201,168,76,0.03);margin:0 -8px;padding:16px 8px;}
+.tl-item-preview:last-child{border-bottom:none;}
+.tl-dot-col{display:flex;flex-direction:column;align-items:center;gap:0;width:32px;flex-shrink:0;}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid var(--white-pure);box-shadow:0 0 0 2px var(--gold);flex-shrink:0;}
+.tl-line-seg{flex:1;width:1px;background:var(--gray-light);min-height:20px;}
+.tl-content{}
+.tl-date{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--gold);margin-bottom:3px;}
+.tl-title{font-size:0.86rem;font-weight:500;color:var(--navy);margin-bottom:3px;}
+.tl-desc{font-size:0.76rem;color:var(--gray);line-height:1.5;font-weight:300;}
+.tl-type{display:inline-block;font-size:0.58rem;text-transform:uppercase;letter-spacing:0.08em;padding:2px 7px;border:1px solid;margin-top:6px;}
+.type-storico{color:var(--gold);border-color:var(--gold);}
+.type-refit{color:var(--orange);border-color:var(--orange);}
+.type-elettronica{color:#7b6ca8;border-color:#7b6ca8;}
+.type-manutenzione{color:var(--gray);border-color:var(--gray-light);}
+
+/* ── NOTIFICATIONS ── */
+.notif-list{display:flex;flex-direction:column;gap:8px;}
+.notif-item{
+  display:flex;gap:14px;align-items:flex-start;
+  padding:14px 18px;background:var(--white-pure);
+  border:1px solid var(--gray-light);border-left:3px solid transparent;
+  transition:border-color 0.2s;cursor:pointer;
+}
+.notif-item:hover{border-color:var(--gold);}
+.notif-item.unread{border-left-color:var(--gold);background:rgba(201,168,76,0.03);}
+.notif-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px;}
+.notif-body{flex:1;}
+.notif-title{font-size:0.82rem;font-weight:500;color:var(--navy);margin-bottom:3px;}
+.notif-text{font-size:0.76rem;color:var(--gray);line-height:1.5;font-weight:300;}
+.notif-time{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--gray-light);}
+.notif-actions{display:flex;gap:6px;margin-top:8px;}
+
+/* ── DOCS TABLE ── */
+.docs-list{display:flex;flex-direction:column;gap:8px;}
+.doc-row{
+  display:flex;align-items:center;gap:16px;padding:12px 16px;
+  background:var(--white-pure);border:1px solid var(--gray-light);
+  transition:border-color 0.2s;cursor:pointer;
+}
+.doc-row:hover{border-color:var(--gold);}
+.doc-icon{font-size:1.2rem;flex-shrink:0;}
+.doc-name{font-size:0.82rem;font-weight:500;color:var(--navy);flex:1;}
+.doc-meta{font-size:0.7rem;color:var(--gray);}
+.doc-boat{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--gold);}
+.doc-dl{color:var(--gray);font-size:0.85rem;cursor:pointer;padding:4px 8px;transition:color 0.2s;}
+.doc-dl:hover{color:var(--gold);}
+
+/* ── PROFILO TAB ── */
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.profile-card{background:var(--white-pure);border:1px solid var(--gray-light);padding:24px;}
+.profile-card-title{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--gray-light);}
+.form-group{margin-bottom:14px;}
+label.form-label{display:block;font-size:0.64rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--gray);margin-bottom:4px;font-weight:500;}
+input.form-input,select.form-input,textarea.form-input{
+  width:100%;padding:9px 12px;border:1px solid var(--gray-light);
+  background:var(--gray-bg);font-family:'DM Sans',sans-serif;font-size:0.84rem;
+  outline:none;transition:border-color 0.2s;
+}
+input.form-input:focus,select.form-input:focus,textarea.form-input:focus{border-color:var(--gold);background:white;}
+
+/* ── BROKER PANEL ── */
+.broker-link-card{
+  background:var(--white-pure);border:1px solid var(--gray-light);
+  padding:18px 20px;display:flex;align-items:center;gap:16px;
+  transition:border-color 0.2s;
+}
+.broker-link-card:hover{border-color:var(--gold);}
+.broker-avatar-sm{
+  width:44px;height:44px;background:var(--navy);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--gold);
+}
+.broker-info{flex:1;}
+.broker-name-link{font-size:0.88rem;font-weight:500;color:var(--navy);margin-bottom:2px;}
+.broker-meta-link{font-size:0.7rem;color:var(--gray);}
+.broker-perms{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.perm-tag{font-size:0.6rem;text-transform:uppercase;letter-spacing:0.06em;padding:2px 7px;border:1px solid var(--green-light);color:var(--green);background:var(--green-bg);}
+
+/* ── SLIDE PANEL ── */
+.slide-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(13,27,42,0.55);backdrop-filter:blur(3px);}
+.slide-overlay.open{display:block;}
+.slide-panel{
+  position:fixed;top:0;right:-600px;width:600px;bottom:0;z-index:201;
+  background:var(--white-pure);overflow-y:auto;
+  transition:right 0.32s cubic-bezier(0.4,0,0.2,1);
+  border-left:1px solid var(--gray-light);
+  box-shadow:-8px 0 32px rgba(13,27,42,0.15);
+}
+.slide-panel.open{right:0;}
+.sp-header{
+  background:var(--navy);padding:22px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:10;
+}
+.sp-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:300;color:white;}
+.sp-sub{font-family:'DM Mono',monospace;font-size:0.6rem;color:var(--gold);margin-top:2px;}
+.sp-close{
+  width:30px;height:30px;background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);color:var(--gray-light);
+  font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.sp-close:hover{background:rgba(255,255,255,0.16);color:white;}
+.sp-tabs{
+  display:flex;border-bottom:2px solid var(--gray-light);
+  padding:0 28px;background:white;
+  position:sticky;top:72px;z-index:9;overflow-x:auto;scrollbar-width:none;
+}
+.sp-tabs::-webkit-scrollbar{display:none;}
+.sp-tab{
+  padding:12px 14px;font-size:0.7rem;font-weight:500;letter-spacing:0.06em;
+  text-transform:uppercase;cursor:pointer;border:none;background:transparent;
+  color:var(--gray);border-bottom:2px solid transparent;margin-bottom:-2px;
+  white-space:nowrap;transition:all 0.2s;
+}
+.sp-tab.active{color:var(--gold);border-bottom-color:var(--gold);}
+.sp-body{display:none;padding:24px 28px;}
+.sp-body.active{display:block;}
+.sp-section-title{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--gray-light);}
+.sp-footer{position:sticky;bottom:0;background:white;border-top:1px solid var(--gray-light);padding:14px 28px;display:flex;gap:10px;justify-content:flex-end;align-items:center;}
+.sp-save-status{font-size:0.7rem;color:var(--gray);font-family:'DM Mono',monospace;margin-right:auto;}
+.sp-save-status.saved{color:var(--green);}
+
+/* ── MODAL (richiesta perizia / invita broker) ── */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(13,27,42,0.7);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:white;width:500px;max-width:95vw;border-top:3px solid var(--gold);}
+.modal-h{padding:22px 28px;border-bottom:1px solid var(--gray-light);display:flex;align-items:center;justify-content:space-between;}
+.modal-h-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:400;}
+.modal-h-close{background:none;border:none;font-size:1.2rem;color:var(--gray);cursor:pointer;transition:color 0.2s;}
+.modal-h-close:hover{color:var(--navy);}
+.modal-body{padding:22px 28px;}
+.modal-footer{padding:14px 28px;border-top:1px solid var(--gray-light);display:flex;gap:8px;justify-content:flex-end;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:28px;right:28px;z-index:999;background:var(--navy);color:white;padding:13px 22px;border-left:3px solid var(--gold);font-size:0.8rem;opacity:0;transform:translateY(8px);transition:all 0.3s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* ANIM */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.fade-in{animation:fadeUp 0.4s ease both;}
+.fade-in-1{animation-delay:0.05s;}
+.fade-in-2{animation-delay:0.1s;}
+.fade-in-3{animation-delay:0.15s;}
+.fade-in-4{animation-delay:0.2s;}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--gray-light);}
+
+@media(max-width:860px){
+  .layout{flex-direction:column;}
+  .sidebar{width:100%;height:auto;position:static;flex-direction:row;flex-wrap:wrap;padding:12px 16px;gap:4px;}
+  .main{padding:20px 16px;}
+  .welcome-band{flex-direction:column;gap:16px;}
+  .welcome-stats{justify-content:flex-start;}
+  .boats-grid{grid-template-columns:1fr;}
+  .profile-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <a href="hullid_demo.html" class="header-logo">Hull<span>ID</span></a>
+  <div class="header-center">
+    <span class="header-dot"></span>
+    Il mio porto · Armatore
+  </div>
+  <div class="header-right">
+    <div class="notif-btn" onclick="showSection('notifiche')">
+      🔔<div class="notif-dot"></div>
+    </div>
+    <div class="user-chip">
+      <div class="user-avatar">GB</div>
+      <div>
+        <div class="user-name">Giovanni Bianchi</div>
+        <div class="user-role">Armatore · Genova</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- SIDEBAR NAV -->
+  <aside class="sidebar">
+    <div class="nav-group">
+      <div class="nav-group-title">Il mio porto</div>
+      <a class="nav-link active" onclick="showSection('barche',this)">
+        <span class="icon">⚓</span> Le mie barche
+        <span class="badge">1</span>
+      </a>
+      <a class="nav-link" onclick="showSection('timeline',this)">
+        <span class="icon">📅</span> Timeline
+      </a>
+      <a class="nav-link" onclick="showSection('notifiche',this)">
+        <span class="icon">🔔</span> Notifiche
+        <span class="badge" style="background:var(--orange);">3</span>
+      </a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Gestione</div>
+      <a class="nav-link" onclick="showSection('documenti',this)">
+        <span class="icon">📄</span> Documenti
+      </a>
+      <a class="nav-link" onclick="showSection('broker',this)">
+        <span class="icon">🤝</span> Broker collegato
+      </a>
+      <a class="nav-link" onclick="showSection('perizia',this)">
+        <span class="icon">📋</span> Richiedi perizia
+      </a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-title">Account</div>
+      <a class="nav-link" onclick="showSection('profilo',this)">
+        <span class="icon">👤</span> Il mio profilo
+      </a>
+      <a class="nav-link" onclick="showSection('privacy',this)">
+        <span class="icon">🔒</span> Privacy & accessi
+      </a>
+    </div>
+    <div class="sidebar-footer">
+      <a href="hullid_demo.html" class="back-link">← Torna al sito</a>
+      <a href="bertram28_scheda.html" class="back-link" style="color:var(--gold);">↗ Vedi scheda pubblica</a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ═══ SEZIONE: BARCHE ═══ -->
+    <div id="section-barche" class="fade-in">
+
+      <!-- Welcome band -->
+      <div class="welcome-band fade-in-1">
+        <div>
+          <div class="welcome-greeting">Bentornato</div>
+          <div class="welcome-name">Giovanni <em>Bianchi</em></div>
+          <div class="welcome-meta">Membro HullID dal Gennaio 2025 · Genova</div>
+        </div>
+        <div class="welcome-stats">
+          <div class="wstat">
+            <div class="wstat-num">1</div>
+            <div class="wstat-label">Barca registrata</div>
+          </div>
+          <div class="wstat">
+            <div class="wstat-num">5</div>
+            <div class="wstat-label">Eventi timeline</div>
+          </div>
+          <div class="wstat">
+            <div class="wstat-num">28 anni</div>
+            <div class="wstat-label">Storia documentata</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Boats grid -->
+      <div class="section-block fade-in-2">
+        <div class="section-header">
+          <div>
+            <div class="section-eyebrow">— Portafoglio</div>
+            <div class="section-title">Le mie barche</div>
+          </div>
+        </div>
+
+        <div class="boats-grid">
+
+          <!-- Bertram 28 Card -->
+          <div class="boat-card">
+            <div class="boat-card-photo">
+              <div class="boat-card-photo-placeholder">
+                <!-- Hull SVG -->
+                <svg viewBox="0 0 320 180" width="320" height="180" class="boat-card-hull-icon">
+                  <path d="M 160 155 L 20 75 L 0 85 L 0 110 L 320 110 L 320 85 L 300 75 Z" fill="none" stroke="#c9a84c" stroke-width="1.5"/>
+                  <line x1="160" y1="155" x2="160" y2="30" stroke="#c9a84c" stroke-width="1" opacity="0.6"/>
+                  <line x1="160" y1="140" x2="80" y2="75" stroke="#c9a84c" stroke-width="0.8" opacity="0.4"/>
+                  <line x1="160" y1="140" x2="240" y2="75" stroke="#c9a84c" stroke-width="0.8" opacity="0.4"/>
+                  <line x1="160" y1="130" x2="40" y2="80" stroke="#c9a84c" stroke-width="0.7" opacity="0.3"/>
+                  <line x1="160" y1="130" x2="280" y2="80" stroke="#c9a84c" stroke-width="0.7" opacity="0.3"/>
+                  <path d="M 20 72 Q 160 48 300 72" fill="none" stroke="#c9a84c" stroke-width="1" opacity="0.4"/>
+                  <line x1="0" y1="110" x2="320" y2="110" stroke="#c9a84c" stroke-width="1" stroke-dasharray="8,6" opacity="0.3"/>
+                </svg>
+              </div>
+              <div class="boat-status-pill pill-felice">⚓ Felice possessore</div>
+              <div class="hullid-badge">BOT-BER28-1998</div>
+            </div>
+            <div class="boat-card-body">
+              <div class="boat-card-name">Bertram 28 FBC</div>
+              <div class="boat-card-sub">Bertram Yacht · 1998 · Porto di Genova</div>
+              <div class="boat-specs-row">
+                <div class="spec-item"><div class="spec-val">9,32 m</div><div class="spec-key">LOA</div></div>
+                <div class="spec-item"><div class="spec-val">2× 350 HP</div><div class="spec-key">Motori</div></div>
+                <div class="spec-item"><div class="spec-val">31 h</div><div class="spec-key">Ore</div></div>
+                <div class="spec-item"><div class="spec-val">28 anni</div><div class="spec-key">Età</div></div>
+              </div>
+              <div class="boat-card-actions">
+                <div class="broker-linked">
+                  <span class="broker-linked-dot"></span>
+                  Broker Blu Med.
+                </div>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn btn-ghost btn-sm" onclick="window.open('bertram28_scheda.html','_blank')">↗ Scheda</button>
+                  <button class="btn btn-outline btn-sm" onclick="openBoatPanel()">✎ Gestisci</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Add new boat -->
+          <div class="boat-card-add" onclick="openAddBoat()">
+            <div class="add-icon">⊕</div>
+            <div class="add-label">Registra una barca</div>
+            <div class="add-sub">Aggiungi un'altra imbarcazione al tuo profilo HullID</div>
+            <button class="btn btn-outline btn-sm" style="margin-top:4px;">+ Nuova registrazione</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="section-block fade-in-3">
+        <div class="section-eyebrow" style="margin-bottom:12px;">— Azioni rapide</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+          <div onclick="openBoatPanel('timeline')" style="background:white;border:1px solid var(--gray-light);padding:16px;cursor:pointer;text-align:center;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gray-light)'">
+            <div style="font-size:1.4rem;margin-bottom:8px;">📅</div>
+            <div style="font-size:0.78rem;font-weight:500;color:var(--navy);margin-bottom:3px;">Aggiungi evento</div>
+            <div style="font-size:0.68rem;color:var(--gray);">Documenta la storia</div>
+          </div>
+          <div onclick="showSection('documenti')" style="background:white;border:1px solid var(--gray-light);padding:16px;cursor:pointer;text-align:center;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gray-light)'">
+            <div style="font-size:1.4rem;margin-bottom:8px;">📄</div>
+            <div style="font-size:0.78rem;font-weight:500;color:var(--navy);margin-bottom:3px;">Carica documento</div>
+            <div style="font-size:0.68rem;color:var(--gray);">Fatture e certificati</div>
+          </div>
+          <div onclick="openPerizia()" style="background:white;border:1px solid var(--gray-light);padding:16px;cursor:pointer;text-align:center;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gray-light)'">
+            <div style="font-size:1.4rem;margin-bottom:8px;">📋</div>
+            <div style="font-size:0.78rem;font-weight:500;color:var(--navy);margin-bottom:3px;">Richiedi perizia</div>
+            <div style="font-size:0.68rem;color:var(--gray);">HullID certificata</div>
+          </div>
+          <div onclick="openBrokerModal()" style="background:white;border:1px solid var(--gray-light);padding:16px;cursor:pointer;text-align:center;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gray-light)'">
+            <div style="font-size:1.4rem;margin-bottom:8px;">🤝</div>
+            <div style="font-size:0.78rem;font-weight:500;color:var(--navy);margin-bottom:3px;">Invita broker</div>
+            <div style="font-size:0.68rem;color:var(--gray);">Gestisci vendita</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ═══ SEZIONE: TIMELINE ═══ -->
+    <div id="section-timeline" style="display:none;" class="fade-in">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">— Bertram 28 FBC</div>
+          <div class="section-title">Timeline storica</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openBoatPanel('timeline')">+ Aggiungi evento</button>
+      </div>
+      <div class="timeline-preview">
+        <div class="tl-item-preview">
+          <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line-seg"></div></div>
+          <div class="tl-content">
+            <div class="tl-date">2024</div>
+            <div class="tl-title">Aggiornamento elettronica — Raymarine Axiom 9</div>
+            <div class="tl-desc">2× Raymarine Axiom 9, pilota automatico, VHF con AIS attivo/passivo, telecamera FLIR notturna.</div>
+            <span class="tl-type type-elettronica">Elettronica</span>
+          </div>
+        </div>
+        <div class="tl-item-preview">
+          <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line-seg"></div></div>
+          <div class="tl-content">
+            <div class="tl-date">2024</div>
+            <div class="tl-title">Aggiornamento omologazione — fino 12 miglia</div>
+            <div class="tl-desc">Rinnovo documentazione e omologazione ufficiale per navigazione fino a 12 miglia dalla costa.</div>
+            <span class="tl-type type-manutenzione">Omologazione</span>
+          </div>
+        </div>
+        <div class="tl-item-preview">
+          <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line-seg"></div></div>
+          <div class="tl-content">
+            <div class="tl-date">2022–2024</div>
+            <div class="tl-title">Refitting completo — motori, scafo e interni</div>
+            <div class="tl-desc">2× Mercruiser 6.2 MPI 350 HP (31 ore). ZF nuovi, assi, eliche 4 pali. Interni completamente rinnovati, teak pozzetto, cucina rifatta.</div>
+            <span class="tl-type type-refit">Refitting</span>
+          </div>
+        </div>
+        <div class="tl-item-preview">
+          <div class="tl-dot-col"><div class="tl-dot"></div><div class="tl-line-seg"></div></div>
+          <div class="tl-content">
+            <div class="tl-date">1998</div>
+            <div class="tl-title">Varo originale — Bertram Yacht, Miami</div>
+            <div class="tl-desc">Prima uscita in acqua. Costruzione in vetroresina Deep-V, motorizzazione bialbero originale.</div>
+            <span class="tl-type type-storico">Varo originale</span>
+          </div>
+        </div>
+        <div class="tl-item-preview" style="border-bottom:none;">
+          <div class="tl-dot-col"><div class="tl-dot" style="background:var(--gray-light);box-shadow:none;border-color:var(--gray-light);"></div></div>
+          <div class="tl-content" style="padding-top:4px;">
+            <button class="btn btn-outline btn-sm" onclick="openBoatPanel('timeline')">+ Aggiungi nuovo evento</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SEZIONE: NOTIFICHE ═══ -->
+    <div id="section-notifiche" style="display:none;" class="fade-in">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">— Aggiornamenti</div>
+          <div class="section-title">Notifiche</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('Tutte le notifiche segnate come lette')">Segna tutte come lette</button>
+      </div>
+      <div class="notif-list">
+        <div class="notif-item unread">
+          <div class="notif-icon">🤝</div>
+          <div class="notif-body">
+            <div class="notif-title">Broker Blu Mediterraneo — richiesta collegamento</div>
+            <div class="notif-text">Broker Blu Mediterraneo ha richiesto di collegare la tua barca Bertram 28 FBC al loro portafoglio. Puoi accettare e impostare i permessi che vuoi concedere.</div>
+            <div class="notif-actions">
+              <button class="btn btn-primary btn-sm" onclick="showToast('Broker collegato con successo')">✓ Accetta</button>
+              <button class="btn btn-ghost btn-sm" onclick="this.closest('.notif-item').style.opacity='0.4'">Rifiuta</button>
+              <button class="btn btn-ghost btn-sm" onclick="openBrokerModal()">Gestisci permessi</button>
+            </div>
+          </div>
+          <div class="notif-time">2 ore fa</div>
+        </div>
+        <div class="notif-item unread">
+          <div class="notif-icon">📋</div>
+          <div class="notif-body">
+            <div class="notif-title">Perizia completata — Bertram 28 FBC</div>
+            <div class="notif-text">La perizia HullID pre-vendita è stata completata dall'Ing. M. Ferrara. Il certificato è stato allegato alla timeline e alla scheda pubblica della tua barca.</div>
+            <div class="notif-actions">
+              <button class="btn btn-outline btn-sm" onclick="showToast('Download certificato perizia')">↓ Scarica certificato</button>
+              <button class="btn btn-ghost btn-sm" onclick="window.open('bertram28_scheda.html','_blank')">↗ Vedi scheda</button>
+            </div>
+          </div>
+          <div class="notif-time">3 giorni fa</div>
+        </div>
+        <div class="notif-item unread">
+          <div class="notif-icon">👁</div>
+          <div class="notif-body">
+            <div class="notif-title">142 visualizzazioni alla tua scheda questo mese</div>
+            <div class="notif-text">La scheda del tuo Bertram 28 FBC ha ricevuto 142 visite questo mese, con 7 richieste di contatto tramite il broker. Ottima visibilità!</div>
+          </div>
+          <div class="notif-time">1 settimana fa</div>
+        </div>
+        <div class="notif-item" style="opacity:0.6;">
+          <div class="notif-icon">✓</div>
+          <div class="notif-body">
+            <div class="notif-title">Registrazione completata — Benvenuto su HullID</div>
+            <div class="notif-text">Il tuo profilo è attivo e la barca Bertram 28 FBC è visibile nella sezione Barche dei Soci.</div>
+          </div>
+          <div class="notif-time">Gen 2025</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SEZIONE: DOCUMENTI ═══ -->
+    <div id="section-documenti" style="display:none;" class="fade-in">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">— Archivio</div>
+          <div class="section-title">Documenti</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Apertura uploader documenti')">+ Carica documento</button>
+      </div>
+      <div class="docs-list">
+        <div class="doc-row">
+          <div class="doc-icon">📜</div>
+          <div style="flex:1;">
+            <div class="doc-name">Certificato omologazione 2024</div>
+            <div class="doc-meta">Ministero delle Infrastrutture e dei Trasporti · PDF · 340 KB</div>
+            <div class="doc-boat">BOT-BER28-1998 · Allegato alla timeline</div>
+          </div>
+          <div class="doc-dl" onclick="showToast('Download certificato omologazione')">↓</div>
+        </div>
+        <div class="doc-row">
+          <div class="doc-icon">🔧</div>
+          <div style="flex:1;">
+            <div class="doc-name">Fattura motori Mercruiser 6.2 MPI</div>
+            <div class="doc-meta">Cantiere Nautico Genova · PDF · 180 KB · Gen 2023</div>
+            <div class="doc-boat">BOT-BER28-1998 · Allegato alla timeline</div>
+          </div>
+          <div class="doc-dl" onclick="showToast('Download fattura motori')">↓</div>
+        </div>
+        <div class="doc-row">
+          <div class="doc-icon">📊</div>
+          <div style="flex:1;">
+            <div class="doc-name">Vessel View 7 — Report ore motori</div>
+            <div class="doc-meta">Mercruiser Digital · PDF · 95 KB · Dic 2024</div>
+            <div class="doc-boat">BOT-BER28-1998 · Allegato alla timeline</div>
+          </div>
+          <div class="doc-dl" onclick="showToast('Download report ore motori')">↓</div>
+        </div>
+        <div class="doc-row">
+          <div class="doc-icon">📋</div>
+          <div style="flex:1;">
+            <div class="doc-name">Perizia HullID — Certificato pre-vendita</div>
+            <div class="doc-meta">Ing. M. Ferrara · HullID Certified · PDF · 420 KB · Gen 2026</div>
+            <div class="doc-boat">BOT-BER28-1998 · Visibile nella scheda pubblica</div>
+          </div>
+          <div class="doc-dl" onclick="showToast('Download perizia certificata')">↓</div>
+        </div>
+        <div class="doc-row" style="border:2px dashed var(--gray-light);background:transparent;justify-content:center;cursor:pointer;" onclick="showToast('Apertura uploader documenti')" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gray-light)'">
+          <div style="text-align:center;padding:8px 0;">
+            <div style="font-size:1.2rem;opacity:0.3;margin-bottom:4px;">+</div>
+            <div style="font-size:0.78rem;color:var(--gray);">Carica un nuovo documento</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SEZIONE: BROKER ═══ -->
+    <div id="section-broker" style="display:none;" class="fade-in">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">— Gestione vendita</div>
+          <div class="section-title">Broker collegato</div>
+        </div>
+        <button class="btn btn-outline btn-sm" onclick="openBrokerModal()">Cambia broker</button>
+      </div>
+      <div class="broker-link-card" style="margin-bottom:16px;">
+        <div class="broker-avatar-sm">BM</div>
+        <div class="broker-info">
+          <div class="broker-name-link">Broker Blu Mediterraneo</div>
+          <div class="broker-meta-link">Alessandro Marino · Livorno · Partner HullID dal 2018 · 4,7★</div>
+          <div class="broker-perms">
+            <span class="perm-tag">Annunci marketplace</span>
+            <span class="perm-tag">Stato e prezzo</span>
+            <span class="perm-tag">Perizie HullID</span>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+          <span style="font-size:0.62rem;color:var(--green);font-weight:600;font-family:'DM Mono',monospace;">● Attivo</span>
+          <a href="broker_profile.html" target="_blank" style="font-size:0.7rem;color:var(--gold);text-decoration:none;">Profilo ↗</a>
+        </div>
+      </div>
+      <div style="background:white;border:1px solid var(--gray-light);padding:20px 24px;margin-bottom:16px;">
+        <div style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;margin-bottom:14px;">Permessi concessi</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--navy);cursor:pointer;">
+            <input type="checkbox" checked> Pubblicazione annunci marketplace
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--navy);cursor:pointer;">
+            <input type="checkbox" checked> Modifica stato (in vendita / ecc.)
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--navy);cursor:pointer;">
+            <input type="checkbox" checked> Inserimento prezzo e condizioni
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--navy);cursor:pointer;">
+            <input type="checkbox" checked> Richiesta perizie HullID
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--gray);cursor:pointer;">
+            <input type="checkbox"> Modifica dati tecnici
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--gray);cursor:pointer;">
+            <input type="checkbox"> Modifica timeline
+          </label>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:8px;">
+          <button class="btn btn-primary btn-sm" onclick="showToast('Permessi aggiornati')">Salva permessi</button>
+          <button class="btn btn-danger btn-sm" onclick="showToast('Collegamento broker rimosso')">Rimuovi broker</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SEZIONE: PERIZIA ═══ -->
+    <div id="section-perizia" style="display:none;" class="fade-in">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">— Servizi HullID</div>
+          <div class="section-title">Richiedi una perizia</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:28px;">
+        <div style="background:white;border:1px solid var(--gray-light);padding:20px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gray-light)'" onclick="openPerizia('strutturale')">
+          <div style="font-size:1.6rem;margin-bottom:10px;">🔍</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--navy);margin-bottom:4px;">Perizia strutturale</div>
+          <div style="font-size:0.74rem;color:var(--gray);margin-bottom:12px;line-height:1.5;">Verifica dello stato di scafo, struttura e sistemi. Ideale prima di acquistare.</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gold);">da €350</div>
+        </div>
+        <div style="background:white;border:1px solid var(--gray-light);padding:20px;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gray-light)'" onclick="openPerizia('storica')">
+          <div style="font-size:1.6rem;margin-bottom:10px;">📜</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--navy);margin-bottom:4px;">Certificazione storica</div>
+          <div style="font-size:0.74rem;color:var(--gray);margin-bottom:12px;line-height:1.5;">Autenticazione della storia documentata. Aumenta il valore della barca.</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gold);">da €200</div>
+        </div>
+        <div style="background:white;border:2px solid var(--gold);padding:20px;cursor:pointer;transition:all 0.2s;position:relative;" onmouseover="this.style.background='rgba(201,168,76,0.03)'" onmouseout="this.style.background='white'" onclick="openPerizia('completa')">
+          <div style="position:absolute;top:-1px;right:16px;background:var(--gold);color:var(--navy);font-size:0.55rem;font-weight:700;padding:2px 8px;letter-spacing:0.1em;text-transform:uppercase;">Più richiesta</div>
+          <div style="font-size:1.6rem;margin-bottom:10px;">⭐</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--navy);margin-bottom:4px;">Perizia completa pre-vendita</div>
+          <div style="font-size:0.74rem;color:var(--gray);margin-bottom:12px;line-height:1.5;">Strutturale + storica + valutazione di mercato HullID. Il pacchetto completo.</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gold);">da €500</div>
+        </div>
+      </div>
+      <div style="background:var(--navy);padding:22px 28px;border:1px solid rgba(201,168,76,0.2);">
+        <div style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;margin-bottom:8px;">Come funziona</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:20px;margin-top:12px;">
+          <div style="font-size:0.78rem;color:var(--gray-light);font-weight:300;line-height:1.5;"><span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:0.65rem;">01 </span>Scegli il tipo di perizia</div>
+          <div style="font-size:0.78rem;color:var(--gray-light);font-weight:300;line-height:1.5;"><span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:0.65rem;">02 </span>HullID assegna un perito certificato</div>
+          <div style="font-size:0.78rem;color:var(--gray-light);font-weight:300;line-height:1.5;"><span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:0.65rem;">03 </span>Sopralluogo in porto (accordi diretti)</div>
+          <div style="font-size:0.78rem;color:var(--gray-light);font-weight:300;line-height:1.5;"><span style="color:var(--gold);font-family:'DM Mono',monospace;font-size:0.65rem;">04 </span>Certificato allegato alla scheda HullID</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SEZIONE: PROFILO ═══ -->
+    <div id="section-profilo" style="display:none;" class="fade-in">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">— Account</div>
+          <div class="section-title">Il mio profilo</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="showToast('Profilo aggiornato')">Salva modifiche</button>
+      </div>
+      <div class="profile-grid">
+        <div class="profile-card">
+          <div class="profile-card-title">Dati personali</div>
+          <div class="form-group"><label class="form-label">Nome</label><input class="form-input" type="text" value="Giovanni"></div>
+          <div class="form-group"><label class="form-label">Cognome</label><input class="form-input" type="text" value="Bianchi"></div>
+          <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" value="g.bianchi@gmail.com"></div>
+          <div class="form-group"><label class="form-label">Telefono</label><input class="form-input" type="text" value="+39 338 123 4567"></div>
+          <div class="form-group"><label class="form-label">Città</label><input class="form-input" type="text" value="Genova"></div>
+        </div>
+        <div class="profile-card">
+          <div class="profile-card-title">Preferenze</div>
+          <div class="form-group"><label class="form-label">Porto principale</label><input class="form-input" type="text" value="Porto di Genova — Darsena"></div>
+          <div class="form-group"><label class="form-label">Notifiche email</label>
+            <select class="form-input"><option>Tutte le notifiche</option><option>Solo importanti</option><option>Disabilitate</option></select>
+          </div>
+          <div class="form-group"><label class="form-label">Profilo pubblico</label>
+            <select class="form-input"><option>Nome visibile nella scheda barca</option><option>Solo iniziali</option><option>Anonimo</option></select>
+          </div>
+          <div class="form-group"><label class="form-label">Lingua</label>
+            <select class="form-input"><option>Italiano</option><option>English</option><option>Français</option></select>
+          </div>
+        </div>
+        <div class="profile-card">
+          <div class="profile-card-title">Sicurezza</div>
+          <div class="form-group"><label class="form-label">Password attuale</label><input class="form-input" type="password" value="••••••••"></div>
+          <div class="form-group"><label class="form-label">Nuova password</label><input class="form-input" type="password" placeholder="Nuova password..."></div>
+          <div class="form-group"><label class="form-label">Conferma password</label><input class="form-input" type="password" placeholder="Ripeti password..."></div>
+          <button class="btn btn-outline btn-sm" onclick="showToast('Password aggiornata')">Aggiorna password</button>
+        </div>
+        <div class="profile-card">
+          <div class="profile-card-title">Abbonamento HullID</div>
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;padding:14px;background:var(--gold-dim);border:1px solid var(--gold);">
+            <div style="font-size:1.3rem;">⭐</div>
+            <div>
+              <div style="font-weight:600;color:var(--navy);font-size:0.88rem;">Piano Armatore</div>
+              <div style="font-size:0.72rem;color:var(--gray);">Attivo dal Gen 2025 · 1 barca inclusa</div>
+            </div>
+          </div>
+          <div style="font-size:0.78rem;color:var(--gray);line-height:1.7;margin-bottom:14px;">
+            Con il piano Armatore puoi registrare 1 barca, caricare documenti illimitati, richiedere perizie e collegare un broker.
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="showToast('Apertura pagina upgrade piano')">Upgrade — aggiungi barche</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SEZIONE: PRIVACY ═══ -->
+    <div id="section-privacy" style="display:none;" class="fade-in">
+      <div class="section-header">
+        <div>
+          <div class="section-eyebrow">— Controllo accessi</div>
+          <div class="section-title">Privacy & accessi</div>
+        </div>
+      </div>
+      <div style="background:white;border:1px solid var(--gray-light);padding:24px;margin-bottom:20px;">
+        <div style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;margin-bottom:16px;">Chi può vedere la tua scheda barca</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">
+            <input type="radio" name="visibility" checked style="margin-top:2px;">
+            <div><div style="font-size:0.84rem;font-weight:500;color:var(--navy);">Pubblica — tutti possono vedere la scheda</div><div style="font-size:0.74rem;color:var(--gray);margin-top:2px;">La barca appare nella sezione Barche dei Soci e nel marketplace HullID</div></div>
+          </label>
+          <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">
+            <input type="radio" name="visibility" style="margin-top:2px;">
+            <div><div style="font-size:0.84rem;font-weight:500;color:var(--navy);">Solo QR — visibile solo con scansione del QR fisico</div><div style="font-size:0.74rem;color:var(--gray);margin-top:2px;">Non appare nell'elenco ma è accessibile tramite QR code sul battello</div></div>
+          </label>
+          <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">
+            <input type="radio" name="visibility" style="margin-top:2px;">
+            <div><div style="font-size:0.84rem;font-weight:500;color:var(--navy);">Privata — solo io e chi invito</div><div style="font-size:0.74rem;color:var(--gray);margin-top:2px;">La scheda è accessibile solo da te e dalle persone che hai invitato (es. broker)</div></div>
+          </label>
+        </div>
+      </div>
+      <div style="background:white;border:1px solid var(--gray-light);padding:24px;">
+        <div style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;margin-bottom:16px;">Cosa è visibile pubblicamente</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--navy);cursor:pointer;"><input type="checkbox" checked> Scheda tecnica completa</label>
+          <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--navy);cursor:pointer;"><input type="checkbox" checked> Timeline storica</label>
+          <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--navy);cursor:pointer;"><input type="checkbox" checked> Galleria fotografica</label>
+          <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--gray);cursor:pointer;"><input type="checkbox"> Il mio nome completo</label>
+          <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--gray);cursor:pointer;"><input type="checkbox"> Informazioni di contatto diretto</label>
+          <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--navy);cursor:pointer;"><input type="checkbox" checked> Perizie e certificazioni</label>
+        </div>
+        <button class="btn btn-primary btn-sm" style="margin-top:16px;" onclick="showToast('Impostazioni privacy salvate')">Salva impostazioni</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══════ BOAT EDIT PANEL ══════ -->
+<div class="slide-overlay" id="boatOverlay" onclick="closeBoatPanel()"></div>
+<div class="slide-panel" id="boatPanel">
+  <div class="sp-header">
+    <div>
+      <div class="sp-title">Gestisci barca</div>
+      <div class="sp-sub">Bertram 28 FBC · BOT-BER28-1998</div>
+    </div>
+    <button class="sp-close" onclick="closeBoatPanel()">✕</button>
+  </div>
+  <div class="sp-tabs">
+    <button class="sp-tab active" onclick="switchSpTab('info')">Info</button>
+    <button class="sp-tab" onclick="switchSpTab('timeline')">Timeline</button>
+    <button class="sp-tab" onclick="switchSpTab('foto')">Foto</button>
+    <button class="sp-tab" onclick="switchSpTab('stato')">Stato</button>
+  </div>
+
+  <!-- INFO TAB -->
+  <div class="sp-body active" id="sptab-info">
+    <div class="sp-section-title">Dati non modificabili</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+      <div class="form-group">
+        <label class="form-label" style="color:var(--red);">🔒 HIN / Telaio</label>
+        <input class="form-input" type="text" value="BTRFD273H898" disabled style="background:#fdf8f8;color:var(--gray);font-family:'DM Mono',monospace;font-size:0.76rem;">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Boat ID</label>
+        <input class="form-input" type="text" value="BOT-BER28-1998" disabled style="background:#f8f8f8;color:var(--gray);font-family:'DM Mono',monospace;font-size:0.76rem;">
+      </div>
+    </div>
+    <div class="sp-section-title">Dati modificabili dall'armatore</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group form-grid-1" style="grid-column:1/-1;">
+        <label class="form-label">Nome barca</label>
+        <input class="form-input" type="text" value="Bertram 28 FBC">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Porto base</label>
+        <input class="form-input" type="text" value="Genova">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note personali (private)</label>
+        <input class="form-input" type="text" placeholder="Solo visibili a te...">
+      </div>
+    </div>
+    <div style="margin-top:16px;padding:12px 14px;background:var(--gray-bg);border-left:3px solid var(--gray-light);font-size:0.76rem;color:var(--gray);line-height:1.5;">
+      Per modificare dati tecnici, motori o dotazioni, contatta HullID o richiedi il permesso all'admin. 
+      Alcune modifiche richiedono verifica documentale.
+    </div>
+  </div>
+
+  <!-- TIMELINE TAB -->
+  <div class="sp-body" id="sptab-timeline">
+    <div class="sp-section-title">Aggiungi evento alla timeline</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <div class="form-group">
+        <label class="form-label">Anno</label>
+        <input class="form-input" type="number" value="2026">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tipo evento</label>
+        <select class="form-input">
+          <option>Manutenzione</option>
+          <option>Refitting</option>
+          <option>Elettronica</option>
+          <option>Rimessaggio</option>
+          <option>Navigazione</option>
+          <option>Altro</option>
+        </select>
+      </div>
+      <div class="form-group" style="grid-column:1/-1;">
+        <label class="form-label">Titolo</label>
+        <input class="form-input" type="text" placeholder="Descrizione breve dell'evento...">
+      </div>
+      <div class="form-group" style="grid-column:1/-1;">
+        <label class="form-label">Descrizione</label>
+        <textarea class="form-input" style="height:80px;" placeholder="Dettagli dell'intervento, note, osservazioni..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Cantiere / Fornitore</label>
+        <input class="form-input" type="text" placeholder="Chi ha eseguito l'intervento">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Costo (€, opzionale)</label>
+        <input class="form-input" type="text" placeholder="Privato o pubblico">
+      </div>
+      <div class="form-group" style="grid-column:1/-1;">
+        <label class="form-label" style="display:flex;gap:8px;align-items:center;cursor:pointer;font-size:0.78rem;text-transform:none;letter-spacing:0;">
+          <input type="file" style="display:none;" id="docUpload">
+          <span onclick="document.getElementById('docUpload').click()" style="padding:8px 14px;border:1px dashed var(--gray-light);font-size:0.72rem;color:var(--gray);cursor:pointer;transition:all 0.2s;display:inline-block;" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--gray-light)';this.style.color='var(--gray)'">
+            + Allega documento (PDF, JPG)
+          </span>
+        </label>
+      </div>
+    </div>
+    <div style="margin-top:16px;padding:12px 14px;background:rgba(201,168,76,0.06);border-left:3px solid var(--gold);font-size:0.76rem;color:#6a5a3a;line-height:1.5;">
+      Gli eventi aggiunti dall'armatore appaiono nella timeline come "Non verificati" finché HullID non li certifica. 
+      Allegare un documento accelera il processo di verifica.
+    </div>
+  </div>
+
+  <!-- FOTO TAB -->
+  <div class="sp-body" id="sptab-foto">
+    <div class="sp-section-title">Gestione gallery</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+      <div style="aspect-ratio:4/3;background:var(--navy-mid);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:rgba(255,255,255,0.3);position:relative;border:1px solid var(--gray-light);">
+        Foto principale
+        <div style="position:absolute;top:6px;left:6px;background:var(--gold);color:var(--navy);font-size:0.5rem;padding:1px 5px;font-weight:700;">COVER</div>
+      </div>
+      <div style="aspect-ratio:4/3;background:var(--navy-light);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:rgba(255,255,255,0.3);border:1px solid var(--gray-light);">Pozzetto</div>
+      <div style="aspect-ratio:4/3;background:var(--navy-mid);display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:rgba(255,255,255,0.3);border:1px solid var(--gray-light);">Timoneria</div>
+    </div>
+    <div style="border:2px dashed var(--gray-light);padding:28px;text-align:center;cursor:pointer;transition:all 0.2s;" onclick="showToast('Upload foto — disponibile con backend')" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gray-light)'">
+      <div style="font-size:1.8rem;opacity:0.25;margin-bottom:8px;">📷</div>
+      <div style="font-size:0.78rem;color:var(--gray);">Trascina le foto o clicca per caricare</div>
+      <div style="font-size:0.68rem;color:var(--gray-light);margin-top:4px;">JPG, PNG, HEIC — max 20MB per foto · max 30 foto</div>
+    </div>
+  </div>
+
+  <!-- STATO TAB -->
+  <div class="sp-body" id="sptab-stato">
+    <div class="sp-section-title">Stato della barca</div>
+    <div style="display:flex;gap:10px;margin-bottom:20px;">
+      <label style="flex:1;padding:14px;border:2px solid var(--navy-light);background:rgba(42,74,107,0.06);cursor:pointer;text-align:center;">
+        <input type="radio" name="u-stato" value="felice" checked style="display:none;">
+        <div style="font-size:1.3rem;margin-bottom:6px;">⚓</div>
+        <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--navy-light);font-weight:600;">Felice possessore</div>
+      </label>
+      <label style="flex:1;padding:14px;border:1px solid var(--gray-light);cursor:pointer;text-align:center;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gray-light)'">
+        <input type="radio" name="u-stato" value="vendita" style="display:none;">
+        <div style="font-size:1.3rem;margin-bottom:6px;">🏷</div>
+        <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:#9a7020;font-weight:600;">In vendita</div>
+      </label>
+      <label style="flex:1;padding:14px;border:1px solid var(--gray-light);cursor:pointer;text-align:center;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gray-light)'">
+        <input type="radio" name="u-stato" value="refit" style="display:none;">
+        <div style="font-size:1.3rem;margin-bottom:6px;">🔧</div>
+        <div style="font-size:0.68rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--green);font-weight:600;">Refit in corso</div>
+      </label>
+    </div>
+    <div style="padding:14px;background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);font-size:0.76rem;color:var(--gray);line-height:1.5;margin-bottom:16px;">
+      Se metti la barca "In vendita", il tuo broker collegato potrà inserire il prezzo e pubblicare un annuncio nel marketplace HullID.
+    </div>
+    <div class="sp-section-title">Visibilità pubblica</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--navy);cursor:pointer;"><input type="checkbox" checked> Profilo visibile in Barche dei Soci</label>
+      <label style="display:flex;align-items:center;gap:10px;font-size:0.82rem;color:var(--navy);cursor:pointer;"><input type="checkbox" checked> QR code attivo</label>
+      <label style="display:flex;align-items:center;gap=10px;font-size:0.82rem;color:var(--navy);cursor:pointer;"><input type="checkbox" checked> Timeline visibile al pubblico</label>
+    </div>
+  </div>
+
+  <div class="sp-footer">
+    <div class="sp-save-status" id="spSaveStatus">Modifiche non salvate</div>
+    <button class="btn btn-outline btn-sm" onclick="closeBoatPanel()">Annulla</button>
+    <button class="btn btn-primary btn-sm" onclick="saveBoatPanel()">Salva</button>
+  </div>
+</div>
+
+<!-- ══════ BROKER INVITE MODAL ══════ -->
+<div class="modal-overlay" id="brokerModal">
+  <div class="modal">
+    <div class="modal-h">
+      <div class="modal-h-title">Invita / cambia broker</div>
+      <button class="modal-h-close" onclick="closeBrokerModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:0.82rem;color:var(--gray);line-height:1.65;margin-bottom:18px;font-weight:300;">
+        Scegli un broker certificato HullID nella tua zona. Il broker potrà gestire la vendita della 
+        tua barca per conto tuo — tu decidi quali permessi concedere e puoi revocarli in qualsiasi momento.
+      </p>
+      <div style="border:2px solid var(--gold);padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer;background:rgba(201,168,76,0.04);">
+        <div style="width:40px;height:40px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--gold);flex-shrink:0;">BM</div>
+        <div style="flex:1;">
+          <div style="font-size:0.88rem;font-weight:500;color:var(--navy);">Broker Blu Mediterraneo <span style="background:var(--gold);color:var(--navy);font-size:0.52rem;padding:1px 6px;margin-left:6px;font-weight:700;">Collegato</span></div>
+          <div style="font-size:0.7rem;color:var(--gray);">Alessandro Marino · Livorno · 4,7★ · Partner HullID</div>
+        </div>
+        <input type="radio" name="brokerSel" checked>
+      </div>
+      <div style="border:1px solid var(--gray-light);padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;opacity:0.45;">
+        <div style="width:40px;height:40px;background:var(--gray-bg);display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:0.65rem;color:var(--gray);flex-shrink:0;">+</div>
+        <div style="font-size:0.82rem;color:var(--gray);">Altri broker partner HullID · In arrivo nella tua zona</div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.12em;color:var(--gold);text-transform:uppercase;margin-bottom:10px;">Permessi da concedere</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--navy);cursor:pointer;"><input type="checkbox" checked> Pubblicazione annunci marketplace</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--navy);cursor:pointer;"><input type="checkbox" checked> Modifica stato e prezzo</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--navy);cursor:pointer;"><input type="checkbox"> Modifica dati tecnici</label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeBrokerModal()">Annulla</button>
+      <button class="btn btn-primary btn-sm" onclick="showToast('Permessi broker aggiornati');closeBrokerModal()">Conferma</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ PERIZIA MODAL ══════ -->
+<div class="modal-overlay" id="perModal">
+  <div class="modal">
+    <div class="modal-h">
+      <div class="modal-h-title">Richiedi perizia HullID</div>
+      <button class="modal-h-close" onclick="document.getElementById('perModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="perTipoLabel" style="background:var(--gold-dim);border:1px solid rgba(201,168,76,0.3);padding:12px 14px;margin-bottom:16px;">
+        <div style="font-size:0.82rem;font-weight:500;color:var(--navy);" id="perTipoName">Perizia completa pre-vendita</div>
+        <div style="font-size:0.72rem;color:var(--gray);margin-top:2px;" id="perTipoPrice">da €500</div>
+      </div>
+      <div class="form-group"><label class="form-label">Barca</label><input class="form-input" type="text" value="Bertram 28 FBC — BOT-BER28-1998" disabled></div>
+      <div class="form-group"><label class="form-label">Porto dove si trova la barca</label><input class="form-input" type="text" value="Porto di Genova — Darsena"></div>
+      <div class="form-group"><label class="form-label">Disponibilità (settimane)</label><input class="form-input" type="text" placeholder="Es. dal 10 al 20 marzo 2026..."></div>
+      <div class="form-group"><label class="form-label">Note aggiuntive</label><textarea class="form-input" style="height:70px;" placeholder="Informazioni utili per il perito..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="document.getElementById('perModal').classList.remove('open')">Annulla</button>
+      <button class="btn btn-primary btn-sm" onclick="showToast('Richiesta perizia inviata — sarai contattato entro 48h');document.getElementById('perModal').classList.remove('open')">Invia richiesta</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── SECTIONS ──
+const sections = ['barche','timeline','notifiche','documenti','broker','perizia','profilo','privacy'];
+function showSection(name, el) {
+  sections.forEach(s => {
+    const sec = document.getElementById('section-'+s);
+    if(sec) sec.style.display = (s===name) ? 'block' : 'none';
+  });
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+  if(el) el.classList.add('active');
+  else {
+    document.querySelectorAll('.nav-link').forEach(l => {
+      if(l.getAttribute('onclick') && l.getAttribute('onclick').includes("'"+name+"'")) l.classList.add('active');
+    });
+  }
+}
+
+// ── BOAT PANEL ──
+function openBoatPanel(tab) {
+  document.getElementById('boatOverlay').classList.add('open');
+  document.getElementById('boatPanel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  if(tab) switchSpTab(tab);
+  else switchSpTab('info');
+}
+function closeBoatPanel() {
+  document.getElementById('boatOverlay').classList.remove('open');
+  document.getElementById('boatPanel').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function saveBoatPanel() {
+  const st = document.getElementById('spSaveStatus');
+  st.textContent = '✓ Salvato — ' + new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+  st.classList.add('saved');
+  showToast('Modifiche salvate');
+}
+
+// ── SP TABS ──
+function switchSpTab(name) {
+  document.querySelectorAll('.sp-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sp-body').forEach(b => b.classList.remove('active'));
+  const body = document.getElementById('sptab-'+name);
+  if(body) body.classList.add('active');
+  document.querySelectorAll('.sp-tab').forEach(t => {
+    if(t.getAttribute('onclick') === `switchSpTab('${name}')`) t.classList.add('active');
+  });
+}
+
+// ── MODALS ──
+function openBrokerModal() {
+  document.getElementById('brokerModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeBrokerModal() {
+  document.getElementById('brokerModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function openPerizia(tipo) {
+  const names = {strutturale:'Perizia strutturale', storica:'Certificazione storica', completa:'Perizia completa pre-vendita'};
+  const prices = {strutturale:'da €350', storica:'da €200', completa:'da €500'};
+  const t = tipo || 'completa';
+  document.getElementById('perTipoName').textContent = names[t] || names.completa;
+  document.getElementById('perTipoPrice').textContent = prices[t] || prices.completa;
+  document.getElementById('perModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function openAddBoat() {
+  showToast('Richiesta nuova barca — apertura form di registrazione');
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3200);
+}
+
+// Close modals on overlay click
+document.getElementById('boatOverlay').addEventListener('click', closeBoatPanel);
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', function(e) {
+    if(e.target === this) {
+      this.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  });
+});
+</script>
+</body>
+</html>
