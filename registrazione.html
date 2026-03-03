@@ -440,7 +440,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);background:#fff
   <script>
     const SUPABASE_URL  = 'https://alvlcjtbecodijpicrvb.supabase.co';
     const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsdmxjanRiZWNvZGlqcGljcnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzODEyOTAsImV4cCI6MjA4Nzk1NzI5MH0.uPd_8Qb3LYW7dLX3-tWoLuSI9vI0EjmjDlPAczCbCaY';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    window._sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
   </script>
 <script>
 let currentMode = 'register';
@@ -522,7 +522,7 @@ async function submitRegister() {
 
   try {
     // 1. Crea utente in Supabase Auth
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await window._sb.auth.signUp({
       email,
       password,
       options: {
@@ -572,7 +572,7 @@ async function submitRegister() {
         profileData.approvato = false; // broker/b2b richiedono approvazione
       }
 
-      const { error: profileError } = await supabase.from('utenti_profili').upsert(profileData);
+      const { error: profileError } = await window._sb.from('utenti_profili').upsert(profileData);
       if (profileError) console.warn('Profilo error:', profileError.message);
     }
 
@@ -616,7 +616,7 @@ async function submitLogin() {
   if (btn) btn.disabled = true;
 
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await window._sb.auth.signInWithPassword({ email, password });
 
     if (error) {
       showToast(error.message === 'Invalid login credentials' ? 'Email o password non corretti' : 'Errore: ' + error.message);
@@ -624,7 +624,7 @@ async function submitLogin() {
       return;
     }
 
-    const { data: profilo } = await supabase
+    const { data: profilo } = await window._sb
       .from('utenti_profili')
       .select('tipo_account, approvato')
       .eq('id', data.user.id)
