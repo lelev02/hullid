@@ -436,6 +436,12 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);background:#fff
 <!-- TOAST -->
 <div id="toast" style="position:fixed;bottom:28px;right:28px;z-index:999;background:var(--navy);color:#fff;padding:13px 22px;border-left:3px solid var(--gold);font-size:0.8rem;opacity:0;transform:translateY(8px);transition:all 0.3s;pointer-events:none;border:1px solid rgba(201,168,76,0.3);"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL  = 'https://alvlcjtbecodijpicrvb.supabase.co';
+    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsdmxjanRiZWNvZGlqcGljcnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzODEyOTAsImV4cCI6MjA4Nzk1NzI5MH0.uPd_8Qb3LYW7dLX3-tWoLuSI9vI0EjmjDlPAczCbCaY';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  </script>
 <script>
 let currentMode = 'register';
 let currentType = 'armatore';
@@ -494,52 +500,156 @@ function togglePass(id, btn) {
   else { inp.type = 'password'; btn.textContent = '👁'; }
 }
 
-function submitRegister() {
-  const nome = document.getElementById('reg-nome').value;
-  const email = document.getElementById('reg-email').value;
-  const privacy = document.getElementById('chk-privacy').checked;
-  
+async function submitRegister() {
+  const nome     = document.getElementById('reg-nome')?.value?.trim() || '';
+  const cognome  = document.getElementById('reg-cognome')?.value?.trim() || '';
+  const email    = document.getElementById('reg-email')?.value?.trim() || '';
+  const password = document.getElementById('reg-password')?.value || '';
+  const privacy  = document.getElementById('chk-privacy')?.checked;
+
   if (!nome || !email) { showToast('Compila tutti i campi obbligatori'); return; }
   if (!privacy) { showToast('Devi accettare la Privacy Policy per procedere'); return; }
+  if (!password || password.length < 6) { showToast('La password deve essere di almeno 6 caratteri'); return; }
+
   if (currentType === 'armatore') {
-    const barca = document.getElementById('reg-barca').value;
-    const anno = document.getElementById('reg-anno').value;
-    if (!barca || !anno) { showToast('Inserisci almeno il nome e l\'anno della barca'); return; }
+    const barca = document.getElementById('reg-barca')?.value;
+    const anno  = document.getElementById('reg-anno')?.value;
+    if (!barca || !anno) { showToast("Inserisci almeno il nome e l'anno della barca"); return; }
   }
-  
-  // Show success
-  document.getElementById('registerForm').style.display = 'none';
-  const succ = document.getElementById('successState');
-  succ.style.display = 'block'; succ.classList.add('visible');
-  
-  if (currentType === 'broker') {
-    document.getElementById('successTitle').textContent = 'Richiesta broker inviata!';
-    document.getElementById('successSub').textContent = 'Verificheremo la tua azienda entro 72 ore lavorative. Riceverai una email con l\'esito e, se approvato, le credenziali di accesso al pannello broker.';
-    document.getElementById('successId').textContent = 'ID Richiesta: BROKER-2026-0012';
-    document.getElementById('successCta').href = 'broker_dashboard.html';
-    document.getElementById('successCta').textContent = 'Vai al pannello broker →';
-  } else {
-    document.getElementById('successTitle').textContent = 'Account creato!';
-    document.getElementById('successSub').textContent = `Benvenuto ${nome}! HullID verificherà la tua barca entro 48 ore. Nel frattempo puoi già esplorare la tua dashboard.`;
-    document.getElementById('successId').textContent = 'ARM-IT-' + Math.floor(Math.random()*9000+1000);
-    document.getElementById('successCta').href = 'armatore_dashboard.html';
+
+  const btn = document.getElementById('regBtnText');
+  if (btn) btn.textContent = 'Registrazione in corso…';
+
+  try {
+    // 1. Crea utente in Supabase Auth
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          nome,
+          cognome,
+          tipo_account: currentType
+        }
+      }
+    });
+
+    if (error) {
+      showToast('Errore: ' + (error.message === 'User already registered' ? 'Email già registrata' : error.message));
+      if (btn) btn.textContent = 'Crea account — Invia richiesta';
+      return;
+    }
+
+    const userId = data.user?.id;
+
+    // 2. Inserisci profilo in utenti_profili
+    if (userId) {
+      const profileData = {
+        id:           userId,
+        nome,
+        cognome,
+        email,
+        tipo_account: currentType,
+        approvato:    currentType === 'appassionato' || currentType === 'armatore' || currentType === 'armatore_pro'
+      };
+
+      // Aggiungi dati barca se armatore
+      if (currentType === 'armatore' || currentType === 'armatore_pro') {
+        const nomeBarca = document.getElementById('reg-barca')?.value?.trim();
+        const annoVaro  = document.getElementById('reg-anno')?.value;
+        if (nomeBarca) profileData.nome_barca_principale = nomeBarca;
+        if (annoVaro)  profileData.anno_varo_principale  = parseInt(annoVaro);
+      }
+
+      // Aggiungi dati azienda se broker/b2b
+      if (currentType === 'broker' || currentType === 'b2b') {
+        const azienda  = document.getElementById('reg-azienda')?.value?.trim();
+        const telefono = document.getElementById('reg-telefono')?.value?.trim();
+        const citta    = document.getElementById('reg-citta')?.value?.trim();
+        if (azienda)  profileData.nome_azienda = azienda;
+        if (telefono) profileData.telefono     = telefono;
+        if (citta)    profileData.citta         = citta;
+        profileData.approvato = false; // broker/b2b richiedono approvazione
+      }
+
+      const { error: profileError } = await supabase.from('utenti_profili').upsert(profileData);
+      if (profileError) console.warn('Profilo error:', profileError.message);
+    }
+
+    // 3. Mostra successo
+    document.getElementById('registerForm').style.display = 'none';
+    const succ = document.getElementById('successState');
+    if (succ) { succ.style.display = 'block'; succ.classList.add('visible'); }
+
+    if (currentType === 'broker' || currentType === 'b2b') {
+      const el = document.getElementById('successTitle');
+      if (el) el.textContent = 'Richiesta inviata!';
+      const sub = document.getElementById('successSub');
+      if (sub) sub.textContent = 'Verificheremo la tua azienda entro 72 ore. Riceverai una email di conferma.';
+      const sid = document.getElementById('successId');
+      if (sid) sid.textContent = currentType.toUpperCase() + '-2026-' + Math.floor(Math.random()*9000+1000);
+    } else {
+      const el = document.getElementById('successTitle');
+      if (el) el.textContent = 'Account creato!';
+      const sub = document.getElementById('successSub');
+      if (sub) sub.textContent = 'Benvenuto ' + nome + '! Controlla la tua email per confermare l\'account, poi accedi.';
+      const sid = document.getElementById('successId');
+      if (sid) sid.textContent = 'ARM-IT-' + Math.floor(Math.random()*9000+1000);
+      const cta = document.getElementById('successCta');
+      if (cta) { cta.href = 'login.html'; cta.textContent = 'Accedi ora →'; }
+    }
+
+  } catch(err) {
+    console.error(err);
+    showToast('Errore di connessione. Riprova.');
+    if (btn) btn.textContent = 'Crea account — Invia richiesta';
   }
 }
 
-function submitLogin() {
-  const email = document.getElementById('login-email').value;
-  if (!email) { showToast('Inserisci email e password'); return; }
-  
-  // Simulate login → redirect
-  showToast('Accesso in corso...');
-  setTimeout(() => {
-    if (loginType === 'broker') {
-      window.location.href = 'broker_dashboard.html';
-    } else {
-      window.location.href = 'armatore_dashboard.html';
+async function submitLogin() {
+  const email    = document.getElementById('login-email')?.value?.trim() || '';
+  const password = document.getElementById('login-password')?.value || '';
+
+  if (!email || !password) { showToast('Inserisci email e password'); return; }
+
+  const btn = document.querySelector('.submit-btn');
+  if (btn) btn.disabled = true;
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      showToast(error.message === 'Invalid login credentials' ? 'Email o password non corretti' : 'Errore: ' + error.message);
+      if (btn) btn.disabled = false;
+      return;
     }
-  }, 800);
+
+    const { data: profilo } = await supabase
+      .from('utenti_profili')
+      .select('tipo_account, approvato')
+      .eq('id', data.user.id)
+      .single();
+
+    const tipo = profilo?.tipo_account || 'appassionato';
+    showToast('Benvenuto! Reindirizzamento…');
+
+    const redirect = {
+      'appassionato': 'appassionato_dashboard.html',
+      'armatore':     'armatore_dashboard.html',
+      'armatore_pro': 'armatore_dashboard.html',
+      'broker':        profilo?.approvato ? 'broker_dashboard.html' : 'attesa_approvazione.html',
+      'b2b':           profilo?.approvato ? 'broker_dashboard.html' : 'attesa_approvazione.html',
+      'admin':         'admin_panel.html',
+    };
+
+    setTimeout(() => { window.location.href = redirect[tipo] || 'appassionato_dashboard.html'; }, 800);
+
+  } catch(err) {
+    showToast('Errore di connessione. Riprova.');
+    if (btn) btn.disabled = false;
+  }
 }
+
 
 function showToast(msg) {
   const t = document.getElementById('toast');
