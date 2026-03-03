@@ -415,7 +415,7 @@ nav.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
 
   <div class="sidebar-user">
     <div class="su-badge">🌊 Appassionato</div>
-    <div class="su-name">Marco Ferretti</div>
+    <div class="su-name"><span id="sidebar-nome">Caricamento...</span></div>
     <div class="su-meta">Iscritto da Gen 2026 · Napoli</div>
     <div class="su-progress-row">
       <div class="mini-ring">
@@ -873,21 +873,21 @@ nav.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
           <div class="card-body">
             <div class="form-group">
               <label>Nome e cognome</label>
-              <input type="text" value="Marco Ferretti">
+              <input type="text" id="prof-nome" value="">
             </div>
             <div class="form-group">
               <label>Email</label>
-              <input type="email" value="marco.ferretti@email.it">
+              <input type="email" id="prof-email" value="" readonly>
             </div>
             <div class="form-group">
               <label>Telefono</label>
-              <input type="tel" value="+39 340 1234567">
+              <input type="tel" id="prof-telefono" value="">
             </div>
             <div class="form-group">
               <label>Città</label>
-              <input type="text" value="Napoli">
+              <input type="text" id="prof-citta" value="">
             </div>
-            <button class="btn btn-primary btn-sm" onclick="showToast('Dati salvati ✓')">Salva</button>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Dati salvati ✓')" onclick="salvaProfilo()">Salva</button>
           </div>
         </div>
 
@@ -1132,5 +1132,59 @@ function showToast(msg) {
     });
   });
   </script>
+<script>
+async function loadProfilo() {
+  if (!window._sb) { setTimeout(loadProfilo, 500); return; }
+  const { data: { session } } = await window._sb.auth.getSession();
+  if (!session) { window.location.href = 'login.html'; return; }
+
+  const { data: p } = await window._sb.from('utenti_profili').select('*').eq('id', session.user.id).single();
+
+  // Sidebar
+  const sn = document.getElementById('sidebar-nome');
+  if (sn) sn.textContent = ((p && p.nome) ? p.nome : '') + ' ' + ((p && p.cognome) ? p.cognome : '');
+  const se = document.getElementById('sidebar-email');
+  if (se) se.textContent = session.user.email || '';
+
+  if (!p) return;
+
+  // Campi form
+  const fn = document.getElementById('prof-nome');
+  if (fn) fn.value = (p.nome || '') + (p.cognome ? ' ' + p.cognome : '');
+  const fe = document.getElementById('prof-email');
+  if (fe) fe.value = session.user.email || '';
+  const ft = document.getElementById('prof-telefono');
+  if (ft) ft.value = p.telefono || '';
+  const fc = document.getElementById('prof-citta');
+  if (fc) fc.value = p.citta || '';
+}
+
+async function salvaProfilo() {
+  if (!window._sb) return;
+  const { data: { session } } = await window._sb.auth.getSession();
+  if (!session) return;
+
+  const nomeCompleto = (document.getElementById('prof-nome')?.value || '').trim().split(' ');
+  const nome = nomeCompleto[0] || '';
+  const cognome = nomeCompleto.slice(1).join(' ') || '';
+  const telefono = document.getElementById('prof-telefono')?.value || '';
+  const citta = document.getElementById('prof-citta')?.value || '';
+
+  const { error } = await window._sb.from('utenti_profili')
+    .update({ nome, cognome, telefono, citta })
+    .eq('id', session.user.id);
+
+  if (error) {
+    alert('Errore: ' + error.message);
+  } else {
+    const sn = document.getElementById('sidebar-nome');
+    if (sn) sn.textContent = nome + ' ' + cognome;
+    if (typeof showToast === 'function') showToast('Profilo salvato!');
+    else alert('Profilo salvato!');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadProfilo);
+</script>
 </body>
 </html>
