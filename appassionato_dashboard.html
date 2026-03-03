@@ -1075,5 +1075,62 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 3000);
 }
 </script>
+
+  <!-- Supabase SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+  // ══ SUPABASE AUTH GUARD ══
+  const SUPABASE_URL  = 'https://alvlcjtbecodijpicrvb.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsdmxjanRiZWNvZGlqcGljcnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzODEyOTAsImV4cCI6MjA4Nzk1NzI5MH0.uPd_8Qb3LYW7dLX3-tWoLuSI9vI0EjmjDlPAczCbCaY';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  let currentUser = null;
+  let currentProfilo = null;
+
+  // Auth guard: redirect se non loggato
+  (async function authGuard() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = 'login.html';
+      return;
+    }
+    currentUser = session.user;
+
+    // Carica profilo
+    const { data: profilo } = await supabase
+      .from('utenti_profili')
+      .select('*')
+      .eq('id', currentUser.id)
+      .single();
+
+    currentProfilo = profilo;
+
+    // Aggiorna UI con dati utente
+    const nomeEl = document.getElementById('user-nome') || document.getElementById('nomeUtente') || document.querySelector('.user-name');
+    if (nomeEl && profilo) nomeEl.textContent = (profilo.nome || '') + ' ' + (profilo.cognome || '');
+
+    const emailEl = document.getElementById('user-email') || document.querySelector('.user-email');
+    if (emailEl) emailEl.textContent = currentUser.email;
+
+    // Tipo account badge
+    const tipoEl = document.getElementById('user-tipo') || document.querySelector('.user-tipo');
+    if (tipoEl && profilo) tipoEl.textContent = profilo.tipo_account || '';
+
+    // Chiama init dashboard se esiste
+    if (typeof initDashboard === 'function') initDashboard(currentUser, profilo);
+    if (typeof loadDashboard === 'function') loadDashboard(currentUser, profilo);
+  })();
+
+  // Logout
+  function logout() {
+    supabase.auth.signOut().then(() => { window.location.href = 'login.html'; });
+  }
+
+  // Aggiungi listener a tutti i bottoni logout
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[onclick*="logout"], .logout-btn, [data-action="logout"]').forEach(el => {
+      el.addEventListener('click', e => { e.preventDefault(); logout(); });
+    });
+  });
+  </script>
 </body>
 </html>

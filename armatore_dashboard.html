@@ -2234,5 +2234,37 @@ function checkTabsOverflow() {
   }
 }
 </script>
+
+  <script>
+  // ══ AUTH GUARD + LOGOUT ══
+  let currentUser = null;
+  let currentProfilo = null;
+
+  (async function authGuard() {
+    if (typeof supabase === 'undefined') return;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+    currentUser = session.user;
+    const { data: profilo } = await supabase.from('utenti_profili').select('*').eq('id', currentUser.id).single();
+    currentProfilo = profilo;
+    const nomeEl = document.getElementById('user-nome') || document.querySelector('.user-name, .sidebar-name, [data-user-name]');
+    if (nomeEl && profilo) nomeEl.textContent = (profilo.nome || '') + ' ' + (profilo.cognome || '');
+    const emailEl = document.getElementById('user-email') || document.querySelector('.user-email, .sidebar-email');
+    if (emailEl) emailEl.textContent = currentUser.email || '';
+    if (typeof initDashboard === 'function') initDashboard(currentUser, profilo);
+    if (typeof loadDashboard === 'function') loadDashboard(currentUser, profilo);
+  })();
+
+  function logout() {
+    if (typeof supabase !== 'undefined') supabase.auth.signOut().then(() => { window.location.href = 'login.html'; });
+    else window.location.href = 'login.html';
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[onclick*="logout"], .logout-btn, [data-action="logout"]').forEach(el => {
+      el.addEventListener('click', e => { e.preventDefault(); logout(); });
+    });
+  });
+  </script>
 </body>
 </html>
