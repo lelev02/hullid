@@ -396,6 +396,10 @@ nav.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
 
 .hamburger { display:none; position:fixed; top:14px; left:14px; z-index:1001; background:var(--navy); border:1px solid var(--gold); color:var(--gold); font-size:1.3rem; width:40px; height:40px; border-radius:6px; cursor:pointer; align-items:center; justify-content:center; }
 .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; }
+.hamburger { display:none; position:fixed; top:14px; left:14px; z-index:1001; background:var(--navy); border:1px solid var(--gold); color:var(--gold); font-size:1.3rem; width:40px; height:40px; border-radius:6px; cursor:pointer; align-items:center; justify-content:center; }
+.sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; pointer-events:none; }
+.sidebar-overlay.open { pointer-events:all; }
+
 @media (max-width: 900px) {
   .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
   .sidebar.open { transform: translateX(0); }
@@ -461,9 +465,10 @@ nav.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
 
 <!-- ── MAIN ── -->
 <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()">☰</button>
+<button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()">☰</button>
 <div class="main">
   <div class="topbar">
-    <div class="topbar-title" id="topbarTitle">Benvenuto, Marco</div>
+    <div class="topbar-title" id="topbarTitle">Benvenuto, <span id="topbar-nome">...</span></div>
     <div class="topbar-right">
       <div class="topbar-notif" onclick="showSection('notifiche', document.querySelectorAll('.nav-item')[3])">
         🔔 <div class="notif-dot"></div>
@@ -1090,13 +1095,13 @@ function showToast(msg) {
   // ══ SUPABASE AUTH GUARD ══
   const SUPABASE_URL  = 'https://alvlcjtbecodijpicrvb.supabase.co';
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsdmxjanRiZWNvZGlqcGljcnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzODEyOTAsImV4cCI6MjA4Nzk1NzI5MH0.uPd_8Qb3LYW7dLX3-tWoLuSI9vI0EjmjDlPAczCbCaY';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  window._sb = window.supabase.createClient(window._sb_URL, window._sb_ANON);
   let currentUser = null;
   let currentProfilo = null;
 
   // Auth guard: redirect se non loggato
   (async function authGuard() {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await window._sb.auth.getSession();
     if (!session) {
       window.location.href = 'login.html';
       return;
@@ -1130,7 +1135,7 @@ function showToast(msg) {
 
   // Logout
   function logout() {
-    supabase.auth.signOut().then(() => { window.location.href = 'login.html'; });
+    window._sb.auth.signOut().then(() => { window.location.href = 'login.html'; });
   }
 
   // Aggiungi listener a tutti i bottoni logout
@@ -1140,221 +1145,78 @@ function showToast(msg) {
     });
   });
   </script>
+
+
+
 <script>
-async function loadProfilo() {
-  if (!window._sb) { setTimeout(loadProfilo, 500); return; }
-  const { data: { session } } = await window._sb.auth.getSession();
-  if (!session) { window.location.href = 'login.html'; return; }
-
-  const { data: p } = await window._sb.from('utenti_profili').select('*').eq('id', session.user.id).single();
-
-  // Sidebar
-  const sn = document.getElementById('sidebar-nome');
-  if (sn) sn.textContent = ((p && p.nome) ? p.nome : '') + ' ' + ((p && p.cognome) ? p.cognome : '');
-  const se = document.getElementById('sidebar-email');
-  if (se) se.textContent = session.user.email || '';
-
-  if (!p) return;
-
-  // Campi form
-  const fn = document.getElementById('prof-nome');
-  if (fn) fn.value = (p.nome || '') + (p.cognome ? ' ' + p.cognome : '');
-  const fe = document.getElementById('prof-email');
-  if (fe) fe.value = session.user.email || '';
-  const ft = document.getElementById('prof-telefono');
-  if (ft) ft.value = p.telefono || '';
-  const fc = document.getElementById('prof-citta');
-  if (fc) fc.value = p.citta || '';
-}
-
-async function salvaProfilo() {
-  if (!window._sb) return;
-  const { data: { session } } = await window._sb.auth.getSession();
-  if (!session) return;
-
-  const nomeCompleto = (document.getElementById('prof-nome')?.value || '').trim().split(' ');
-  const nome = nomeCompleto[0] || '';
-  const cognome = nomeCompleto.slice(1).join(' ') || '';
-  const telefono = document.getElementById('prof-telefono')?.value || '';
-  const citta = document.getElementById('prof-citta')?.value || '';
-
-  const { error } = await window._sb.from('utenti_profili')
-    .update({ nome, cognome, telefono, citta })
-    .eq('id', session.user.id);
-
-  if (error) {
-    alert('Errore: ' + error.message);
-  } else {
-    const sn = document.getElementById('sidebar-nome');
-    if (sn) sn.textContent = nome + ' ' + cognome;
-    if (typeof showToast === 'function') showToast('Profilo salvato!');
-    else alert('Profilo salvato!');
-  }
-}
-
-document.addEventListener('DOMContentLoaded', loadProfilo);
-</script>
-<script>
-// ══ PROFILO — carica e salva da Supabase ══
-let _profiloEditMode = false;
-
-async function loadProfilo() {
-  if (!window._sb) { setTimeout(loadProfilo, 300); return; }
-  const { data: { session } } = await window._sb.auth.getSession();
-  if (!session) { window.location.href = 'login.html'; return; }
-
-  const { data: p, error } = await window._sb.from('utenti_profili')
-    .select('*').eq('id', session.user.id).single();
-
-  // Sidebar
-  const sn = document.getElementById('sidebar-nome');
-  if (sn) sn.textContent = (p && p.nome ? p.nome + ' ' + (p.cognome || '') : session.user.email);
-  const se = document.getElementById('sidebar-email');
-  if (se) se.textContent = session.user.email || '';
-
-  if (!p) return;
-
-  // Campi form
-  const fn = document.getElementById('prof-nome');
-  if (fn) fn.value = (p.nome || '') + (p.cognome ? ' ' + p.cognome : '');
-  const fe = document.getElementById('prof-email');
-  if (fe) fe.value = session.user.email || '';
-  const ft = document.getElementById('prof-telefono');
-  if (ft) ft.value = p.telefono || '';
-  const fc = document.getElementById('prof-citta');
-  if (fc) fc.value = p.citta || '';
-
-  // Disabilita campi finché non si clicca Modifica
-  setFieldsEditable(false);
-}
-
-function setFieldsEditable(editable) {
-  ['prof-nome','prof-telefono','prof-citta'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.readOnly = !editable;
-      el.style.background = editable ? '' : '#f5f5f5';
-      el.style.cursor = editable ? '' : 'default';
-    }
-  });
-  _profiloEditMode = editable;
-}
-
-function attivaModificaProfilo() {
-  setFieldsEditable(true);
-  document.getElementById('prof-nome')?.focus();
-  if (typeof showToast === 'function') showToast('Puoi ora modificare i dati');
-}
-
-async function salvaDatiPersonali() {
-  if (!window._sb) return;
-  if (!_profiloEditMode) { attivaModificaProfilo(); return; }
-
-  const { data: { session } } = await window._sb.auth.getSession();
-  if (!session) return;
-
-  const nomeCompleto = (document.getElementById('prof-nome')?.value || '').trim().split(' ');
-  const nome = nomeCompleto[0] || '';
-  const cognome = nomeCompleto.slice(1).join(' ') || '';
-  const telefono = document.getElementById('prof-telefono')?.value || '';
-  const citta = document.getElementById('prof-citta')?.value || '';
-
-  const { error } = await window._sb.from('utenti_profili')
-    .update({ nome, cognome, telefono, citta })
-    .eq('id', session.user.id);
-
-  if (error) {
-    alert('Errore: ' + error.message);
-  } else {
-    const sn = document.getElementById('sidebar-nome');
-    if (sn) sn.textContent = nome + ' ' + cognome;
-    setFieldsEditable(false);
-    if (typeof showToast === 'function') showToast('Profilo salvato!');
-  }
-}
-
-async function salvaPreferenze() {
-  if (!window._sb) return;
-  const { data: { session } } = await window._sb.auth.getSession();
-  if (!session) return;
-
-  const tipoBarca = document.getElementById('prof-tipo-barca')?.value || '';
-  const zona = document.getElementById('prof-zona')?.value || '';
-  const budget = document.getElementById('prof-budget')?.value || '';
-
-  const { error } = await window._sb.from('utenti_profili')
-    .update({ preferenza_tipo_barca: tipoBarca, preferenza_zona: zona, preferenza_budget: budget })
-    .eq('id', session.user.id);
-
-  if (error) {
-    alert('Errore: ' + error.message);
-  } else {
-    if (typeof showToast === 'function') showToast('Preferenze salvate!');
-  }
-}
-
-document.addEventListener('DOMContentLoaded', loadProfilo);
-</script>
-<script>
+// ══ SIDEBAR ══
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
   document.getElementById('sidebar-overlay').classList.toggle('open');
 }
-let _profiloEditMode = false;
+
+// ══ PROFILO ══
+let _editMode = false;
+
 async function loadProfilo() {
   if (!window._sb) { setTimeout(loadProfilo, 300); return; }
   const { data: { session } } = await window._sb.auth.getSession();
   if (!session) { window.location.href = 'login.html'; return; }
   const { data: p } = await window._sb.from('utenti_profili').select('*').eq('id', session.user.id).single();
-  const sn = document.getElementById('sidebar-nome');
-  if (sn) sn.textContent = (p && p.nome ? p.nome + ' ' + (p.cognome||'') : session.user.email);
-  const se = document.getElementById('sidebar-email');
-  if (se) se.textContent = session.user.email || '';
+
+  document.getElementById('sidebar-nome') && (document.getElementById('sidebar-nome').textContent = p && p.nome ? p.nome+' '+(p.cognome||'') : session.user.email);
+  document.getElementById('sidebar-email') && (document.getElementById('sidebar-email').textContent = session.user.email||'');
+  document.getElementById('topbar-nome') && (document.getElementById('topbar-nome').textContent = p && p.nome ? p.nome : '');
+
   if (!p) return;
-  const avatar = document.getElementById('prof-avatar');
-  if (avatar) avatar.textContent = ((p.nome||'?')[0]+(p.cognome||'?')[0]).toUpperCase();
-  const cn = document.getElementById('home-nome-utente');
-  if (cn) cn.textContent = p.nome || '';
-  const mc = document.getElementById('prof-meta-citta');
-  if (mc) mc.textContent = p.citta || '';
-  const fn = document.getElementById('prof-nome');
-  if (fn) fn.value = (p.nome||'')+(p.cognome ? ' '+p.cognome : '');
-  const fe = document.getElementById('prof-email');
-  if (fe) fe.value = session.user.email || '';
-  const ft = document.getElementById('prof-telefono');
-  if (ft) ft.value = p.telefono || '';
-  const fc = document.getElementById('prof-citta');
-  if (fc) fc.value = p.citta || '';
-  setFieldsEditable(false);
+
+  document.getElementById('prof-avatar') && (document.getElementById('prof-avatar').textContent = ((p.nome||'?')[0]+(p.cognome||'?')[0]).toUpperCase());
+  document.getElementById('home-nome-utente') && (document.getElementById('home-nome-utente').textContent = p.nome||'');
+  document.getElementById('prof-meta-citta') && (document.getElementById('prof-meta-citta').textContent = p.citta||'');
+  document.getElementById('prof-nome') && (document.getElementById('prof-nome').value = (p.nome||'')+(p.cognome?' '+p.cognome:''));
+  document.getElementById('prof-email') && (document.getElementById('prof-email').value = session.user.email||'');
+  document.getElementById('prof-telefono') && (document.getElementById('prof-telefono').value = p.telefono||'');
+  document.getElementById('prof-citta') && (document.getElementById('prof-citta').value = p.citta||'');
+  setEditMode(false);
 }
-function setFieldsEditable(editable) {
+
+function setEditMode(on) {
   ['prof-nome','prof-telefono','prof-citta'].forEach(id => {
     const el = document.getElementById(id);
-    if (el) { el.readOnly = !editable; el.style.background = editable ? '' : '#f5f5f5'; el.style.cursor = editable ? '' : 'default'; }
+    if (!el) return;
+    el.readOnly = !on;
+    el.style.background = on ? '' : '#f5f5f5';
+    el.style.cursor = on ? '' : 'default';
   });
-  _profiloEditMode = editable;
+  _editMode = on;
 }
+
 function attivaModificaProfilo() {
-  setFieldsEditable(true);
+  setEditMode(true);
   document.getElementById('prof-nome')?.focus();
-  if (typeof showToast === 'function') showToast('Modifica i dati e clicca Salva');
+  if (typeof showToast==='function') showToast('Modifica i dati e clicca Salva');
 }
+
 async function salvaDatiPersonali() {
-  if (!_profiloEditMode) { attivaModificaProfilo(); return; }
+  if (!_editMode) { attivaModificaProfilo(); return; }
   const { data: { session } } = await window._sb.auth.getSession();
   if (!session) return;
-  const nc = (document.getElementById('prof-nome')?.value||'').trim().split(' ');
-  const nome = nc[0]||''; const cognome = nc.slice(1).join(' ')||'';
-  const telefono = document.getElementById('prof-telefono')?.value||'';
-  const citta = document.getElementById('prof-citta')?.value||'';
-  const { error } = await window._sb.from('utenti_profili').update({nome,cognome,telefono,citta}).eq('id', session.user.id);
+  const parts = (document.getElementById('prof-nome')?.value||'').trim().split(' ');
+  const nome = parts[0]||'', cognome = parts.slice(1).join(' ')||'';
+  const { error } = await window._sb.from('utenti_profili').update({
+    nome, cognome,
+    telefono: document.getElementById('prof-telefono')?.value||'',
+    citta: document.getElementById('prof-citta')?.value||''
+  }).eq('id', session.user.id);
   if (error) { alert('Errore: '+error.message); return; }
-  const sn = document.getElementById('sidebar-nome'); if (sn) sn.textContent = nome+' '+cognome;
-  const av = document.getElementById('prof-avatar'); if (av) av.textContent = (nome[0]||'')+(cognome[0]||'');
-  const cn = document.getElementById('home-nome-utente'); if (cn) cn.textContent = nome;
-  setFieldsEditable(false);
-  if (typeof showToast === 'function') showToast('Profilo salvato!');
+  document.getElementById('sidebar-nome') && (document.getElementById('sidebar-nome').textContent = nome+' '+cognome);
+  document.getElementById('prof-avatar') && (document.getElementById('prof-avatar').textContent = (nome[0]||'')+(cognome[0]||''));
+  document.getElementById('home-nome-utente') && (document.getElementById('home-nome-utente').textContent = nome);
+  document.getElementById('topbar-nome') && (document.getElementById('topbar-nome').textContent = nome);
+  setEditMode(false);
+  if (typeof showToast==='function') showToast('Profilo salvato!');
 }
+
 async function salvaPreferenze() {
   const { data: { session } } = await window._sb.auth.getSession();
   if (!session) return;
@@ -1364,8 +1226,9 @@ async function salvaPreferenze() {
     preferenza_budget: document.getElementById('prof-budget')?.value||''
   }).eq('id', session.user.id);
   if (error) { alert('Errore: '+error.message); return; }
-  if (typeof showToast === 'function') showToast('Preferenze salvate!');
+  if (typeof showToast==='function') showToast('Preferenze salvate!');
 }
+
 document.addEventListener('DOMContentLoaded', loadProfilo);
 </script>
 </body>
