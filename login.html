@@ -399,7 +399,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);background:#fff
     // ══════════════════════════════════════════════════
     const SUPABASE_URL  = 'https://alvlcjtbecodijpicrvb.supabase.co';
     const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsdmxjanRiZWNvZGlqcGljcnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzODEyOTAsImV4cCI6MjA4Nzk1NzI5MH0.uPd_8Qb3LYW7dLX3-tWoLuSI9vI0EjmjDlPAczCbCaY';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    window._sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
   </script>
 </head>
 <body>
@@ -513,7 +513,7 @@ async function handleLogin() {
 
   try {
     // ── SUPABASE: autenticazione reale ──
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    const { data, error } = await window._sb.auth.signInWithPassword({ email, password: pass });
 
     if (error) {
       showToast(error.message === 'Invalid login credentials'
@@ -525,7 +525,7 @@ async function handleLogin() {
     }
 
     // ── Login riuscito: leggi tipo account e redirect ──
-    const { data: profilo } = await supabase
+    const { data: profilo } = await window._sb
       .from('utenti_profili')
       .select('tipo_account, approvato')
       .eq('id', data.user.id)
@@ -556,10 +556,10 @@ async function handleLogin() {
 }
 // ── SUPABASE: controlla sessione esistente al caricamento ──
 document.addEventListener('DOMContentLoaded', async () => {
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await window._sb.auth.getSession();
   if (session) {
     // Utente già loggato — redirect diretto
-    const { data: profilo } = await supabase
+    const { data: profilo } = await window._sb
       .from('utenti_profili')
       .select('tipo_account, approvato')
       .eq('id', session.user.id)
