@@ -504,7 +504,7 @@ async function submitRegister() {
   const nome     = document.getElementById('reg-nome')?.value?.trim() || '';
   const cognome  = document.getElementById('reg-cognome')?.value?.trim() || '';
   const email    = document.getElementById('reg-email')?.value?.trim() || '';
-  const password = document.getElementById('reg-password')?.value || '';
+  const password = document.getElementById('reg-pass')?.value || document.getElementById('reg-password')?.value || document.querySelector('input[type="password"]')?.value || '';
   const privacy  = document.getElementById('chk-privacy')?.checked;
 
   if (!nome || !email) { showToast('Compila tutti i campi obbligatori'); return; }
