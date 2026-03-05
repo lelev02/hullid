@@ -1092,11 +1092,6 @@ function loadWatchlist() {
           ${b.barca_badge ? `<span class="watch-badge ${b.barca_badge}">${b.barca_badge_label || b.barca_badge}</span>` : ''}
         </div>
       </div>
-      <div style="text-align:right;">
-        <div class="watch-price">${b.barca_prezzo || ''}</div>
-        <button onclick="removeWatch('${b.barca_nome}')" style="margin-top:8px;background:none;border:none;color:var(--gray);cursor:pointer;font-size:0.75rem;">✕ Rimuovi</button>
-      </div>
-    </div>
 
 ```
 function removeWatch(id, name) {
