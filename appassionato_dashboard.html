@@ -1142,7 +1142,7 @@ function showToast(msg) {
   // ══ SUPABASE AUTH GUARD ══
   const SUPABASE_URL  = 'https://alvlcjtbecodijpicrvb.supabase.co';
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsdmxjanRiZWNvZGlqcGljcnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzODEyOTAsImV4cCI6MjA4Nzk1NzI5MH0.uPd_8Qb3LYW7dLX3-tWoLuSI9vI0EjmjDlPAczCbCaY';
-  window._sb = window.supabase.createClient(window._sb_URL, window._sb_ANON);
+  window._sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON); 
   let currentUser = null;
   let currentProfilo = null;
 
