@@ -1176,10 +1176,14 @@ function showToast(msg) {
   }
 
   // Aggiungi listener a tutti i bottoni logout
-  document.addEventListener('DOMContentLoaded', () => {
+ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[onclick*="logout"], .logout-btn, [data-action="logout"]').forEach(el => {
       el.addEventListener('click', e => { e.preventDefault(); logout(); });
     });
+    // Carica watchlist da localStorage/Supabase
+    loadWatchlist();
+    // Ricarica quando arriva sync dal server
+    document.addEventListener('hullid:synced', loadWatchlist);
   });
   </script>
 <script src="js/hullid-persistence.js"></script>
