@@ -1058,13 +1058,30 @@ function removeWatch(name) {
   });
 }
 function loadWatchlist() {
-  const container = document.getElementById('watchlistItems');
+  var container = document.getElementById('watchlistItems');
   if (!container) return;
-  const list = HullID.Watchlist.getLocal();
+  var list = HullID.Watchlist.getLocal();
   if (list.length === 0) {
     container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--gray);">Nessuna barca in watchlist</div>';
     return;
   }
+  var html = '';
+  list.forEach(function(b) {
+    var badge = b.barca_badge ? '<span class="watch-badge ' + b.barca_badge + '">' + (b.barca_badge_label || b.barca_badge) + '</span>' : '';
+    html += '<div class="watch-item" style="padding:16px 20px;border-bottom:1px solid var(--gray-light);">';
+    html += '<div class="watch-thumb" style="width:72px;height:52px;">' + (b.barca_emoji || '🚢') + '</div>';
+    html += '<div class="watch-info" style="margin:0 16px;flex:1;">';
+    html += '<div class="watch-name" style="font-size:0.9rem;margin-bottom:3px;">' + b.barca_nome + '</div>';
+    html += '<div class="watch-meta">' + (b.barca_meta || '') + '</div>';
+    html += '<div style="display:flex;gap:8px;margin-top:8px;">' + badge + '</div>';
+    html += '</div>';
+    html += '<div style="text-align:right;">';
+    html += '<div class="watch-price">' + (b.barca_prezzo || '') + '</div>';
+    html += '<button onclick="removeWatch(\'' + b.barca_nome + '\')" style="margin-top:8px;background:none;border:none;color:var(--gray);cursor:pointer;font-size:0.75rem;">✕ Rimuovi</button>';
+    html += '</div></div>';
+  });
+  container.innerHTML = html;
+}
   container.innerHTML = list.map(b => `
     <div class="watch-item" style="padding:16px 20px;border-bottom:1px solid var(--gray-light);">
       <div class="watch-thumb" style="width:72px;height:52px;">${b.barca_emoji || '🚢'}</div>
