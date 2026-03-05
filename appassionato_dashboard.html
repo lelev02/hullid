@@ -1097,10 +1097,8 @@ function loadWatchlist() {
         <button onclick="removeWatch('${b.barca_nome}')" style="margin-top:8px;background:none;border:none;color:var(--gray);cursor:pointer;font-size:0.75rem;">✕ Rimuovi</button>
       </div>
     </div>
-  `).join('');
-}
-```
 
+```
 function removeWatch(id, name) {
   const el = document.getElementById(id);
   if (el) {
