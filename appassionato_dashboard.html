@@ -394,18 +394,16 @@ nav.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
 #toast.show { opacity: 1; transform: translateY(0); }
 
 
-.hamburger { display:none; position:fixed; top:14px; left:14px; z-index:1001; background:var(--navy); border:1px solid var(--gold); color:var(--gold); font-size:1.3rem; width:40px; height:40px; border-radius:6px; cursor:pointer; align-items:center; justify-content:center; }
+.hamburger { display:none; position:fixed; top:12px; left:12px; z-index:1001; background:var(--navy); border:1px solid rgba(201,168,76,0.6); color:var(--gold); font-size:1.2rem; width:44px; height:44px; cursor:pointer; align-items:center; justify-content:center; transition: background 0.15s; }
+.hamburger:hover { background: var(--navy2); }
 .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; }
-.hamburger { display:none; position:fixed; top:14px; left:14px; z-index:1001; background:var(--navy); border:1px solid var(--gold); color:var(--gold); font-size:1.3rem; width:40px; height:40px; border-radius:6px; cursor:pointer; align-items:center; justify-content:center; }
-.sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:999; pointer-events:none; }
-.sidebar-overlay.open { pointer-events:all; }
-
 @media (max-width: 900px) {
-  .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; }
+  .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; z-index:1000; }
   .sidebar.open { transform: translateX(0); }
-  .hamburger { display: flex; }
+  .hamburger { display: flex !important; }
   .sidebar-overlay.open { display: block; }
   .main { margin-left: 0; }
+  .topbar { padding-left: 70px; }
   .stats-row { grid-template-columns: 1fr 1fr; }
   .two-col { grid-template-columns: 1fr; }
   .three-col { grid-template-columns: 1fr 1fr; }
@@ -444,7 +442,7 @@ nav.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
   <nav class="sidebar-nav">
     <div class="nav-group-label">Principale</div>
     <div class="nav-item active" onclick="showSection('home',this)"><span class="nav-icon">🏠</span> Home</div>
-    <div class="nav-item" onclick="showSection('watchlist',this)"><span class="nav-icon">👁</span> Watchlist <span class="nav-badge">3</span></div>
+    <div class="nav-item" onclick="showSection('watchlist',this)"><span class="nav-icon">👁</span> Watchlist <span class="nav-badge" id="watchlist-count">3</span></div>
     <div class="nav-item" onclick="showSection('esplora',this)"><span class="nav-icon">🔍</span> Esplora barche</div>
     <div class="nav-item" onclick="showSection('notifiche',this)"><span class="nav-icon">🔔</span> Notifiche <span class="nav-badge blue">2</span></div>
 
@@ -465,10 +463,9 @@ nav.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
 
 <!-- ── MAIN ── -->
 <button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()">☰</button>
-<button class="hamburger" id="hamburger-btn" onclick="toggleSidebar()">☰</button>
 <div class="main">
   <div class="topbar">
-    <div class="topbar-title" id="topbarTitle">Benvenuto, <span id="topbar-nome">...</span></div>
+    <div class="topbar-title" id="topbarTitle">Benvenuto</div>
     <div class="topbar-right">
       <div class="topbar-notif" onclick="showSection('notifiche', document.querySelectorAll('.nav-item')[3])">
         🔔 <div class="notif-dot"></div>
@@ -733,7 +730,7 @@ nav.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
             <div class="btc-meta">Genova · Motoscafo · 9,3 m</div>
             <div class="btc-specs"><span class="btc-spec"><strong>€ 38.000</strong></span><span class="btc-spec">· VTR · 1.240 h</span></div>
             <div class="btc-actions">
-              <button class="btn btn-outline btn-xs" onclick="event.stopPropagation();addWatch('Bertram 28')">+ Watch</button>
+              <button class="btn btn-outline btn-xs" onclick="event.stopPropagation();addWatch('Bertram 28', {barca_nome:'Bertram 28 FBC · 1998', barca_meta:'Genova · Motoscafo · 9,3 m', barca_prezzo:'€ 38.000', barca_emoji:'🚢'})">+ Watch</button>
               <button class="btn btn-navy btn-xs">Scheda</button>
             </div>
           </div>
@@ -757,7 +754,7 @@ nav.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
             <div class="btc-meta">Napoli · Cabinato · 11,4 m</div>
             <div class="btc-specs"><span class="btc-spec"><strong>€ 55.000</strong></span><span class="btc-spec">· VTR · 1.200 h</span></div>
             <div class="btc-actions">
-              <button class="btn btn-outline btn-xs" onclick="addWatch('Ferretti 360', {barca_nome:'Ferretti 360 · 1985', barca_meta:'Napoli · Cabinato · 11,4 m', barca_prezzo:'€ 55.000', barca_emoji:'🛥️'})">+ Watch</button>
+              <button class="btn btn-outline btn-xs" onclick="addWatch('Ferretti 360', {barca_nome:'Ferretti 360 · 1985', barca_meta:'Napoli · Cabinato · 11,4 m', barca_prezzo:'€ 55.000', barca_emoji:'🛥'})">+ Watch</button>
               <button class="btn btn-navy btn-xs">Scheda</button>
             </div>
           </div>
@@ -769,7 +766,7 @@ nav.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
             <div class="btc-meta">Livorno · Classic · 12 m</div>
             <div class="btc-specs"><span class="btc-spec"><strong>€ 72.000</strong></span><span class="btc-spec">· Alluminio</span></div>
             <div class="btc-actions">
-             <button class="btn btn-outline btn-xs" onclick="addWatch('Baglietto 12m', {barca_nome:'Baglietto 12m · 1972', barca_meta:'Livorno · Classic · 12 m', barca_prezzo:'€ 72.000', barca_emoji:'⛵', barca_badge:'certified', barca_badge_label:'CERTIFICATA'})">+ Watch</button>
+              <button class="btn btn-outline btn-xs" onclick="addWatch('Baglietto 12m', {barca_nome:'Baglietto 12m · 1972', barca_meta:'Livorno · Classic · 12 m', barca_prezzo:'€ 72.000', barca_emoji:'⛵', barca_badge:'certified', barca_badge_label:'CERTIFICATA'})">+ Watch</button>
               <button class="btn btn-navy btn-xs">Scheda</button>
             </div>
           </div>
@@ -793,7 +790,7 @@ nav.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
             <div class="btc-meta">Palermo · Motoscafo · 11,2 m</div>
             <div class="btc-specs"><span class="btc-spec"><strong>€ 42.000</strong></span><span class="btc-spec">· VTR</span></div>
             <div class="btc-actions">
-              <button class="btn btn-outline btn-xs" onclick="addWatch('Posillipo Bahamas', {barca_nome:'Posillipo Bahamas 37', barca_meta:'Palermo · Motoscafo · 11,2 m', barca_prezzo:'€ 42.000', barca_emoji:'🛥️', barca_badge:'new', barca_badge_label:'IN VENDITA'})">+ Watch</button>
+              <button class="btn btn-outline btn-xs" onclick="addWatch('Posillipo Bahamas', {barca_nome:'Posillipo Bahamas 37', barca_meta:'Palermo · Motoscafo · 11,2 m', barca_prezzo:'€ 42.000', barca_emoji:'🛥', barca_badge:'new', barca_badge_label:'IN VENDITA'})">+ Watch</button>
               <button class="btn btn-navy btn-xs">Scheda</button>
             </div>
           </div>
@@ -868,7 +865,7 @@ nav.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
         <div class="profile-avatar" id="prof-avatar">MF</div>
         <div>
           <div class="ph-name"><span id="sidebar-nome">...</span></div>
-          <div class="ph-meta">Appassionato · Napoli · Iscritto Gen 2026</div>
+          <div class="ph-meta" id="prof-ph-meta">Appassionato · Napoli · Iscritto Gen 2026</div>
           <div style="margin-top:8px;display:flex;gap:8px;">
             <span style="font-size:0.62rem;padding:3px 9px;background:rgba(201,168,76,0.1);border:1px solid rgba(201,168,76,0.25);color:var(--gold3);">🌊 Appassionato</span>
             <span style="font-size:0.62rem;padding:3px 9px;background:var(--bg2);border:1px solid var(--gray-light);color:var(--gray);">Profilo 50% completo</span>
@@ -889,8 +886,8 @@ nav.sidebar-nav { flex: 1; overflow-y: auto; padding: 10px 0; }
               <input type="text" id="prof-nome" value="">
             </div>
             <div class="form-group">
-              <label>Email</label>
-              <input type="email" id="prof-email" value="" readonly>
+              <label>Email <span style="font-size:0.6rem;color:var(--gray);">· non modificabile</span></label>
+              <input type="email" id="prof-email" value="" readonly style="background:#f5f5f5;cursor:default;">
             </div>
             <div class="form-group">
               <label>Telefono</label>
@@ -1033,7 +1030,7 @@ function showSection(name, el) {
   if (el) el.classList.add('active');
 
   const titles = {
-    home: 'Benvenuto, Marco',
+    home: window._userName ? 'Benvenuto, ' + window._userName : 'Home',
     watchlist: 'Watchlist',
     esplora: 'Esplora barche',
     notifiche: 'Notifiche',
@@ -1044,23 +1041,34 @@ function showSection(name, el) {
 }
 
 function addWatch(name, dati) {
-  const barca = dati || { barca_nome: name };
+  var barca = dati || {};
   barca.barca_nome = barca.barca_nome || name;
-  HullID.Watchlist.add(barca).then(r => {
+  if (window.HullID && window.HullID.Watchlist) {
+    HullID.Watchlist.add(barca).then(function() {
+      showToast('✓ ' + name + ' aggiunta alla watchlist');
+      loadWatchlist();
+    });
+  } else {
     showToast('✓ ' + name + ' aggiunta alla watchlist');
-  });
+  }
 }
 
 function removeWatch(name) {
-  HullID.Watchlist.remove(name).then(() => {
-    showToast('✗ ' + name + ' rimossa dalla watchlist');
-    loadWatchlist();
-  });
+  if (window.HullID && window.HullID.Watchlist) {
+    HullID.Watchlist.remove(name).then(function() {
+      showToast(name + ' rimossa dalla watchlist');
+      loadWatchlist();
+    });
+  }
 }
+
 function loadWatchlist() {
   var container = document.getElementById('watchlistItems');
   if (!container) return;
+  if (!window.HullID || !window.HullID.Watchlist) return;
   var list = HullID.Watchlist.getLocal();
+  var badge = document.getElementById('watchlist-count');
+  if (badge) badge.textContent = list.length;
   if (list.length === 0) {
     container.innerHTML = '<div style="padding:20px;text-align:center;color:var(--gray);">Nessuna barca in watchlist</div>';
     return;
@@ -1077,33 +1085,24 @@ function loadWatchlist() {
     html += '</div>';
     html += '<div style="text-align:right;">';
     html += '<div class="watch-price">' + (b.barca_prezzo || '') + '</div>';
-    html += '<button onclick="removeWatch(\'' + b.barca_nome + '\')" style="margin-top:8px;background:none;border:none;color:var(--gray);cursor:pointer;font-size:0.75rem;">✕ Rimuovi</button>';
+    html += '<button onclick="removeWatch(\'' + b.barca_nome + '\')" style="margin-top:8px;background:none;border:none;color:var(--gray);cursor:pointer;font-size:0.75rem;">&#x2715; Rimuovi</button>';
     html += '</div></div>';
   });
   container.innerHTML = html;
 }
-  container.innerHTML = list.map(b => `
-    <div class="watch-item" style="padding:16px 20px;border-bottom:1px solid var(--gray-light);">
-      <div class="watch-thumb" style="width:72px;height:52px;">${b.barca_emoji || '🚢'}</div>
-      <div class="watch-info" style="margin:0 16px;flex:1;">
-        <div class="watch-name" style="font-size:0.9rem;margin-bottom:3px;">${b.barca_nome}</div>
-        <div class="watch-meta">${b.barca_meta || ''}</div>
-        <div style="display:flex;gap:8px;margin-top:8px;">
-          ${b.barca_badge ? `<span class="watch-badge ${b.barca_badge}">${b.barca_badge_label || b.barca_badge}</span>` : ''}
-        </div>
-      </div>
-function removeWatch(id, name) {
-  const el = document.getElementById(id);
+
+function removeWatchOld(id, name) {
+  var el = document.getElementById(id);
   if (el) {
     el.style.transition = 'all 0.3s';
     el.style.opacity = '0';
     el.style.height = el.offsetHeight + 'px';
-    setTimeout(() => {
+    setTimeout(function() {
       el.style.height = '0';
       el.style.padding = '0';
       el.style.overflow = 'hidden';
     }, 200);
-    setTimeout(() => el.remove(), 500);
+    setTimeout(function() { el.remove(); }, 500);
   }
   showToast(name + ' rimossa dalla watchlist');
 }
@@ -1139,8 +1138,8 @@ function showToast(msg) {
   <script>
   // ══ SUPABASE AUTH GUARD ══
   const SUPABASE_URL  = 'https://alvlcjtbecodijpicrvb.supabase.co';
-  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsdmxjanRiZWNvZGlqcGljcnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzODEyOTAsImV4cCI6MjA4Nzk1NzI5MH0.uPd_8Qb3LYW7dLX3-tWoLuSI9vI0EjmjDlPAczCbCaY';
-  window._sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON); 
+  const SUPABASE_ANON = 'sb_publishable_yuwru1iINXkuln7xvmvziQ_v90INnWv';
+  window._sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
   let currentUser = null;
   let currentProfilo = null;
 
@@ -1154,7 +1153,7 @@ function showToast(msg) {
     currentUser = session.user;
 
     // Carica profilo
-    const { data: profilo } = await supabase
+    const { data: profilo } = await window._sb
       .from('utenti_profili')
       .select('*')
       .eq('id', currentUser.id)
@@ -1184,88 +1183,87 @@ function showToast(msg) {
   }
 
   // Aggiungi listener a tutti i bottoni logout
- document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[onclick*="logout"], .logout-btn, [data-action="logout"]').forEach(el => {
       el.addEventListener('click', e => { e.preventDefault(); logout(); });
     });
-    // Carica watchlist da localStorage/Supabase
     loadWatchlist();
-    // Ricarica quando arriva sync dal server
     document.addEventListener('hullid:synced', loadWatchlist);
   });
   </script>
 <script src="js/hullid-persistence.js"></script>
-
-
 <script>
-// ══ SIDEBAR ══
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('open');
   document.getElementById('sidebar-overlay').classList.toggle('open');
 }
-
-// ══ PROFILO ══
-let _editMode = false;
-
+let _profiloEditMode = false;
 async function loadProfilo() {
   if (!window._sb) { setTimeout(loadProfilo, 300); return; }
   const { data: { session } } = await window._sb.auth.getSession();
   if (!session) { window.location.href = 'login.html'; return; }
   const { data: p } = await window._sb.from('utenti_profili').select('*').eq('id', session.user.id).single();
-
-  document.getElementById('sidebar-nome') && (document.getElementById('sidebar-nome').textContent = p && p.nome ? p.nome+' '+(p.cognome||'') : session.user.email);
-  document.getElementById('sidebar-email') && (document.getElementById('sidebar-email').textContent = session.user.email||'');
-  document.getElementById('topbar-nome') && (document.getElementById('topbar-nome').textContent = p && p.nome ? p.nome : '');
-
+  const sn = document.getElementById('sidebar-nome');
+  if (sn) sn.textContent = (p && p.nome ? p.nome + ' ' + (p.cognome||'') : session.user.email);
+  const se = document.getElementById('sidebar-email');
+  if (se) se.textContent = session.user.email || '';
   if (!p) return;
-
-  document.getElementById('prof-avatar') && (document.getElementById('prof-avatar').textContent = ((p.nome||'?')[0]+(p.cognome||'?')[0]).toUpperCase());
-  document.getElementById('home-nome-utente') && (document.getElementById('home-nome-utente').textContent = p.nome||'');
-  document.getElementById('prof-meta-citta') && (document.getElementById('prof-meta-citta').textContent = p.citta||'');
-  document.getElementById('prof-nome') && (document.getElementById('prof-nome').value = (p.nome||'')+(p.cognome?' '+p.cognome:''));
-  document.getElementById('prof-email') && (document.getElementById('prof-email').value = session.user.email||'');
-  document.getElementById('prof-telefono') && (document.getElementById('prof-telefono').value = p.telefono||'');
-  document.getElementById('prof-citta') && (document.getElementById('prof-citta').value = p.citta||'');
-  setEditMode(false);
+  const avatar = document.getElementById('prof-avatar');
+  if (avatar) avatar.textContent = ((p.nome||'?')[0]+(p.cognome||'?')[0]).toUpperCase();
+  const cn = document.getElementById('home-nome-utente');
+  if (cn) cn.textContent = p.nome || '';
+  window._userName = p.nome || '';
+  const tb = document.getElementById('topbarTitle');
+  if (tb) tb.textContent = p.nome ? 'Benvenuto, ' + p.nome : 'Home';
+  const mc = document.getElementById('prof-meta-citta');
+  if (mc) mc.textContent = p.citta || '';
+  const phMeta = document.getElementById('prof-ph-meta');
+  if (phMeta) {
+    var tipo = p.tipo_account || 'Appassionato';
+    var citta = p.citta || '';
+    var iscr = p.created_at ? 'Iscritto ' + new Date(p.created_at).toLocaleDateString('it-IT', {month:'short', year:'numeric'}) : '';
+    phMeta.textContent = [tipo, citta, iscr].filter(Boolean).join(' · ');
+  }
+  const fn = document.getElementById('prof-nome');
+  if (fn) fn.value = (p.nome||'')+(p.cognome ? ' '+p.cognome : '');
+  const fe = document.getElementById('prof-email');
+  if (fe) fe.value = session.user.email || '';
+  const ft = document.getElementById('prof-telefono');
+  if (ft) ft.value = p.telefono || '';
+  const fc = document.getElementById('prof-citta');
+  if (fc) fc.value = p.citta || '';
+  setFieldsEditable(false);
 }
-
-function setEditMode(on) {
+function setFieldsEditable(editable) {
   ['prof-nome','prof-telefono','prof-citta'].forEach(id => {
     const el = document.getElementById(id);
-    if (!el) return;
-    el.readOnly = !on;
-    el.style.background = on ? '' : '#f5f5f5';
-    el.style.cursor = on ? '' : 'default';
+    if (el) { el.readOnly = !editable; el.style.background = editable ? '' : '#f5f5f5'; el.style.cursor = editable ? '' : 'default'; }
   });
-  _editMode = on;
+  _profiloEditMode = editable;
 }
-
 function attivaModificaProfilo() {
-  setEditMode(true);
+  setFieldsEditable(true);
   document.getElementById('prof-nome')?.focus();
-  if (typeof showToast==='function') showToast('Modifica i dati e clicca Salva');
+  if (typeof showToast === 'function') showToast('Modifica i dati e clicca Salva');
 }
-
 async function salvaDatiPersonali() {
-  if (!_editMode) { attivaModificaProfilo(); return; }
+  if (!_profiloEditMode) { attivaModificaProfilo(); return; }
   const { data: { session } } = await window._sb.auth.getSession();
   if (!session) return;
-  const parts = (document.getElementById('prof-nome')?.value||'').trim().split(' ');
-  const nome = parts[0]||'', cognome = parts.slice(1).join(' ')||'';
-  const { error } = await window._sb.from('utenti_profili').update({
-    nome, cognome,
-    telefono: document.getElementById('prof-telefono')?.value||'',
-    citta: document.getElementById('prof-citta')?.value||''
-  }).eq('id', session.user.id);
+  const nc = (document.getElementById('prof-nome')?.value||'').trim().split(' ');
+  const nome = nc[0]||''; const cognome = nc.slice(1).join(' ')||'';
+  const telefono = document.getElementById('prof-telefono')?.value||'';
+  const citta = document.getElementById('prof-citta')?.value||'';
+  const { error } = await window._sb.from('utenti_profili').update({nome,cognome,telefono,citta}).eq('id', session.user.id);
   if (error) { alert('Errore: '+error.message); return; }
-  document.getElementById('sidebar-nome') && (document.getElementById('sidebar-nome').textContent = nome+' '+cognome);
-  document.getElementById('prof-avatar') && (document.getElementById('prof-avatar').textContent = (nome[0]||'')+(cognome[0]||''));
-  document.getElementById('home-nome-utente') && (document.getElementById('home-nome-utente').textContent = nome);
-  document.getElementById('topbar-nome') && (document.getElementById('topbar-nome').textContent = nome);
-  setEditMode(false);
-  if (typeof showToast==='function') showToast('Profilo salvato!');
+  const sn = document.getElementById('sidebar-nome'); if (sn) sn.textContent = nome+' '+cognome;
+  const av = document.getElementById('prof-avatar'); if (av) av.textContent = ((nome[0]||'')+(cognome[0]||'')).toUpperCase();
+  const cn = document.getElementById('home-nome-utente'); if (cn) cn.textContent = nome;
+  window._userName = nome;
+  const tbSave = document.getElementById('topbarTitle'); if (tbSave) tbSave.textContent = 'Benvenuto, ' + nome;
+  setFieldsEditable(false);
+  if (typeof showToast === 'function') showToast('Profilo salvato!');
 }
-
 async function salvaPreferenze() {
   const { data: { session } } = await window._sb.auth.getSession();
   if (!session) return;
@@ -1275,10 +1273,8 @@ async function salvaPreferenze() {
     preferenza_budget: document.getElementById('prof-budget')?.value||''
   }).eq('id', session.user.id);
   if (error) { alert('Errore: '+error.message); return; }
-  if (typeof showToast==='function') showToast('Preferenze salvate!');
+  if (typeof showToast === 'function') showToast('Preferenze salvate!');
 }
-
 document.addEventListener('DOMContentLoaded', loadProfilo);
 </script>
 </body>
-</html>

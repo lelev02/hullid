@@ -397,9 +397,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);background:#fff
     // SUPABASE CONFIG — sostituisci con i tuoi valori da
     // supabase.com → Settings → API
     // ══════════════════════════════════════════════════
-    const SUPABASE_URL  = 'https://alvlcjtbecodijpicrvb.supabase.co';
-    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsdmxjanRiZWNvZGlqcGljcnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzODEyOTAsImV4cCI6MjA4Nzk1NzI5MH0.uPd_8Qb3LYW7dLX3-tWoLuSI9vI0EjmjDlPAczCbCaY';
-    window._sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    window._sb_URL  = 'https://alvlcjtbecodijpicrvb.supabase.co';
+    window._sb_ANON = 'sb_publishable_yuwru1iINXkuln7xvmvziQ_v90INnWv';
+    window._sb = window.supabase.createClient(window._sb_URL, window._sb_ANON);
   </script>
 </head>
 <body>
@@ -554,27 +554,9 @@ async function handleLogin() {
     btn.disabled = false;
   }
 }
-// ── SUPABASE: controlla sessione esistente al caricamento ──
+// ── SUPABASE: pulisce qualsiasi sessione residua al caricamento ──
 document.addEventListener('DOMContentLoaded', async () => {
-  const { data: { session } } = await window._sb.auth.getSession();
-  if (session) {
-    // Utente già loggato — redirect diretto
-    const { data: profilo } = await window._sb
-      .from('utenti_profili')
-      .select('tipo_account, approvato')
-      .eq('id', session.user.id)
-      .single();
-    const tipo = profilo?.tipo_account || 'appassionato';
-    const redirect = {
-      'appassionato': 'appassionato_dashboard.html',
-      'armatore':     'armatore_dashboard.html',
-      'armatore_pro': 'armatore_dashboard.html',
-      'broker':        profilo?.approvato ? 'broker_dashboard.html' : 'attesa_approvazione.html',
-      'b2b':           profilo?.approvato ? 'broker_dashboard.html' : 'attesa_approvazione.html',
-      'admin':         'dashboard.html',
-    };
-    window.location.href = redirect[tipo] || 'appassionato_dashboard.html';
-  }
+  await window._sb.auth.signOut();
 });
 
 function showToast(msg) {

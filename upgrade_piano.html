@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HullID — Upgrade Piano</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0d1b2a;--navy-mid:#1a2f45;--navy-light:#2a4a6b;
+  --gold:#c9a84c;--gold-light:#e8c97a;--gold-dim:rgba(201,168,76,0.15);
+  --white:#f5f2ee;--white-pure:#fff;
+  --gray:#8a9aaa;--gray-light:#d4dde5;--gray-bg:#f0f2f5;
+  --green:#2d8a5e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);color:#fff;min-height:100vh;display:flex;flex-direction:column;}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:0 48px;height:64px;border-bottom:1px solid rgba(201,168,76,0.12);}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:#fff;text-decoration:none;}
+.nav-logo span{color:var(--gold);}
+.nav-back{font-size:0.75rem;color:var(--gray);text-decoration:none;transition:color 0.2s;}
+.nav-back:hover{color:var(--gold);}
+
+.page{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 24px;}
+.card{width:100%;max-width:560px;}
+
+.eyebrow{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin-bottom:12px;}
+.title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,2.8rem);font-weight:300;line-height:1.1;margin-bottom:12px;}
+.title em{color:var(--gold);font-style:italic;}
+.subtitle{font-size:0.88rem;color:rgba(255,255,255,0.55);line-height:1.7;margin-bottom:36px;font-weight:300;}
+
+/* Piano attuale */
+.piano-attuale{border:1px solid rgba(255,255,255,0.1);padding:16px 20px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.pa-label{font-size:0.7rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;}
+.pa-nome{font-size:0.9rem;font-weight:500;}
+.pa-badge{font-family:'DM Mono',monospace;font-size:0.58rem;padding:3px 10px;border:1px solid rgba(255,255,255,0.2);color:var(--gray);}
+
+/* Piano premium */
+.piano-premium{border:1px solid var(--gold);padding:24px;margin-bottom:28px;position:relative;background:rgba(201,168,76,0.04);}
+.pp-badge{position:absolute;top:-1px;right:20px;background:var(--gold);color:var(--navy);font-family:'DM Mono',monospace;font-size:0.58rem;font-weight:700;padding:3px 12px;letter-spacing:0.08em;}
+.pp-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.pp-nome{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:#fff;margin-bottom:4px;}
+.pp-sub{font-size:0.72rem;color:var(--gray);}
+.pp-prezzo{text-align:right;}
+.pp-prezzo-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:600;color:var(--gold);line-height:1;}
+.pp-prezzo-sub{font-size:0.65rem;color:var(--gray);margin-top:2px;}
+.pp-prezzo-nota{font-size:0.65rem;color:rgba(201,168,76,0.7);margin-top:3px;}
+
+.features{display:flex;flex-direction:column;gap:8px;}
+.feature{display:flex;align-items:center;gap:10px;font-size:0.8rem;color:rgba(255,255,255,0.75);}
+.feature-icon{color:var(--gold);font-size:0.75rem;flex-shrink:0;}
+
+/* CTA */
+.cta-btn{
+  display:block;width:100%;padding:15px;
+  background:var(--gold);color:var(--navy);
+  font-family:'DM Sans',sans-serif;font-size:0.85rem;font-weight:600;
+  letter-spacing:0.08em;text-transform:uppercase;
+  text-align:center;text-decoration:none;
+  border:none;cursor:pointer;transition:background 0.2s;
+  margin-bottom:12px;
+}
+.cta-btn:hover{background:var(--gold-light);}
+.back-link{display:block;text-align:center;font-size:0.74rem;color:var(--gray);text-decoration:none;transition:color 0.2s;}
+.back-link:hover{color:#fff;}
+
+.divider{border:none;border-top:1px solid rgba(255,255,255,0.07);margin:24px 0;}
+
+.garanzia{display:flex;align-items:flex-start;gap:12px;font-size:0.72rem;color:rgba(255,255,255,0.4);line-height:1.5;}
+.gar-icon{font-size:1rem;flex-shrink:0;margin-top:1px;}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="hullid_demo.html" class="nav-logo">Hull<span>ID.</span></a>
+  <a href="armatore_dashboard.html" class="nav-back">← Torna alla dashboard</a>
+</nav>
+
+<div class="page">
+  <div class="card">
+
+    <div class="eyebrow">— Il tuo piano</div>
+    <h1 class="title">Sblocca <em>barche illimitate</em><br>con il piano Premium</h1>
+    <p class="subtitle">Il piano Base ti permette di registrare una sola barca. Passa al Premium con un upgrade una tantum e registra tutte le barche che vuoi.</p>
+
+    <!-- Piano attuale -->
+    <div class="piano-attuale">
+      <div>
+        <div class="pa-label">Piano attuale</div>
+        <div class="pa-nome">⚓ Armatore Base</div>
+      </div>
+      <div class="pa-badge">1 BARCA INCLUSA</div>
+    </div>
+
+    <!-- Piano premium -->
+    <div class="piano-premium">
+      <div class="pp-badge">UPGRADE</div>
+      <div class="pp-header">
+        <div>
+          <div class="pp-nome">★ Armatore Premium</div>
+          <div class="pp-sub">Tutto del Base, più barche illimitate</div>
+        </div>
+        <div class="pp-prezzo">
+          <div class="pp-prezzo-num">€450</div>
+          <div class="pp-prezzo-sub">una tantum</div>
+          <div class="pp-prezzo-nota">Già versati €350 → totale €800</div>
+        </div>
+      </div>
+      <div class="features">
+        <div class="feature"><span class="feature-icon">✓</span> Barche illimitate registrabili</div>
+        <div class="feature"><span class="feature-icon">✓</span> Boat ID + QR fisico per ogni barca</div>
+        <div class="feature"><span class="feature-icon">✓</span> Timeline verificata illimitata</div>
+        <div class="feature"><span class="feature-icon">✓</span> Schede pubbliche con priority ranking</div>
+        <div class="feature"><span class="feature-icon">✓</span> Accesso anticipato alle nuove funzioni</div>
+      </div>
+    </div>
+
+    <a id="stripe-upgrade-btn" href="https://buy.stripe.com/PLACEHOLDER_UPGRADE" class="cta-btn">
+      Completa l'upgrade — €450 →
+    </a>
+    <a href="armatore_dashboard.html" class="back-link">Non ora, torna alla dashboard</a>
+
+    <hr class="divider">
+
+    <div class="garanzia">
+      <span class="gar-icon">🔒</span>
+      <span>Pagamento sicuro via Stripe. L'upgrade è una tantum, nessun abbonamento. Il tuo piano viene aggiornato automaticamente dopo il pagamento.</span>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const _sbUrl  = 'https://alvlcjtbecodijpicrvb.supabase.co';
+  const _sbAnon = 'sb_publishable_yuwru1iINXkuln7xvmvziQ_v90INnWv';
+  window._sb = window.supabase.createClient(_sbUrl, _sbAnon);
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    const { data: { session } } = await window._sb.auth.getSession();
+    if (!session) { window.location.href = 'login.html'; return; }
+
+    // Prefill email sul link Stripe
+    const btn = document.getElementById('stripe-upgrade-btn');
+    if (btn && session.user.email) {
+      const base = btn.href.split('?')[0];
+      btn.href = base + '?prefilled_email=' + encodeURIComponent(session.user.email);
+    }
+  });
+</script>
+</body>
+</html>

@@ -2,10 +2,153 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=hullid_demo.html">
-<title>HullID</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HullID — Il registro digitale per barche storiche</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0d1b2a;--navy-mid:#1a2f45;--navy-light:#2a4a6b;--gold:#c9a84c;--gold-light:#e8c97a;--white:#f5f2ee;--gray:#8a9aaa;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--white);min-height:100vh;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(201,168,76,0.08) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(42,74,107,0.6) 0%,transparent 60%);pointer-events:none;}
+.grid-overlay{position:fixed;inset:0;background-image:linear-gradient(rgba(201,168,76,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,0.04) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;}
+.waves{position:fixed;bottom:0;left:0;right:0;height:160px;overflow:hidden;opacity:0.12;}
+.waves svg{position:absolute;bottom:0;width:200%;height:100%;}
+.wave1{animation:wave 8s linear infinite;}
+.wave2{animation:wave 12s linear infinite reverse;opacity:0.5;}
+@keyframes wave{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.deco-line{position:fixed;top:0;left:50%;width:1px;height:80px;background:linear-gradient(to bottom,var(--gold),transparent);opacity:0.3;}
+.container{position:relative;z-index:10;text-align:center;padding:40px 24px;max-width:680px;animation:fadeUp 1s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+.logo-area{margin-bottom:44px;animation:fadeUp 1s ease 0.1s both;}
+.logo-mark{display:inline-flex;align-items:center;gap:14px;margin-bottom:8px;}
+.logo-icon{width:46px;height:46px;}
+.logo-icon svg{width:100%;height:100%;}
+.logo-text{font-family:'DM Mono',monospace;font-size:1.9rem;font-weight:400;letter-spacing:0.12em;color:var(--white);}
+.logo-text span{color:var(--gold);}
+.logo-tagline{font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);opacity:0.8;}
+.divider{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:36px auto;animation:fadeUp 1s ease 0.2s both;}
+h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,6vw,3.8rem);font-weight:300;line-height:1.15;color:var(--white);margin-bottom:18px;animation:fadeUp 1s ease 0.3s both;}
+h1 em{font-style:italic;color:var(--gold-light);}
+.subtitle{font-size:0.95rem;font-weight:300;color:var(--gray);line-height:1.7;max-width:480px;margin:0 auto 44px;animation:fadeUp 1s ease 0.4s both;}
+.countdown-label{font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;animation:fadeUp 1s ease 0.5s both;}
+.countdown{display:flex;gap:20px;justify-content:center;margin-bottom:48px;animation:fadeUp 1s ease 0.5s both;}
+.count-block{text-align:center;min-width:58px;}
+.count-num{font-family:'DM Mono',monospace;font-size:2.2rem;color:var(--white);line-height:1;display:block;}
+.count-sep{font-family:'DM Mono',monospace;font-size:1.8rem;color:var(--gold);opacity:0.4;align-self:flex-start;margin-top:4px;}
+.count-label{font-size:0.55rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gray);margin-top:6px;display:block;}
+.notify-form{display:flex;max-width:400px;margin:0 auto 16px;animation:fadeUp 1s ease 0.6s both;border:1px solid rgba(201,168,76,0.3);}
+.notify-form input{flex:1;padding:13px 16px;background:rgba(255,255,255,0.05);border:none;color:var(--white);font-family:'DM Sans',sans-serif;font-size:0.83rem;outline:none;}
+.notify-form input::placeholder{color:rgba(255,255,255,0.3);}
+.notify-form button{padding:13px 20px;background:var(--gold);border:none;color:var(--navy);font-family:'DM Sans',sans-serif;font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;white-space:nowrap;}
+.notify-form button:hover{background:var(--gold-light);}
+.notify-note{font-size:0.68rem;color:var(--gray);opacity:0.6;animation:fadeUp 1s ease 0.7s both;}
+.footer-bar{position:fixed;bottom:0;left:0;right:0;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(201,168,76,0.1);z-index:10;}
+.footer-copy{font-size:0.63rem;color:var(--gray);opacity:0.5;letter-spacing:0.05em;}
+.footer-links{display:flex;gap:20px;}
+.footer-links a{font-size:0.63rem;color:var(--gray);opacity:0.5;text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;transition:opacity 0.2s,color 0.2s;}
+.footer-links a:hover{opacity:1;color:var(--gold);}
+.toast{position:fixed;bottom:56px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gold);color:var(--navy);padding:11px 22px;font-size:0.78rem;font-weight:600;opacity:0;transition:all 0.3s ease;pointer-events:none;z-index:100;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:480px){
+  .notify-form{flex-direction:column;}
+  .countdown{gap:10px;}
+  .count-num{font-size:1.7rem;}
+  .footer-bar{flex-direction:column;gap:6px;text-align:center;}
+}
+</style>
 </head>
 <body>
-<script>window.location.href='hullid_demo.html';</script>
+<div class="deco-line"></div>
+<div class="grid-overlay"></div>
+<div class="waves">
+  <svg class="wave1" viewBox="0 0 1440 120" preserveAspectRatio="none">
+    <path d="M0,60 C240,100 480,20 720,60 C960,100 1200,20 1440,60 L1440,120 L0,120 Z" fill="rgba(201,168,76,1)"/>
+  </svg>
+  <svg class="wave2" viewBox="0 0 1440 120" preserveAspectRatio="none" style="bottom:20px">
+    <path d="M0,40 C360,80 720,10 1080,50 C1260,70 1380,30 1440,40 L1440,120 L0,120 Z" fill="rgba(42,74,107,1)"/>
+  </svg>
+</div>
+
+<div class="container">
+  <div class="logo-area">
+    <div class="logo-mark">
+      <div class="logo-icon">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="28" width="32" height="6" rx="1" fill="#c9a84c" opacity="0.9"/>
+          <path d="M12 28 L24 8 L36 28 Z" fill="none" stroke="#c9a84c" stroke-width="1.5" stroke-linejoin="round"/>
+          <path d="M4 34 Q12 38 24 38 Q36 38 44 34" stroke="#c9a84c" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <circle cx="24" cy="20" r="2.5" fill="#c9a84c" opacity="0.6"/>
+          <circle cx="20" cy="24" r="1.5" fill="#c9a84c" opacity="0.4"/>
+          <circle cx="28" cy="24" r="1.5" fill="#c9a84c" opacity="0.4"/>
+        </svg>
+      </div>
+      <div class="logo-text">Hull<span>ID</span></div>
+    </div>
+    <div class="logo-tagline">Il registro digitale per barche storiche</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <h1>Stiamo <em>arrivando</em><br>in porto</h1>
+
+  <p class="subtitle">La prima piattaforma italiana dedicata alla registrazione, valorizzazione e compravendita di imbarcazioni con più di 15 anni di storia. Presto online.</p>
+
+  <div class="countdown-label">— Lancio previsto —</div>
+
+  <div class="countdown">
+    <div class="count-block"><span class="count-num" id="cd-days">00</span><span class="count-label">Giorni</span></div>
+    <div class="count-sep">:</div>
+    <div class="count-block"><span class="count-num" id="cd-hours">00</span><span class="count-label">Ore</span></div>
+    <div class="count-sep">:</div>
+    <div class="count-block"><span class="count-num" id="cd-mins">00</span><span class="count-label">Minuti</span></div>
+    <div class="count-sep">:</div>
+    <div class="count-block"><span class="count-num" id="cd-secs">00</span><span class="count-label">Secondi</span></div>
+  </div>
+
+  <div class="notify-form">
+    <input type="email" id="notify-email" placeholder="La tua email — ti avvisiamo al lancio">
+    <button onclick="handleNotify()">Avvisami</button>
+  </div>
+  <p class="notify-note">Nessuno spam. Solo un messaggio quando siamo pronti.</p>
+</div>
+
+<div class="footer-bar">
+  <div class="footer-copy">© 2026 HullID · Tutti i diritti riservati</div>
+  <div class="footer-links">
+    <a href="mailto:info@hullid.it">info@hullid.it</a>
+    <a href="hullid_demo.html">Preview</a>
+    <a href="login.html">Accedi</a>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const target = new Date('2026-06-01T09:00:00').getTime();
+function updateCountdown(){
+  const diff = target - Date.now();
+  if(diff<=0){document.querySelector('.countdown').innerHTML='<span style="font-family:\'Cormorant Garamond\',serif;font-size:1.8rem;color:var(--gold)">Siamo online!</span>';return;}
+  const d=Math.floor(diff/86400000);
+  const h=Math.floor((diff%86400000)/3600000);
+  const m=Math.floor((diff%3600000)/60000);
+  const s=Math.floor((diff%60000)/1000);
+  document.getElementById('cd-days').textContent=String(d).padStart(2,'0');
+  document.getElementById('cd-hours').textContent=String(h).padStart(2,'0');
+  document.getElementById('cd-mins').textContent=String(m).padStart(2,'0');
+  document.getElementById('cd-secs').textContent=String(s).padStart(2,'0');
+}
+updateCountdown();setInterval(updateCountdown,1000);
+
+function handleNotify(){
+  const email=document.getElementById('notify-email').value.trim();
+  if(!email||!email.includes('@')){showToast('Inserisci un\'email valida');return;}
+  showToast('✓ Grazie! Ti avvisiamo al lancio');
+  document.getElementById('notify-email').value='';
+}
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+</script>
 </body>
 </html>

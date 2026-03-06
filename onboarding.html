@@ -442,10 +442,137 @@ select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns
 </style>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const SUPABASE_URL  = 'https://TUO-PROGETTO.supabase.co';
-    const SUPABASE_ANON = 'TUA-ANON-KEY';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    const SUPABASE_URL  = 'https://alvlcjtbecodijpicrvb.supabase.co';
+    const SUPABASE_ANON = 'sb_publishable_yuwru1iINXkuln7xvmvziQ_v90INnWv';
+    window._sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
   </script>
+
+<style>
+
+  /* ============================================
+     HULLID MOBILE RESPONSIVE - v2.0
+     ============================================ */
+
+  /* Hamburger button (hidden on desktop) */
+  .nav-hamburger {
+    display: none; flex-direction: column; justify-content: center;
+    gap: 5px; cursor: pointer; padding: 8px; background: none; border: none;
+  }
+  .nav-hamburger span {
+    display: block; width: 22px; height: 2px;
+    background: var(--white-pure, #fff); transition: all 0.3s ease; border-radius: 2px;
+  }
+  .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  @media (max-width: 1100px) {
+    .hero-right { display: none; }
+  }
+
+  @media (max-width: 1024px) {
+    nav { padding: 0 24px; }
+    .nav-links { gap: 20px; }
+    .b2b-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    section { padding: 60px 24px; }
+    .hero-content { padding: 0 24px; }
+    .stats-bar { padding: 24px; flex-wrap: wrap; gap: 20px; }
+    .registro-grid, .marketplace-grid, .scheda-layout, .b2b-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .timeline-container { padding-left: 28px; }
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; height: 60px; }
+    .nav-hamburger { display: flex; }
+    .nav-links {
+      display: none; position: fixed; top: 60px; left: 0; right: 0;
+      flex-direction: column; gap: 0; background: rgba(13,27,42,0.98);
+      backdrop-filter: blur(12px); border-bottom: 1px solid rgba(201,168,76,0.2);
+      padding: 8px 0 16px; z-index: 98;
+    }
+    .nav-links.mobile-open { display: flex; }
+    .nav-links li { width: 100%; }
+    .nav-links a { display: block; padding: 13px 24px; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .nav-links li:last-child a { margin: 10px 20px 0; padding: 11px 20px; text-align: center; border-bottom: none; }
+    .hero { padding-top: 60px; min-height: 100svh; align-items: flex-start; }
+    .hero-content { padding: 40px 20px 48px; width: 100%; max-width: 100%; }
+    .hero-right { display: none; }
+    .hero-eyebrow { font-size: 0.62rem; letter-spacing: 0.14em; }
+    .hero-title { font-size: 2.6rem; line-height: 1.05; }
+    .hero-subtitle { font-size: 0.95rem; margin: 16px 0 28px; max-width: 100%; }
+    .hero-buttons { flex-direction: column; gap: 12px; align-items: stretch; }
+    .hero-buttons .btn-primary, .hero-buttons .btn-outline { text-align: center; padding: 14px 20px; width: 100%; }
+    .stats-bar { flex-wrap: wrap; padding: 20px; gap: 0; }
+    .stat-item { flex: 1 1 45%; padding: 12px 8px; border-right: none !important; border-bottom: 1px solid rgba(201,168,76,0.15); }
+    .stat-item:nth-child(odd) { border-right: 1px solid rgba(201,168,76,0.15) !important; }
+    .stat-divider { display: none; }
+    .registro-section, .scheda-section, .timeline-section, .marketplace-section, .b2b-section, .manifesto-section { padding: 60px 20px !important; }
+    .scheda-layout { grid-template-columns: 1fr !important; gap: 32px; }
+    .section-title { font-size: 1.9rem !important; line-height: 1.1 !important; }
+    .section-eyebrow { font-size: 0.62rem !important; }
+    .section-text { font-size: 0.95rem !important; }
+    input, select, textarea { font-size: 16px !important; }
+    .soci-card { width: 100% !important; max-width: 100% !important; }
+    .boat-specs { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    #boatsGrid { grid-template-columns: 1fr !important; gap: 16px !important; }
+    div[style*="repeat(4,1fr)"], div[style*="repeat(4, 1fr)"] { grid-template-columns: 1fr 1fr !important; gap: 20px !important; }
+    div[style*="grid-template-columns:1fr 1fr"], div[style*="grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; gap: 24px !important; }
+    div[style*="padding:96px 80px"], div[style*="padding: 96px 80px"] { padding: 60px 20px !important; }
+    section[style*="padding:96px"], section[style*="padding: 96px"] { padding-left: 20px !important; padding-right: 20px !important; }
+    .scheda-card { padding: 20px !important; }
+    .scheda-row { grid-template-columns: 1fr 1fr !important; gap: 12px; }
+    .timeline-container { padding-left: 16px; }
+    .timeline-item { padding-left: 28px; margin-bottom: 28px; }
+    .timeline-item-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .timeline-item-date { font-size: 0.75rem; }
+    .timeline-item-footer { flex-direction: column; gap: 6px; align-items: flex-start; }
+    .marketplace-grid { grid-template-columns: 1fr !important; gap: 20px; }
+    .listing-card { max-width: 480px; margin: 0 auto; width: 100%; }
+    .listing-price { font-size: 1.4rem; }
+    .listing-highlights { flex-wrap: wrap; gap: 6px; }
+    .b2b-grid { grid-template-columns: 1fr !important; gap: 16px; }
+    .partner-card { padding: 20px !important; }
+    .partner-footer { flex-direction: column; gap: 8px; align-items: flex-start; }
+    .manifesto-section { text-align: center; }
+    .manifesto-quote { font-size: 1.3rem !important; }
+    .footer-grid { grid-template-columns: 1fr !important; gap: 32px; }
+    .footer-bottom { flex-direction: column !important; gap: 8px; text-align: center; }
+    .modal-overlay .modal-card { width: 90%; max-width: 360px; padding: 28px 20px; }
+    .qr-placeholder { width: 140px !important; height: 140px !important; }
+    /* Dashboard / panel mobile */
+    .sidebar { transform: translateX(-100%); position: fixed; z-index: 200; transition: transform 0.3s ease; }
+    .sidebar.mobile-open { transform: translateX(0); }
+    .main-content { margin-left: 0 !important; padding: 16px !important; }
+    .panel-grid, .stats-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+    .card { padding: 16px !important; }
+    table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .form-row { flex-direction: column !important; gap: 12px !important; }
+    .btn-group { flex-direction: column !important; gap: 8px !important; }
+    .tab-nav { overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+    .tab-nav::-webkit-scrollbar { display: none; }
+    .page-header { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+    .header-actions { width: 100% !important; }
+    .header-actions .btn { width: 100% !important; text-align: center !important; }
+  }
+
+  @media (max-width: 480px) {
+    .hero-title { font-size: 2rem; }
+    .section-title { font-size: 1.6rem !important; }
+    .manifesto-quote { font-size: 1.1rem !important; }
+    .scheda-row { grid-template-columns: 1fr !important; }
+    .stat-number { font-size: 1.4rem; }
+    div[style*="repeat(4,1fr)"], div[style*="repeat(4, 1fr)"] { grid-template-columns: 1fr !important; }
+    .card-title { font-size: 1rem !important; }
+    .btn { padding: 10px 16px !important; font-size: 0.85rem !important; }
+  }
+
+</style>
 </head>
 <body>
 
@@ -497,12 +624,12 @@ select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns
   <div class="step active" id="step0">
     <div class="step-card">
       <div class="step-eyebrow">— Passo 1 di 6</div>
-      <h1 class="step-title">Bentornato,<br><em>Marco.</em></h1>
-      <p class="step-sub">Stai registrando la prima barca su HullID. Ci vorranno circa 5 minuti.<br>Puoi salvare e riprendere in qualsiasi momento.</p>
+      <h1 class="step-title">Bentornato,<br><em id="ob-user-nome">—</em></h1>
+      <p class="step-sub">Stai registrando una nuova barca su HullID. Ci vorranno circa 5 minuti.<br>Puoi salvare e riprendere in qualsiasi momento.</p>
 
-      <div class="account-badge">
+      <div class="account-badge" id="ob-piano-badge">
         <span class="badge-icon">⚓</span>
-        Account Armatore PRO · Barche illimitate
+        Account Armatore
       </div>
 
       <div class="time-estimate">
@@ -529,7 +656,7 @@ select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns
           <div class="wi-num">4</div>
           <div>
             <div class="wi-title">Prime foto</div>
-            <div class="wi-sub">Carica fino a 5 foto HD. Almeno una foto vale +20% sul punteggio di completamento.</div>
+            <div class="wi-sub">Carica fino a 20 foto HD. Almeno una foto vale +20% sul punteggio di completamento.</div>
           </div>
         </div>
         <div class="welcome-item">
@@ -575,7 +702,7 @@ select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns
         <div class="field-group">
           <label>Modello <span class="req">*</span></label>
           <div class="cascade-wrap">
-            <input type="text" id="f-modello" placeholder="Seleziona prima il cantiere…" disabled
+            <input type="text" id="f-modello" placeholder="Es. 28 FBC, Aquarama, 360…"
               oninput="cascadeModello(this.value)" autocomplete="off">
             <div class="cascade-results" id="res-modello"></div>
           </div>
@@ -623,6 +750,7 @@ select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns
         <select id="f-tipo">
           <option value="">Seleziona tipologia…</option>
           <option>Motoscafo open</option>
+          <option>Powerboat</option>
           <option>Motoryacht cabinato</option>
           <option>Barca a vela — sloop</option>
           <option>Barca a vela — ketch</option>
@@ -632,7 +760,7 @@ select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns
           <option>Entrobordo classico</option>
           <option>Fuoribordo</option>
           <option>RIB / Pneumatico</option>
-          <option>Barca da pesca</option>
+          <option>Fisherman</option>
           <option>Altro</option>
         </select>
       </div>
@@ -708,7 +836,7 @@ select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns
     <div class="step-card">
       <div class="step-eyebrow">— Passo 4 di 6 · Fotografie</div>
       <h2 class="step-title">Mostraci<br><em>la tua barca.</em></h2>
-      <p class="step-sub">Carica fino a 5 foto. La prima foto diventa la copertina della scheda pubblica. Almeno una foto sblocca +20% di completamento.</p>
+      <p class="step-sub">Carica fino a 20 foto. La prima foto diventa la copertina della scheda pubblica. Almeno una foto sblocca +20% di completamento.</p>
 
       <div class="completion-chip">
         <span>3 foto o più</span>
@@ -723,7 +851,7 @@ select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns
         <input type="file" accept="image/*" multiple onchange="handleFiles(this.files)">
         <div class="upload-icon">📷</div>
         <div class="upload-text">Trascina qui le foto o clicca per selezionarle</div>
-        <div class="upload-sub">JPG, PNG, HEIC · max 20MB per foto · fino a 5 foto</div>
+        <div class="upload-sub">JPG, PNG, HEIC · max 20MB per foto · fino a 20 foto</div>
       </div>
 
       <div class="photos-grid" id="photosGrid"></div>
@@ -740,7 +868,7 @@ select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns
     <div class="step-card">
       <div class="step-eyebrow">— Passo 5 di 6 · Prima voce in timeline</div>
       <h2 class="step-title">Racconta<br><em>la prima storia.</em></h2>
-      <p class="step-sub">Ogni barca ha una storia. Aggiungi il primo evento: un restauro, un intervento tecnico, una regata storica o una traversata memorabile.</p>
+      <p class="step-sub">Aggiungi uno o più eventi alla timeline della tua barca. Puoi aggiungerne quanti vuoi ora, o completare dalla dashboard in seguito.</p>
 
       <div class="completion-chip">
         <span>Aggiungere almeno 1 evento vale</span>
@@ -748,64 +876,61 @@ select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns
         <span>sul completamento</span>
       </div>
 
-      <!-- Tipo evento -->
-      <div style="margin-bottom:20px;">
-        <label style="margin-bottom:10px;">Tipo di evento</label>
-        <div class="entry-type-grid">
-          <button class="entry-type-btn sel" onclick="selectEvt('manutenzione',this)">
-            <span class="entry-type-icon">🔧</span>Manutenzione
-          </button>
-          <button class="entry-type-btn" onclick="selectEvt('restauro',this)">
-            <span class="entry-type-icon">⚒️</span>Restauro
-          </button>
-          <button class="entry-type-btn" onclick="selectEvt('regata',this)">
-            <span class="entry-type-icon">🏆</span>Regata / Evento
-          </button>
-          <button class="entry-type-btn" onclick="selectEvt('viaggio',this)">
-            <span class="entry-type-icon">🗺️</span>Viaggio
-          </button>
-          <button class="entry-type-btn" onclick="selectEvt('aggiornamento',this)">
-            <span class="entry-type-icon">⚙️</span>Aggiornamento
-          </button>
-          <button class="entry-type-btn" onclick="selectEvt('perizia',this)">
-            <span class="entry-type-icon">📋</span>Perizia
-          </button>
-          <button class="entry-type-btn" onclick="selectEvt('passaggio',this)">
-            <span class="entry-type-icon">🤝</span>Passaggio prop.
-          </button>
-          <button class="entry-type-btn" onclick="selectEvt('altro',this)">
-            <span class="entry-type-icon">📌</span>Altro
-          </button>
-        </div>
+      <!-- Timeline eventi già aggiunti -->
+      <div id="evt-timeline" style="display:none;margin-bottom:20px;">
+        <div style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.15em;color:var(--gold3);text-transform:uppercase;margin-bottom:10px;">— Eventi aggiunti</div>
+        <div id="evt-list" style="display:flex;flex-direction:column;gap:8px;"></div>
       </div>
 
-      <div class="field-row">
+      <!-- Form evento -->
+      <div id="evt-form">
+        <div style="margin-bottom:20px;">
+          <label style="margin-bottom:10px;">Tipo di evento</label>
+          <div class="entry-type-grid">
+            <button class="entry-type-btn sel" onclick="selectEvt('manutenzione',this)"><span class="entry-type-icon">🔧</span>Manutenzione</button>
+            <button class="entry-type-btn" onclick="selectEvt('restauro',this)"><span class="entry-type-icon">⚒️</span>Restauro</button>
+            <button class="entry-type-btn" onclick="selectEvt('regata',this)"><span class="entry-type-icon">🏆</span>Regata / Evento</button>
+            <button class="entry-type-btn" onclick="selectEvt('viaggio',this)"><span class="entry-type-icon">🗺️</span>Viaggio</button>
+            <button class="entry-type-btn" onclick="selectEvt('aggiornamento',this)"><span class="entry-type-icon">⚙️</span>Aggiornamento</button>
+            <button class="entry-type-btn" onclick="selectEvt('perizia',this)"><span class="entry-type-icon">📋</span>Perizia</button>
+            <button class="entry-type-btn" onclick="selectEvt('passaggio',this)"><span class="entry-type-icon">🤝</span>Passaggio prop.</button>
+            <button class="entry-type-btn" onclick="selectEvt('altro',this)"><span class="entry-type-icon">📌</span>Altro</button>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field-group">
+            <label>Titolo dell'evento <span class="req">*</span></label>
+            <input type="text" id="f-evt-titolo" placeholder="Es. Restauro completo opera viva…">
+          </div>
+          <div class="field-group">
+            <label>Data (o anno)</label>
+            <input type="text" id="f-evt-data" placeholder="Es. Giugno 2019 o 2019">
+          </div>
+        </div>
+
         <div class="field-group">
-          <label>Titolo dell'evento <span class="req">*</span></label>
-          <input type="text" id="f-evt-titolo" placeholder="Es. Restauro completo opera viva…">
+          <label>Descrizione</label>
+          <textarea id="f-evt-desc" rows="3" placeholder="Racconta cosa è successo…"></textarea>
         </div>
+
         <div class="field-group">
-          <label>Data (o anno)</label>
-          <input type="text" id="f-evt-data" placeholder="Es. Giugno 2019 o 2019">
+          <label>Cantiere / Professionista che ha eseguito</label>
+          <input type="text" id="f-evt-chi" placeholder="Es. Cantiere Navale Rossi, Napoli">
         </div>
-      </div>
 
-      <div class="field-group">
-        <label>Descrizione</label>
-        <textarea id="f-evt-desc" rows="4" placeholder="Racconta cosa è successo, chi ha eseguito i lavori, materiali usati, costo approssimativo…"></textarea>
-      </div>
+        <div style="margin-top:8px;margin-bottom:16px;">
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.68rem;cursor:pointer;text-transform:none;letter-spacing:0;">
+            <input type="checkbox" id="f-evt-certify" style="width:14px;height:14px;accent-color:var(--gold);">
+            Richiedere la verifica di questo evento da parte di HullID
+            <span style="font-size:0.6rem;color:var(--gold3);">(+5 punti completamento)</span>
+          </label>
+        </div>
 
-      <div class="field-group">
-        <label>Cantiere / Professionista che ha eseguito</label>
-        <input type="text" id="f-evt-chi" placeholder="Es. Cantiere Navale Rossi, Napoli">
-      </div>
-
-      <div style="margin-top:8px;">
-        <label style="display:flex;align-items:center;gap:8px;font-size:0.68rem;cursor:pointer;text-transform:none;letter-spacing:0;">
-          <input type="checkbox" id="f-evt-certify" style="width:14px;height:14px;accent-color:var(--gold);">
-          Richiedere la verifica di questo evento da parte di HullID
-          <span style="font-size:0.6rem;color:var(--gold3);">(+5 punti completamento)</span>
-        </label>
+        <!-- Bottone aggiungi evento -->
+        <button onclick="addEventoToList()" style="width:100%;padding:11px;background:var(--navy);color:#fff;border:none;font-family:'DM Sans',sans-serif;font-size:0.8rem;font-weight:500;letter-spacing:0.06em;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='#1a2f45'" onmouseout="this.style.background='var(--navy)'">
+          + Aggiungi questo evento alla timeline
+        </button>
       </div>
     </div>
   </div>
@@ -855,7 +980,7 @@ select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns
         <div>
           <div style="font-size:0.7rem;color:var(--gray);margin-bottom:3px;letter-spacing:0.06em;text-transform:uppercase;">QR Code barca</div>
           <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--navy);font-weight:600;" id="finalRegistroId">B-BER-0001</div>
-          <div style="font-size:0.64rem;color:var(--gray);margin-top:2px;">hullid.it/barca/B-BER-0001</div>
+          <div style="font-size:0.64rem;color:var(--gray);margin-top:2px;" id="finalRegistroUrl">hullid.it/barca/—</div>
         </div>
         <button onclick="showToast('QR scaricato!')" style="margin-left:auto;padding:8px 16px;border:1px solid var(--paper2);background:white;font-size:0.7rem;cursor:pointer;font-family:'DM Mono',monospace;">↓ Scarica QR</button>
       </div>
@@ -863,13 +988,13 @@ select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns
       <!-- Prossimi step -->
       <div style="font-size:0.62rem;letter-spacing:0.16em;color:var(--gold);text-transform:uppercase;margin-bottom:12px;">— Prossimi step per arrivare al 100%</div>
       <div class="next-steps-grid">
-        <div class="ns-item">
+        <div class="ns-item" onclick="window.location.href='armatore_dashboard.html'" style="cursor:pointer;" onmouseover="this.style.borderColor='var(--gold3)'" onmouseout="this.style.borderColor='var(--paper2)'">
           <div class="ns-icon">📄</div>
           <div class="ns-title">Aggiungi documenti</div>
           <div class="ns-sub">Atto di proprietà, polizza assicurativa, libretto.</div>
           <div class="ns-pts">+10% completamento</div>
         </div>
-        <div class="ns-item">
+        <div class="ns-item" onclick="window.location.href='armatore_dashboard.html'" style="cursor:pointer;" onmouseover="this.style.borderColor='var(--gold3)'" onmouseout="this.style.borderColor='var(--paper2)'">
           <div class="ns-icon">📐</div>
           <div class="ns-title">Completa le specifiche</div>
           <div class="ns-sub">Dati tecnici completi (serbatoi, coperta, winch…)</div>
@@ -882,7 +1007,7 @@ select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns
           <div class="ns-sub">Disponibile al 100% di completamento.</div>
           <div class="ns-pts">Sblocca a 100%</div>
         </div>
-        <div class="ns-item">
+        <div class="ns-item" onclick="window.location.href='armatore_dashboard.html'" style="cursor:pointer;" onmouseover="this.style.borderColor='var(--gold3)'" onmouseout="this.style.borderColor='var(--paper2)'">
           <div class="ns-icon">➕</div>
           <div class="ns-title">Aggiungi altri eventi</div>
           <div class="ns-sub">Ogni evento arricchisce la storia certificata.</div>
@@ -992,7 +1117,7 @@ function cascadeCantiere(val) {
     `<div class="cascade-item" onclick="selectCantiere('${c}')">${c}</div>`
   ).join('');
   r.classList.add('show');
-  mInput.disabled = true;
+  // mInput.disabled = true;
   mInput.placeholder = 'Seleziona prima il cantiere…';
   cantiereSel = null;
 }
@@ -1065,9 +1190,53 @@ function selectEvt(type, btn) {
   btn.classList.add('sel');
 }
 
+let eventiList = [];
+
+function addEventoToList() {
+  const titolo = document.getElementById('f-evt-titolo')?.value?.trim();
+  if (!titolo) { showToast('Inserisci almeno il titolo dell\'evento'); return; }
+
+  eventiList.push({
+    tipo:        selectedEvtType,
+    titolo,
+    data_evento: document.getElementById('f-evt-data')?.value?.trim() || null,
+    descrizione: document.getElementById('f-evt-desc')?.value?.trim() || null,
+    eseguito_da: document.getElementById('f-evt-chi')?.value?.trim() || null,
+    verificato:  false
+  });
+
+  renderEventiList();
+
+  // Reset form
+  document.getElementById('f-evt-titolo').value = '';
+  document.getElementById('f-evt-data').value = '';
+  document.getElementById('f-evt-desc').value = '';
+  document.getElementById('f-evt-chi').value = '';
+  document.getElementById('f-evt-certify').checked = false;
+  showToast('✓ Evento aggiunto');
+}
+
+function renderEventiList() {
+  const tl = document.getElementById('evt-timeline');
+  const list = document.getElementById('evt-list');
+  if (!tl || !list) return;
+  if (!eventiList.length) { tl.style.display = 'none'; return; }
+  tl.style.display = 'block';
+  const icons = {manutenzione:'🔧',restauro:'⚒️',regata:'🏆',viaggio:'🗺️',aggiornamento:'⚙️',perizia:'📋',passaggio:'🤝',altro:'📌'};
+  list.innerHTML = eventiList.map((e, i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border:1px solid var(--paper2);">
+      <span>${icons[e.tipo]||'📌'}</span>
+      <div style="flex:1;">
+        <div style="font-size:0.8rem;font-weight:500;color:var(--ink);">${e.titolo}</div>
+        ${e.data_evento ? `<div style="font-size:0.64rem;color:var(--gray2);">${e.data_evento}</div>` : ''}
+      </div>
+      <button onclick="eventiList.splice(${i},1);renderEventiList()" style="background:none;border:none;color:var(--gray2);cursor:pointer;font-size:0.8rem;padding:2px 6px;">✕</button>
+    </div>`).join('');
+}
+
 // ── Upload foto ──
 function handleFiles(files) {
-  Array.from(files).slice(0, 5 - photos.length).forEach(f => {
+  Array.from(files).slice(0, 20 - photos.length).forEach(f => {
     if (!f.type.startsWith('image/')) return;
     const reader = new FileReader();
     reader.onload = e => {
@@ -1092,7 +1261,7 @@ function renderPhotos() {
       <button class="photo-remove" onclick="removePhoto(${i})">✕</button>
       ${i===0 ? '<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(201,168,76,0.9);color:#0d1b2a;font-size:0.55rem;padding:2px;text-align:center;letter-spacing:0.1em;">COPERTINA</div>' : ''}
     </div>
-  `).join('') + (photos.length < 5 ? `
+  `).join('') + (photos.length < 20 ? `
     <div class="photo-thumb" style="cursor:pointer;border:1px dashed var(--paper2);" onclick="document.querySelector('#dropZone input').click()">
       <div class="photo-empty">+ Aggiungi<br>foto</div>
     </div>
@@ -1106,7 +1275,7 @@ function removePhoto(i) {
 
 // ── Navigazione step ──
 function goToStep(n) {
-  if (n > currentStep) return; // non saltare avanti
+  if (n < 0 || n >= TOTAL_STEPS) return;
   currentStep = n;
   renderStep();
 }
@@ -1117,7 +1286,13 @@ async function nextStep() {
   // Ultimo step — salva nel DB prima di procedere
   if (currentStep === TOTAL_STEPS - 2) {
     const ok = await saveBoatToSupabase();
-    // Anche se fallisce, procedi comunque (salvataggio offline come fallback)
+    if (!ok) return; // Blocca se il salvataggio è fallito
+    // Aggiorna ID e URL nella schermata finale con il vero boatId
+    const realId = window._lastBoatId || '—';
+    const idEl = document.getElementById('finalRegistroId');
+    if (idEl) idEl.textContent = realId;
+    const urlEl = document.getElementById('finalRegistroUrl');
+    if (urlEl) urlEl.textContent = 'hullid.it/barca/' + realId;
   }
 
   goToStep(currentStep + 1);
@@ -1141,7 +1316,11 @@ function validateStep() {
   }
   if (currentStep === 4) {
     const titolo = document.getElementById('f-evt-titolo').value.trim();
-    if (!titolo) { showToast('Inserisci un titolo per l\'evento'); return false; }
+    // Obbligatorio solo se la lista è vuota e il form è vuoto
+    if (!titolo && eventiList.length === 0) {
+      showToast('Aggiungi almeno un evento o salta questo step');
+      return false;
+    }
   }
   return true;
 }
@@ -1214,61 +1393,119 @@ function renderStep() {
 // SUPABASE — salva dati barca al completamento onboarding
 // ══════════════════════════════════════════════════════
 async function saveBoatToSupabase() {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) { showToast('Accedi prima di salvare'); return false; }
+  const { data: { session } } = await window._sb.auth.getSession();
+  if (!session) { showToast('Accedi prima di salvare'); window.location.href = 'login.html'; return false; }
 
-  // Raccogli tutti i dati dai campi del form
-  const nome    = document.getElementById('f-name')?.value || '';
-  const cantiere = document.getElementById('f-cantiere')?.value || '';
-  const modello  = document.getElementById('f-modello')?.value || '';
-  const anno     = parseInt(document.getElementById('f-year')?.value) || null;
-  const porto    = document.getElementById('f-porto')?.value || '';
-  const hin      = document.getElementById('f-hin')?.value || '';
-  const loa      = parseFloat(document.getElementById('f-loa')?.value) || null;
+  const userId = session.user.id;
+
+  // Raccogli dati form
+  const nome       = document.getElementById('f-nome')?.value?.trim() || '';
+  const cantiere   = document.getElementById('f-cantiere')?.value?.trim() || '';
+  const modello    = document.getElementById('f-modello')?.value?.trim() || '';
+  const anno       = parseInt(document.getElementById('f-anno')?.value) || null;
+  const porto      = document.getElementById('f-porto')?.value?.trim() || '';
+  const hin        = document.getElementById('f-hin')?.value?.trim() || '';
+  const loa        = parseFloat(document.getElementById('f-lun')?.value) || null;
+  const larghezza  = parseFloat(document.getElementById('f-lar')?.value) || null;
+  const pescaggio  = parseFloat(document.getElementById('f-pesc')?.value) || null;
+  const tipo       = document.getElementById('f-tipo')?.value || '';
+  const motmarca   = document.getElementById('f-motmarca')?.value?.trim() || '';
+  const cv         = parseInt(document.getElementById('f-cv')?.value) || null;
+  const descrizione = document.getElementById('f-desc')?.value?.trim() || '';
   const propulsione = selectedProp || 'entro';
 
-  // Genera Boat ID dal cantiere + anno
+  // Genera Boat ID univoco — progressivo globale
   const safeCantiere = (cantiere || 'BARCA').replace(/[^A-Z]/gi,'').substring(0,3).toUpperCase();
   const safeModello  = (modello || '').replace(/[^A-Z0-9]/gi,'').substring(0,5).toUpperCase();
-  const boatId = `BOT-${safeCantiere}${safeModello}-${anno || new Date().getFullYear()}`;
+  const prefix = `BOT-${safeCantiere}${safeModello}-${anno || new Date().getFullYear()}`;
+
+  // Conta quante barche esistono già con questo prefisso per generare numero progressivo
+  const { data: existing } = await window._sb
+    .from('barche')
+    .select('id')
+    .like('id', prefix + '%');
+  const nextNum = (existing?.length || 0) + 1;
+  const boatId = `${prefix}-${String(nextNum).padStart(3, '0')}`;
+
+  // Leggi tipo account per badge
+  const { data: profilo } = await window._sb.from('utenti_profili').select('tipo_account').eq('id', userId).single();
+  const isPremium = profilo?.tipo_account === 'armatore_pro';
 
   const boatData = {
     id: boatId,
-    armatore_id: session.user.id,
+    armatore_id: userId,
     nome: nome || `${cantiere} ${modello}`.trim(),
-    cantiere, modello, anno, porto,
-    loa,
-    motori: { propulsione },
+    cantiere, modello, anno, porto, hin,
+    loa, larghezza, pescaggio, tipo,
+    motori: { propulsione, marca: motmarca, cv },
+    descrizione,
     completamento: Math.round(completionPoints),
+    verificato: false,
     pubblica: true,
     in_vendita: false,
+    // piano: rimosso — colonna non presente in tabella barche
   };
 
   try {
-    const { error } = await supabase.from('barche').upsert(boatData);
-    if (error) { showToast('Errore salvataggio: ' + error.message); return false; }
+    // 1. Salva barca
+    const { error } = await window._sb.from('barche').insert(boatData);
+    if (error) { showToast('Errore: ' + error.message); return false; }
 
-    // Salva anche l'evento di registrazione nella timeline
-    await supabase.from('timeline_eventi').insert({
+    // 2. Upload foto se presenti
+    if (photos && photos.length > 0) {
+      for (let i = 0; i < photos.length; i++) {
+        const file = photos[i];
+        if (!file || !file.name) continue; // salta elementi nulli/undefined
+        const ext = file.name.split('.').pop();
+        const path = `barche/${boatId}/foto_${i+1}.${ext}`;
+        const { error: upErr } = await window._sb.storage.from('hullid-media').upload(path, file, { upsert: true });
+        if (upErr) console.warn('Foto upload error:', upErr.message);
+      }
+    }
+
+    // 3. Evento timeline iniziale
+    await window._sb.from('timeline_eventi').insert({
       barca_id: boatId,
-      tipo: 'acquisto',
+      utente_id: userId,
+      tipo: 'registrazione',
       titolo: 'Registrazione su HullID',
       data_evento: new Date().toISOString().split('T')[0],
       verificato: false
     });
 
-    // Aggiorna tipo account a 'armatore' se era appassionato
-    await supabase.from('utenti_profili')
-      .update({ tipo_account: 'armatore' })
-      .eq('id', session.user.id)
-      .eq('tipo_account', 'appassionato');
+    // 4. Salva tutti gli eventi dalla lista + eventuale evento nel form
+    const evtTitoloForm = document.getElementById('f-evt-titolo')?.value?.trim();
+    if (evtTitoloForm) {
+      eventiList.push({
+        tipo: selectedEvtType || 'intervento',
+        titolo: evtTitoloForm,
+        data_evento: document.getElementById('f-evt-data')?.value?.trim() || null,
+        descrizione: document.getElementById('f-evt-desc')?.value?.trim() || null,
+        eseguito_da: document.getElementById('f-evt-chi')?.value?.trim() || null,
+        verificato: false
+      });
+    }
+    for (const evt of eventiList) {
+      await window._sb.from('timeline_eventi').insert({
+        barca_id: boatId,
+        utente_id: userId,
+        ...evt
+      });
+    }
 
-    showToast('✓ Barca salvata — ID: ' + boatId);
-    // Salva ID in localStorage per uso nella scheda
-    localStorage.setItem('last_boat_id', boatId);
+    // 5. Aggiorna profilo con barca principale se non ce l'ha
+    await window._sb.from('utenti_profili')
+      .update({ nome_barca_principale: nome || `${cantiere} ${modello}`.trim(), anno_varo_principale: anno })
+      .eq('id', userId)
+      .is('nome_barca_principale', null);
+
+    window._lastBoatId = boatId;
+    showToast('✓ Barca registrata — ' + boatId);
     return true;
+
   } catch(e) {
-    showToast('Errore connessione');
+    console.error(e);
+    showToast('Errore di connessione. Riprova.');
     return false;
   }
 }
@@ -1281,7 +1518,54 @@ function showToast(msg) {
 }
 
 // ── Init ──
-renderStep();
+document.addEventListener("DOMContentLoaded", async function init() {
+  // Auth guard
+  const { data: { session } } = await window._sb.auth.getSession();
+  if (!session) { window.location.href = 'login.html'; return; }
+
+  // Badge piano (armatore vs armatore_pro)
+  const { data: profilo } = await window._sb.from('utenti_profili')
+    .select('nome, cognome, tipo_account')
+    .eq('id', session.user.id)
+    .single();
+
+  if (profilo) {
+    // Mostra nome utente nello step 0 se presente
+    const nomeEl = document.getElementById('ob-user-nome');
+    if (nomeEl) nomeEl.textContent = ((profilo.nome || '') + ' ' + (profilo.cognome || '')).trim() || session.user.email;
+
+    // Badge piano
+    const badgeEl = document.getElementById('ob-piano-badge');
+    if (badgeEl) {
+      const isPremium = profilo.tipo_account === 'armatore_pro';
+      badgeEl.textContent = isPremium ? '★ ARMATORE PREMIUM' : '✓ ARMATORE';
+      badgeEl.style.background = isPremium ? 'var(--gold)' : 'rgba(201,168,76,0.15)';
+      badgeEl.style.color = isPremium ? 'var(--navy)' : 'var(--gold)';
+    }
+  }
+
+  renderStep();
+});
 </script>
+
+<script>
+/* HullID Mobile Nav - auto-injected */
+(function(){
+  var ham = document.querySelector('.nav-hamburger');
+  var nav = document.querySelector('.nav-links');
+  if(!ham || !nav) return;
+  ham.addEventListener('click', function(){
+    this.classList.toggle('open');
+    nav.classList.toggle('mobile-open');
+  });
+  document.addEventListener('click', function(e){
+    if(!ham.contains(e.target) && !nav.contains(e.target)){
+      ham.classList.remove('open');
+      nav.classList.remove('mobile-open');
+    }
+  });
+})();
+</script>
+
 </body>
 </html>

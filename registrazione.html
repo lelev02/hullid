@@ -177,6 +177,22 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);background:#fff
 .broker-fields{display:none;}
 .broker-fields.visible{display:block;}
 
+/* Piano selector */
+.piano-selector{display:none;margin-bottom:20px;}
+.piano-selector.visible{display:block;}
+.piano-title{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--gray-light);}
+.piano-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.piano-card{border:1px solid var(--gray-light);padding:16px;cursor:pointer;transition:all 0.2s;background:#fff;position:relative;}
+.piano-card:hover{border-color:var(--gold);}
+.piano-card.selected{border-color:var(--gold);background:rgba(201,168,76,0.04);}
+.piano-card.selected::after{content:'✓';position:absolute;top:8px;right:10px;font-size:0.7rem;color:var(--gold);font-weight:700;}
+.piano-card input[type=radio]{display:none;}
+.piano-prezzo{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;color:var(--navy);line-height:1;margin-bottom:4px;}
+.piano-prezzo span{font-size:0.75rem;font-weight:400;color:var(--gray);}
+.piano-nome{font-size:0.8rem;font-weight:600;color:var(--navy);margin-bottom:6px;}
+.piano-features{font-size:0.68rem;color:var(--gray);line-height:1.6;}
+.piano-badge{display:inline-block;font-size:0.58rem;padding:2px 7px;background:var(--gold);color:var(--navy);font-weight:700;letter-spacing:0.05em;margin-bottom:8px;}
+
 /* LOGIN FORM */
 .login-form{display:none;}
 .login-form.visible{display:block;}
@@ -334,6 +350,36 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);background:#fff
           </div>
         </div>
 
+        <!-- ARMATORE: SCELTA PIANO -->
+        <div class="piano-selector" id="sectionPiano">
+          <div class="piano-title">Scegli il tuo piano</div>
+          <div class="piano-options">
+            <label class="piano-card selected" onclick="selectPiano('base',this)">
+              <input type="radio" name="piano" value="base" checked>
+              <div class="piano-prezzo">€350 <span>una tantum</span></div>
+              <div class="piano-nome">⚓ Armatore Base</div>
+              <div class="piano-features">
+                1 barca registrata<br>
+                Boat ID + QR fisico<br>
+                Timeline verificata<br>
+                Scheda pubblica
+              </div>
+            </label>
+            <label class="piano-card" onclick="selectPiano('premium',this)">
+              <input type="radio" name="piano" value="premium">
+              <div class="piano-badge">CONSIGLIATO</div>
+              <div class="piano-prezzo">€800 <span>una tantum</span></div>
+              <div class="piano-nome">★ Armatore Premium</div>
+              <div class="piano-features">
+                Barche illimitate<br>
+                Boat ID + QR fisico<br>
+                Timeline verificata<br>
+                Scheda pubblica + priority
+              </div>
+            </label>
+          </div>
+        </div>
+
         <!-- BROKER: EXTRA FIELDS -->
         <div class="form-section broker-fields" id="sectionBroker">
           <div class="form-section-title">Dati società</div>
@@ -439,7 +485,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--gold);background:#fff
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL  = 'https://alvlcjtbecodijpicrvb.supabase.co';
-    const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsdmxjanRiZWNvZGlqcGljcnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzODEyOTAsImV4cCI6MjA4Nzk1NzI5MH0.uPd_8Qb3LYW7dLX3-tWoLuSI9vI0EjmjDlPAczCbCaY';
+    const SUPABASE_ANON = 'sb_publishable_yuwru1iINXkuln7xvmvziQ_v90INnWv';
     window._sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
   </script>
 <script>
@@ -465,6 +511,7 @@ function selectType(type, card) {
   brokerFields.classList.remove('visible'); brokerFields.style.display = '';
   b2bFields.style.display = 'none';
   barcaSection.style.display = 'none';
+  document.getElementById('sectionPiano').classList.remove('visible');
 
   if (type === 'broker') {
     brokerFields.classList.add('visible');
@@ -481,10 +528,23 @@ function selectType(type, card) {
     regSub.textContent   = 'Esplora HullID gratuitamente';
     regBtn.textContent   = 'Crea account gratuito';
   } else {
+    // armatore o armatore_pro
     barcaSection.style.display = 'block';
+    document.getElementById('sectionPiano').classList.add('visible');
     regTitle.textContent = 'Crea il tuo account';
     regSub.textContent   = 'Registra la tua barca su HullID';
-    regBtn.textContent   = 'Crea account — Invia richiesta';
+    regBtn.textContent   = selectedPiano === 'premium' ? 'Continua al pagamento Premium →' : 'Continua al pagamento →';
+  }
+}
+
+let selectedPiano = 'base';
+function selectPiano(piano, card) {
+  selectedPiano = piano;
+  document.querySelectorAll('.piano-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+  const regBtn = document.getElementById('regBtnText');
+  if (regBtn && (currentType === 'armatore' || currentType === 'armatore_pro')) {
+    regBtn.textContent = piano === 'premium' ? 'Continua al pagamento Premium →' : 'Continua al pagamento →';
   }
 }
 
@@ -500,22 +560,25 @@ function togglePass(id, btn) {
   else { inp.type = 'password'; btn.textContent = '👁'; }
 }
 
+// Link Stripe placeholder — sostituire con link reali
+const STRIPE_LINKS = {
+  base:    'https://buy.stripe.com/PLACEHOLDER_BASE',
+  premium: 'https://buy.stripe.com/PLACEHOLDER_PREMIUM',
+  upgrade: 'https://buy.stripe.com/PLACEHOLDER_UPGRADE'
+};
+
 async function submitRegister() {
   const nome     = document.getElementById('reg-nome')?.value?.trim() || '';
   const cognome  = document.getElementById('reg-cognome')?.value?.trim() || '';
   const email    = document.getElementById('reg-email')?.value?.trim() || '';
-  const password = document.getElementById('reg-pass')?.value || document.getElementById('reg-password')?.value || document.querySelector('input[type="password"]')?.value || '';
+  const password = document.getElementById('reg-pass')?.value || '';
   const privacy  = document.getElementById('chk-privacy')?.checked;
 
   if (!nome || !email) { showToast('Compila tutti i campi obbligatori'); return; }
   if (!privacy) { showToast('Devi accettare la Privacy Policy per procedere'); return; }
   if (!password || password.length < 6) { showToast('La password deve essere di almeno 6 caratteri'); return; }
 
-  if (currentType === 'armatore') {
-    const barca = document.getElementById('reg-barca')?.value;
-    const anno  = document.getElementById('reg-anno')?.value;
-    if (!barca || !anno) { showToast("Inserisci almeno il nome e l'anno della barca"); return; }
-  }
+  // barca facoltativa — si aggiunge dalla dashboard
 
   const btn = document.getElementById('regBtnText');
   if (btn) btn.textContent = 'Registrazione in corso…';
@@ -544,17 +607,21 @@ async function submitRegister() {
 
     // 2. Inserisci profilo in utenti_profili
     if (userId) {
+      // Per armatore: tipo_account dipende dal piano scelto
+      const tipoFinale = (currentType === 'armatore' && selectedPiano === 'premium')
+        ? 'armatore_pro' : currentType;
+
       const profileData = {
         id:           userId,
         nome,
         cognome,
         email,
-        tipo_account: currentType,
-        approvato:    currentType === 'appassionato' || currentType === 'armatore' || currentType === 'armatore_pro'
+        tipo_account: tipoFinale,
+        approvato:    tipoFinale === 'appassionato' || tipoFinale === 'armatore' || tipoFinale === 'armatore_pro'
       };
 
       // Aggiungi dati barca se armatore
-      if (currentType === 'armatore' || currentType === 'armatore_pro') {
+      if (tipoFinale === 'armatore' || tipoFinale === 'armatore_pro') {
         const nomeBarca = document.getElementById('reg-barca')?.value?.trim();
         const annoVaro  = document.getElementById('reg-anno')?.value;
         if (nomeBarca) profileData.nome_barca_principale = nomeBarca;
@@ -569,32 +636,65 @@ async function submitRegister() {
         if (azienda)  profileData.nome_azienda = azienda;
         if (telefono) profileData.telefono     = telefono;
         if (citta)    profileData.citta         = citta;
-        profileData.approvato = false; // broker/b2b richiedono approvazione
+        profileData.approvato = false;
       }
 
       const { error: profileError } = await window._sb.from('utenti_profili').upsert(profileData);
       if (profileError) console.warn('Profilo error:', profileError.message);
     }
 
-    // 3. Mostra successo
-    document.getElementById('registerForm').style.display = 'none';
-    const succ = document.getElementById('successState');
-    if (succ) { succ.style.display = 'block'; succ.classList.add('visible'); }
+    // 3. Redirect o success state
+    if (currentType === 'armatore') {
+      // Redirect a Stripe con email prefill
+      const stripeUrl = selectedPiano === 'premium'
+        ? STRIPE_LINKS.premium + '?prefilled_email=' + encodeURIComponent(email)
+        : STRIPE_LINKS.base    + '?prefilled_email=' + encodeURIComponent(email);
 
-    if (currentType === 'broker' || currentType === 'b2b') {
+      const el = document.getElementById('successTitle');
+      if (el) el.textContent = 'Account creato!';
+      const sub = document.getElementById('successSub');
+      if (sub) sub.textContent = 'Benvenuto ' + nome + '! Ora completa il pagamento per attivare il tuo Boat ID.';
+      const sid = document.getElementById('successId');
+      if (sid) sid.textContent = selectedPiano === 'premium' ? '★ Piano Premium — €800' : '⚓ Piano Base — €350';
+      const cta = document.getElementById('successCta');
+      if (cta) {
+        cta.href = stripeUrl;
+        cta.textContent = selectedPiano === 'premium' ? 'Paga €800 e inizia →' : 'Paga €350 e inizia →';
+      }
+      // Aggiungi link secondario per saltare pagamento (testing / pay later)
+      const ctaWrap = document.getElementById('successCta')?.parentElement;
+      if (ctaWrap && !document.getElementById('skipPayBtn')) {
+        const skip = document.createElement('a');
+        skip.id = 'skipPayBtn';
+        skip.href = 'armatore_dashboard.html';
+        skip.textContent = 'Vai alla dashboard (paga dopo) →';
+        skip.style.cssText = 'display:block;text-align:center;margin-top:10px;font-size:0.74rem;color:#8a9aaa;text-decoration:none;border-bottom:1px solid rgba(138,154,170,0.3);padding-bottom:2px;width:fit-content;margin-left:auto;margin-right:auto;';
+        ctaWrap.appendChild(skip);
+      }
+      document.getElementById('registerForm').style.display = 'none';
+      const succ = document.getElementById('successState');
+      if (succ) { succ.style.display = 'block'; succ.classList.add('visible'); }
+
+    } else if (currentType === 'broker' || currentType === 'b2b') {
+      document.getElementById('registerForm').style.display = 'none';
+      const succ = document.getElementById('successState');
+      if (succ) { succ.style.display = 'block'; succ.classList.add('visible'); }
       const el = document.getElementById('successTitle');
       if (el) el.textContent = 'Richiesta inviata!';
       const sub = document.getElementById('successSub');
       if (sub) sub.textContent = 'Verificheremo la tua azienda entro 72 ore. Riceverai una email di conferma.';
       const sid = document.getElementById('successId');
       if (sid) sid.textContent = currentType.toUpperCase() + '-2026-' + Math.floor(Math.random()*9000+1000);
+
     } else {
+      // Appassionato: account gratuito, vai al login
+      document.getElementById('registerForm').style.display = 'none';
+      const succ = document.getElementById('successState');
+      if (succ) { succ.style.display = 'block'; succ.classList.add('visible'); }
       const el = document.getElementById('successTitle');
       if (el) el.textContent = 'Account creato!';
       const sub = document.getElementById('successSub');
-      if (sub) sub.textContent = 'Benvenuto ' + nome + '! Controlla la tua email per confermare l\'account, poi accedi.';
-      const sid = document.getElementById('successId');
-      if (sid) sid.textContent = 'ARM-IT-' + Math.floor(Math.random()*9000+1000);
+      if (sub) sub.textContent = 'Benvenuto ' + nome + '! Controlla la tua email per confermare l\'account.';
       const cta = document.getElementById('successCta');
       if (cta) { cta.href = 'login.html'; cta.textContent = 'Accedi ora →'; }
     }
