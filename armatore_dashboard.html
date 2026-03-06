@@ -287,42 +287,16 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   const _sbUrl  = 'https://alvlcjtbecodijpicrvb.supabase.co';
-  const _sbAnon = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFsdmxjanRiZWNvZGlqcGljcnZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIzODEyOTAsImV4cCI6MjA4Nzk1NzI5MH0.uPd_8Qb3LYW7dLX3-tWoLuSI9vI0EjmjDlPAczCbCaY';
+  const _sbAnon = 'sb_publishable_yuwru1iINXkuln7xvmvziQ_v90INnWv';
   const sb = window.supabase.createClient(_sbUrl, _sbAnon);
-
-  // ID barca attiva (demo: Bertram 28)
-  const BARCA_ID = 'BOT-BER28-1998';
-  let currentUser = null;
-
-  // Carica utente loggato all'avvio
-  async function initDashboard() {
-    const { data: { user } } = await sb.auth.getUser();
-    if (!user) {
-      // Non loggato — redirect a login
-      // window.location.href = 'login.html';
-      // Commentato per ora: in sviluppo locale si può navigare senza login
-      return;
-    }
-    currentUser = user;
-    // Carica dati barca reali
-    loadBarcaData();
-  }
-
+  window._sb = sb;
+  const BARCA_ID = null; // non più usato — barche caricate dinamicamente
   async function loadBarcaData() {
-    const { data: barca, error } = await sb
-      .from('barche')
-      .select('*')
-      .eq('id', BARCA_ID)
-      .single();
-    if (error || !barca) return; // usa dati demo se barca non esiste ancora
-    // Aggiorna UI con dati reali se presenti
+    const { data: barca, error } = await sb.from('barche').select('*').eq('id', BARCA_ID).single();
+    if (error || !barca) return;
     if (barca.nome) document.querySelectorAll('.bc-name').forEach(el => el.textContent = barca.nome);
-    if (barca.porto) document.querySelectorAll('.spec-val').forEach((el, i) => {
-      if (i === 4) el.textContent = barca.porto;
-    });
+    if (barca.porto) document.querySelectorAll('.spec-val').forEach((el, i) => { if (i === 4) el.textContent = barca.porto; });
   }
-
-  document.addEventListener('DOMContentLoaded', initDashboard);
 </script>
 </head>
 <body>
@@ -334,7 +308,7 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
     <div class="user-pill">
       <div class="user-avatar">GB</div>
       <div>
-        <div class="user-name-sm">Giovanni Bianchi</div>
+        <div class="user-name-sm" id="user-nome-sm">—</div>
         <div class="user-since">Membro dal Gen 2025</div>
       </div>
     </div>
@@ -344,7 +318,7 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
     <a class="nav-item active" onclick="showSection('barche',this)"><span class="nav-icon">⚓</span> Le mie barche <span class="nav-badge">1</span></a>
     <a class="nav-item" onclick="showSection('timeline',this)"><span class="nav-icon">📅</span> Timeline eventi</a>
     <a class="nav-item" onclick="showSection('broker',this)"><span class="nav-icon">🤝</span> I miei broker <span class="nav-badge nav-badge-orange">1</span></a>
-    <a class="nav-item" onclick="showSection('watchlist',this)"><span class="nav-icon">⭐</span> Watchlist <span class="nav-badge" style="background:var(--navy-light);color:#fff;">3</span></a>
+    <a class="nav-item" onclick="showSection('watchlist',this)"><span class="nav-icon">⭐</span> Watchlist <span class="nav-badge" id="watchlist-badge" style="background:var(--navy-light);color:#fff;">0</span></a>
     <div class="nav-section-title">Account</div>
     <a class="nav-item" onclick="showSection('profilo',this)"><span class="nav-icon">👤</span> Il mio profilo</a>
     <a class="nav-item" onclick="showSection('notifiche',this)"><span class="nav-icon">🔔</span> Notifiche <span class="nav-badge nav-badge-orange">2</span></a>
@@ -352,7 +326,6 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
   </nav>
   <div class="sidebar-footer">
     <div class="sidebar-links">
-      <a href="scheda_barca.html" class="sidebar-link">↗ Scheda pubblica barca</a>
       <a href="hullid_demo.html" class="sidebar-link">← Torna al sito</a>
       <a href="registrazione.html" class="sidebar-link" style="color:var(--gold);">+ Registra altra barca</a>
       <a href="#" class="sidebar-link" style="color:rgba(201,168,76,0.6);border-top:1px solid rgba(255,255,255,0.06);margin-top:8px;padding-top:12px;" onclick="openTrasferisciDashboard();return false;">🔄 Trasferisci proprietà</a>
@@ -364,7 +337,7 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
   <div class="topbar">
     <div>
       <div class="topbar-eyebrow">Bentornato</div>
-      <div class="topbar-title">Ciao, <span>Giovanni</span></div>
+      <div class="topbar-title">Ciao, <span id="topbar-nome">—</span></div>
     </div>
     <div class="topbar-actions">
       <button class="btn btn-outline btn-sm" onclick="showSection('notifiche',null);document.querySelectorAll('.nav-item')[4].classList.add('active')">🔔 <span style="background:var(--orange);color:white;font-size:0.55rem;padding:1px 5px;margin-left:2px;">2</span></button>
@@ -378,9 +351,9 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
     <div id="section-barche">
       <div class="welcome-banner">
         <div>
-          <div class="wb-name">Giovanni Bianchi</div>
-          <div class="wb-sub">Armatore HullID · Genova</div>
-          <div class="wb-id">ARM-IT-GE-2025-0042</div>
+          <div class="wb-name" id="wb-nome">—</div>
+          <div class="wb-sub" id="wb-sub">Armatore HullID</div>
+          <div class="wb-id" id="wb-id">—</div>
         </div>
         <div class="wb-stats">
           <div><div class="wb-stat-num">1</div><div class="wb-stat-label">Barca registrata</div></div>
@@ -393,40 +366,9 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
         <div><div class="section-eyebrow">— Portafoglio</div><div class="section-title">Le mie imbarcazioni</div></div>
       </div>
 
-      <div class="boats-grid">
-        <div class="boat-card">
-          <div class="boat-card-img">
-            <div class="bc-overlay"></div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:rgba(255,255,255,0.25);position:relative;z-index:1;">Bertram 28 FBC</div>
-            <div class="bc-status" style="background:var(--navy-light);color:white;">⚓ Felice possessore</div>
-            <div class="bc-hullid">BOT-BER28-1998 · HullID ✓</div>
-          </div>
-          <div class="boat-card-body">
-            <div class="bc-name">Bertram 28 FBC</div>
-            <div class="bc-meta">Bertram Yacht · 1998 · Genova</div>
-            <div class="bc-specs">
-              <div class="spec-block"><span class="spec-label">LOA</span><span class="spec-val">9,32 m</span></div>
-              <div class="spec-block"><span class="spec-label">Motori</span><span class="spec-val">2×350 HP</span></div>
-              <div class="spec-block"><span class="spec-label">Ore moto</span><span class="spec-val">1.240 h</span></div>
-              <div class="spec-block"><span class="spec-label">Carena</span><span class="spec-val">VTR / V profondo</span></div>
-              <div class="spec-block"><span class="spec-label">Porto</span><span class="spec-val">Genova</span></div>
-              <div class="spec-block"><span class="spec-label">Completamento</span><span class="spec-val" style="color:var(--gold);">62%</span></div>
-            </div>
-            <div class="bc-actions">
-              <div class="bc-broker-tag">✓ Broker Blu Med. attivo</div>
-              <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn btn-outline btn-sm" onclick="openBoatEdit()">✎ Modifica</button>
-                <a href="scheda_barca.html" target="_blank" class="btn btn-navy btn-sm" style="text-decoration:none;">↗ Scheda</a>
-                <button class="btn btn-sm" onclick="document.getElementById('trasferisciModal').style.display='flex'" style="background:transparent;border:1px solid rgba(201,168,76,0.35);color:var(--gold);font-size:0.62rem;letter-spacing:0.04em;cursor:pointer;white-space:nowrap;">🔄 Trasferisci</button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="add-boat-card" onclick="openModal('registerBoat')">
-          <div class="add-icon">⚓</div>
-          <div class="add-text">Registra un'altra barca</div>
-          <div class="add-sub">Richiedi un nuovo HullID<br>per la tua imbarcazione</div>
-        </div>
+      <div class="boats-grid" id="boats-grid">
+        <!-- Caricato dinamicamente da loadBarche() -->
+        <div style="padding:40px;text-align:center;color:var(--gray);font-size:0.8rem;">Caricamento barche…</div>
       </div>
 
       <div class="section-header"><div><div class="section-eyebrow">— Azioni rapide</div><div class="section-title">Cosa fare oggi</div></div></div>
@@ -504,36 +446,17 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
         <button class="btn btn-primary btn-sm" onclick="openModal('brokerInvite')">+ Invita broker</button>
       </div>
 
-      <div style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;">Broker attivi</div>
-      <div class="broker-card">
-        <div class="broker-avatar-sq">BM</div>
-        <div class="broker-info">
-          <div class="broker-name-lg">Broker Blu Mediterraneo</div>
-          <div class="broker-ref">Dott. Alessandro Marino · Livorno</div>
-          <div class="broker-meta">Partner HullID Certificato · 4,7★ · Attivo dal 15 Gen 2025</div>
-          <div class="perm-tags">
-            <span class="perm-tag perm-ok">✓ Pubblica annunci</span>
-            <span class="perm-tag perm-ok">✓ Stato e prezzo</span>
-            <span class="perm-tag perm-ok">✓ Perizie</span>
-            <span class="perm-tag">✗ Dati tecnici</span>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
-          <a href="broker_profile.html" target="_blank" class="btn btn-outline btn-sm">↗ Profilo</a>
-          <button class="btn btn-outline btn-sm" onclick="openModal('permissions')">Permessi</button>
-          <button class="btn btn-danger btn-sm" onclick="showToast('Accesso broker revocato')">Rimuovi</button>
-        </div>
+      <div id="broker-loading" style="padding:24px;text-align:center;font-size:0.78rem;color:var(--gray);">Caricamento broker...</div>
+
+      <div id="broker-attivi-wrap" style="display:none;">
+        <div style="margin-bottom:8px;font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;">Broker attivi</div>
+        <div id="broker-attivi-list"></div>
       </div>
 
-      <div style="margin-top:20px;margin-bottom:8px;font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;color:var(--orange);text-transform:uppercase;">In attesa risposta</div>
-      <div class="broker-card" style="opacity:0.65;">
-        <div class="broker-avatar-sq" style="background:var(--gray-bg);color:var(--gray);">YN</div>
-        <div class="broker-info">
-          <div class="broker-name-lg" style="color:var(--gray);">Yacht Network Italia</div>
-          <div class="broker-ref">Marco Ferretti · Napoli</div>
-          <div class="broker-meta">Invito inviato il 20 Feb 2026 · In attesa risposta</div>
-        </div>
-        <button class="btn btn-outline btn-sm" onclick="showToast('Invito annullato')">Annulla</button>
+      <div id="broker-empty" style="display:none;padding:32px;text-align:center;border:2px dashed var(--gray-light);background:#fff;margin-bottom:16px;">
+        <div style="font-size:2rem;margin-bottom:10px;opacity:0.3;">🤝</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gray);margin-bottom:6px;">Nessun broker ancora</div>
+        <div style="font-size:0.74rem;color:var(--gray-light);">Invita un broker certificato HullID per gestire gli annunci della tua barca</div>
       </div>
 
       <div style="margin-top:24px;background:var(--navy);padding:22px 26px;border:1px solid rgba(201,168,76,0.2);">
@@ -551,37 +474,70 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
     <div id="section-profilo" style="display:none;">
       <div class="section-header">
         <div><div class="section-eyebrow">— Account</div><div class="section-title">Il mio profilo</div></div>
-        <button class="btn btn-primary btn-sm" onclick="showToast('Profilo aggiornato')">Salva</button>
+        <button class="btn btn-primary btn-sm" onclick="saveProfilo()">Salva modifiche</button>
       </div>
       <div style="background:#fff;border:1px solid var(--gray-light);padding:32px;">
         <div class="profile-grid">
           <div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
-            <div class="avatar-big">GB</div>
+            <div class="avatar-big" id="profilo-avatar" style="font-size:1.3rem;">—</div>
             <div style="font-size:0.7rem;color:var(--gold);cursor:pointer;">Cambia foto</div>
-            <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--gold);text-align:center;">ARM-IT-GE-2025-0042</div>
+            <div style="font-family:'DM Mono',monospace;font-size:0.58rem;color:var(--gold);text-align:center;" id="profilo-id">—</div>
+            <div id="profilo-piano" style="font-size:0.62rem;padding:2px 10px;background:rgba(201,168,76,0.1);color:var(--gold);border:1px solid rgba(201,168,76,0.3);text-align:center;"></div>
           </div>
           <div>
-            <div class="form-grid" style="margin-bottom:12px;">
-              <div class="form-group"><label>Nome</label><input value="Giovanni"></div>
-              <div class="form-group"><label>Cognome</label><input value="Bianchi"></div>
-              <div class="form-group"><label>Email</label><input type="email" value="g.bianchi@gmail.com"></div>
-              <div class="form-group"><label>Telefono</label><input value="+39 345 678 9012"></div>
-              <div class="form-group"><label>Porto base</label><input id="e-porto-profile" value="Genova"></div>
-              <div class="form-group"><label>Paese</label><select><option>🇮🇹 Italia</option></select></div>
-              <div class="form-group form-grid-1"><label>Bio</label><textarea style="height:60px;" placeholder="Armatore appassionato dal 1998..."></textarea></div>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:8px;">
-              <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:0.82rem;color:var(--navy);cursor:pointer;font-weight:400;"><input type="checkbox" checked style="width:auto;padding:0;"> Profilo visibile ad altri armatori HullID</label>
-              <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:0.82rem;color:var(--navy);cursor:pointer;font-weight:400;"><input type="checkbox" checked style="width:auto;padding:0;"> Notifiche email per attività broker</label>
+            <div id="profilo-loading" style="padding:20px;text-align:center;font-size:0.78rem;color:var(--gray);">Caricamento dati...</div>
+            <div id="profilo-form" style="display:none;">
+              <div class="form-grid" style="margin-bottom:16px;">
+                <div class="form-group"><label>Nome</label><input id="p-nome" placeholder="Nome"></div>
+                <div class="form-group"><label>Cognome</label><input id="p-cognome" placeholder="Cognome"></div>
+                <div class="form-group"><label>Email (non modificabile)</label><input id="p-email" type="email" disabled style="background:#f8f8f8;color:var(--gray);"></div>
+                <div class="form-group"><label>Telefono</label><input id="p-telefono" placeholder="+39 xxx xxx xxxx"></div>
+                <div class="form-group"><label>Città / Porto base</label><input id="p-citta" placeholder="Es. Genova"></div>
+                <div class="form-group" style="grid-column:1/-1;">
+                  <label>Le mie barche registrate</label>
+                  <div id="p-barche-list" style="display:flex;flex-direction:column;gap:6px;min-height:36px;">
+                    <div style="font-size:0.75rem;color:var(--gray);">Caricamento…</div>
+                  </div>
+                </div>
+              </div>
+              <div style="border-top:1px solid var(--gray-light);padding-top:16px;margin-bottom:16px;">
+                <div style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;margin-bottom:10px;">Preferenze</div>
+                <div class="form-grid">
+                  <div class="form-group"><label>Tipo barca preferito</label><input id="p-tipo-barca" placeholder="Es. Motoscafo, Vela..."></div>
+                  <div class="form-group"><label>Zona preferita</label><input id="p-zona" placeholder="Es. Mediterraneo"></div>
+                </div>
+              </div>
+              <div style="border-top:1px solid var(--gray-light);padding-top:16px;">
+                <div style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;margin-bottom:10px;">Privacy</div>
+                <div style="display:flex;flex-direction:column;gap:8px;">
+                  <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:0.82rem;color:var(--navy);cursor:pointer;font-weight:400;">
+                    <input type="checkbox" id="p-profilo-visibile" style="width:auto;padding:0;accent-color:var(--gold);">
+                    Profilo visibile ad altri armatori HullID
+                  </label>
+                  <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:0.82rem;color:var(--navy);cursor:pointer;font-weight:400;">
+                    <input type="checkbox" id="p-notif-broker" style="width:auto;padding:0;accent-color:var(--gold);">
+                    Notifiche email per attività broker
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+      <!-- Info account -->
+      <div style="margin-top:16px;background:#fff;border:1px solid var(--gray-light);padding:20px 28px;">
+        <div style="font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;margin-bottom:12px;">Informazioni account</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+          <div><div style="font-size:0.62rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.08em;">Tipo account</div><div style="font-size:0.84rem;font-weight:500;margin-top:2px;" id="info-tipo-account">—</div></div>
+          <div><div style="font-size:0.62rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.08em;">Piano attivo</div><div style="font-size:0.84rem;font-weight:500;margin-top:2px;" id="info-piano">—</div></div>
+          <div><div style="font-size:0.62rem;color:var(--gray);text-transform:uppercase;letter-spacing:0.08em;">Membro dal</div><div style="font-size:0.84rem;font-weight:500;margin-top:2px;" id="info-membro-dal">—</div></div>
         </div>
       </div>
     </div>
 
     <!-- NOTIFICHE -->
     <div id="section-notifiche" style="display:none;">
-      <div class="section-header">
+      <div class="section-header" style="padding:0 32px;">
         <div><div class="section-eyebrow">— Aggiornamenti</div><div class="section-title">Notifiche</div></div>
         <div style="display:flex;gap:8px;">
           <button class="btn btn-outline btn-sm" onclick="markAllRead()">Segna tutte lette</button>
@@ -598,128 +554,23 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
       <!-- Badge riassunto -->
       <div style="display:flex;gap:10px;margin:0 32px 20px;flex-wrap:wrap;">
         <div style="padding:10px 16px;border:1px solid var(--gold);background:rgba(201,168,76,0.06);display:flex;align-items:center;gap:8px;">
-          <span style="font-size:0.7rem;font-weight:700;color:var(--gold);font-family:'DM Mono',monospace;">3</span>
+          <span id="notif-count-unread" style="font-size:0.7rem;font-weight:700;color:var(--gold);font-family:'DM Mono',monospace;">0</span>
           <span style="font-size:0.68rem;color:var(--gray);">Non lette</span>
         </div>
         <div style="padding:10px 16px;border:1px solid var(--gray-light);background:#fff;display:flex;align-items:center;gap:8px;">
-          <span style="font-size:0.7rem;font-weight:700;color:var(--navy);font-family:'DM Mono',monospace;">12</span>
-          <span style="font-size:0.68rem;color:var(--gray);">Totali questo mese</span>
-        </div>
-        <div style="padding:10px 16px;border:1px solid var(--gray-light);background:#fff;display:flex;align-items:center;gap:8px;">
-          <span style="font-size:0.68rem;color:var(--gray);">Prossima: verifica evento timeline il <strong>1 Mar 2026</strong></span>
+          <span id="notif-count-total" style="font-size:0.7rem;font-weight:700;color:var(--navy);font-family:'DM Mono',monospace;">0</span>
+          <span style="font-size:0.68rem;color:var(--gray);">Totali</span>
         </div>
       </div>
 
-      <!-- Lista notifiche -->
+      <!-- Lista notifiche dinamica -->
       <div style="margin:0 32px 32px;" id="notifList">
-
-        <!-- Non letta: verifica timeline -->
-        <div class="notif-row unread" data-type="timeline" id="notif-1">
-          <div class="nr-indicator"></div>
-          <div class="nr-icon" style="background:rgba(201,168,76,0.1);border-color:rgba(201,168,76,0.25);">📋</div>
-          <div class="nr-body">
-            <div class="nr-title">Evento timeline in verifica</div>
-            <div class="nr-sub">Il restauro "Opera viva 2019" è in attesa di verifica da parte di HullID. Allegare la fattura velocizza il processo.</div>
-            <div class="nr-meta">
-              <span class="nr-time">2 ore fa</span>
-              <span class="nr-tag tag-timeline">Timeline</span>
-            </div>
-          </div>
-          <div class="nr-actions">
-            <button class="btn btn-gold btn-sm" onclick="showToast('Apertura evento timeline');markRead('notif-1')">Carica documento</button>
-            <button class="nr-dismiss" onclick="dismissNotif('notif-1')">✕</button>
-          </div>
+        <div id="notif-loading" style="padding:24px;text-align:center;font-size:0.78rem;color:var(--gray);">Caricamento notifiche...</div>
+        <div id="notif-empty" style="display:none;padding:32px;text-align:center;border:2px dashed var(--gray-light);background:#fff;">
+          <div style="font-size:2rem;margin-bottom:10px;opacity:0.3;">🔔</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gray);">Nessuna notifica</div>
         </div>
-
-        <!-- Non letta: completamento scheda -->
-        <div class="notif-row unread" data-type="sistema" id="notif-2">
-          <div class="nr-indicator"></div>
-          <div class="nr-icon" style="background:rgba(13,27,42,0.06);border-color:rgba(13,27,42,0.12);">📊</div>
-          <div class="nr-body">
-            <div class="nr-title">Scheda al 62% — quasi al traguardo</div>
-            <div class="nr-sub">Aggiungi le dotazioni e l'elettronica per arrivare al 100% e sbloccare la Targa HullID in acciaio inclusa nel tuo piano.</div>
-            <div class="nr-meta">
-              <span class="nr-time">1 giorno fa</span>
-              <span class="nr-tag tag-sistema">Sistema</span>
-            </div>
-          </div>
-          <div class="nr-actions">
-            <button class="btn btn-outline btn-sm" onclick="openBoatEdit();switchTab('t-dotaz');markRead('notif-2')">Completa scheda</button>
-            <button class="nr-dismiss" onclick="dismissNotif('notif-2')">✕</button>
-          </div>
-        </div>
-
-        <!-- Non letta: marketplace -->
-        <div class="notif-row unread" data-type="marketplace" id="notif-3">
-          <div class="nr-indicator"></div>
-          <div class="nr-icon" style="background:rgba(45,122,90,0.08);border-color:rgba(45,122,90,0.2);">💰</div>
-          <div class="nr-body">
-            <div class="nr-title">3 visualizzazioni sulla tua barca oggi</div>
-            <div class="nr-sub">La scheda del Bertram 28 FBC ha ricevuto 3 visite nelle ultime 24 ore. Con il piano PRO vedi chi ha visitato la scheda.</div>
-            <div class="nr-meta">
-              <span class="nr-time">3 ore fa</span>
-              <span class="nr-tag tag-marketplace">Marketplace</span>
-            </div>
-          </div>
-          <div class="nr-actions">
-            <button class="btn btn-outline btn-sm" onclick="showToast('Analitiche disponibili con PRO');markRead('notif-3')">Vedi analitiche</button>
-            <button class="nr-dismiss" onclick="dismissNotif('notif-3')">✕</button>
-          </div>
-        </div>
-
-        <!-- Letta: broker assegnato -->
-        <div class="notif-row" data-type="sistema" id="notif-4">
-          <div class="nr-indicator read"></div>
-          <div class="nr-icon" style="background:var(--bg-light);border-color:var(--gray-light);opacity:0.7;">🤝</div>
-          <div class="nr-body" style="opacity:0.6;">
-            <div class="nr-title">Broker Blu Mediterraneo assegnato alla tua barca</div>
-            <div class="nr-sub">Hai concesso a Broker Blu Mediterraneo i permessi per gestire gli annunci del Bertram 28 FBC.</div>
-            <div class="nr-meta">
-              <span class="nr-time">5 giorni fa</span>
-              <span class="nr-tag tag-sistema">Sistema</span>
-            </div>
-          </div>
-          <div class="nr-actions">
-            <button class="nr-dismiss" onclick="dismissNotif('notif-4')" style="opacity:0.5;">✕</button>
-          </div>
-        </div>
-
-        <!-- Letta: targa ordinata -->
-        <div class="notif-row" data-type="sistema" id="notif-5">
-          <div class="nr-indicator read"></div>
-          <div class="nr-icon" style="background:var(--bg-light);border-color:var(--gray-light);opacity:0.7;">🏷️</div>
-          <div class="nr-body" style="opacity:0.6;">
-            <div class="nr-title">Targa HullID in spedizione</div>
-            <div class="nr-sub">La tua Targa HullID in acciaio inox è in spedizione. Arrivo stimato: 5–7 giorni lavorativi. Tracking disponibile via email.</div>
-            <div class="nr-meta">
-              <span class="nr-time">12 Gen 2026</span>
-              <span class="nr-tag tag-sistema">Sistema</span>
-            </div>
-          </div>
-          <div class="nr-actions">
-            <button class="btn btn-outline btn-sm" onclick="showToast('Tracking aperto')" style="opacity:0.6;">Tracking</button>
-            <button class="nr-dismiss" onclick="dismissNotif('notif-5')" style="opacity:0.5;">✕</button>
-          </div>
-        </div>
-
-        <!-- Letta: HullID assegnato -->
-        <div class="notif-row" data-type="sistema" id="notif-6">
-          <div class="nr-indicator read"></div>
-          <div class="nr-icon" style="background:var(--bg-light);border-color:var(--gray-light);opacity:0.7;">⚓</div>
-          <div class="nr-body" style="opacity:0.6;">
-            <div class="nr-title">HullID assegnato — BOT-BER28-1998</div>
-            <div class="nr-sub">La registrazione del Bertram 28 FBC è stata approvata. Il tuo Boat ID è BOT-BER28-1998 e la scheda pubblica è attiva.</div>
-            <div class="nr-meta">
-              <span class="nr-time">15 Gen 2026</span>
-              <span class="nr-tag tag-sistema">Sistema</span>
-            </div>
-          </div>
-          <div class="nr-actions">
-            <button class="btn btn-outline btn-sm" onclick="window.open('scheda_barca.html')" style="opacity:0.6;">Vedi scheda</button>
-            <button class="nr-dismiss" onclick="dismissNotif('notif-6')" style="opacity:0.5;">✕</button>
-          </div>
-        </div>
-
+        <div id="notif-items-wrap"></div>
       </div>
 
       <!-- Preferenze notifiche -->
@@ -743,29 +594,7 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
             <input type="checkbox" style="accent-color:var(--gold);width:auto;">
           </label>
         </div>
-        <button class="btn btn-outline btn-sm" style="margin-top:12px;" onclick="showToast('Preferenze salvate ✓')">Salva preferenze</button>
-      </div>
-    </div>
-      <div style="background:#fff;border:1px solid var(--gray-light);">
-        <div class="notif-item">
-          <div class="notif-dot notif-unread"></div>
-          <div style="flex:1;"><div style="font-size:0.84rem;font-weight:500;margin-bottom:3px;">Broker Blu Med. ha pubblicato un annuncio</div><div style="font-size:0.76rem;color:var(--gray);">Ha pubblicato la tua Bertram 28 FBC sul marketplace HullID.</div><div style="font-size:0.64rem;color:var(--gray-light);margin-top:4px;font-family:'DM Mono',monospace;">Oggi, 14:32</div></div>
-          <button class="btn btn-outline btn-sm" onclick="showToast('Annuncio visualizzato')">Vedi</button>
-        </div>
-        <div class="notif-item">
-          <div class="notif-dot notif-unread"></div>
-          <div style="flex:1;"><div style="font-size:0.84rem;font-weight:500;margin-bottom:3px;">Evento timeline in attesa di verifica</div><div style="font-size:0.76rem;color:var(--gray);">"Tendalino fly 2025" è in attesa di verifica HullID. Allega fattura per accelerare.</div><div style="font-size:0.64rem;color:var(--gray-light);margin-top:4px;font-family:'DM Mono',monospace;">Ieri, 09:15</div></div>
-          <button class="btn btn-outline btn-sm" onclick="showToast('Fattura allegata')">Allega</button>
-        </div>
-        <div class="notif-item">
-          <div class="notif-dot notif-read"></div>
-          <div style="flex:1;"><div style="font-size:0.84rem;color:var(--navy);margin-bottom:3px;">Perizia completata ✓</div><div style="font-size:0.76rem;color:var(--gray);">Perizia pre-vendita completata dall'ing. M. Ferrara — allegata alla scheda.</div><div style="font-size:0.64rem;color:var(--gray-light);margin-top:4px;font-family:'DM Mono',monospace;">10 Gen 2026</div></div>
-          <button class="btn btn-outline btn-sm" onclick="showToast('PDF scaricato')">↓ PDF</button>
-        </div>
-        <div class="notif-item">
-          <div class="notif-dot notif-read"></div>
-          <div style="flex:1;"><div style="font-size:0.84rem;color:var(--navy);margin-bottom:3px;">Barca registrata su HullID ✓</div><div style="font-size:0.76rem;color:var(--gray);">La tua Bertram 28 FBC ha ricevuto il codice BOT-BER28-1998 ed è ora visibile nella sezione Barche dei Soci.</div><div style="font-size:0.64rem;color:var(--gray-light);margin-top:4px;font-family:'DM Mono',monospace;">15 Gen 2025</div></div>
-        </div>
+        <button class="btn btn-outline btn-sm" style="margin-top:12px;" onclick="savePreferenzeNotifiche()">Salva preferenze</button>
       </div>
     </div>
 
@@ -946,60 +775,11 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
           <div style="font-size:0.68rem;color:var(--gray);">Se conosci il Boat ID o la matricola di una barca, puoi aggiungerla direttamente.</div>
         </div>
         <div style="display:flex;gap:8px;flex-shrink:0;">
-          <input type="text" placeholder="Es. BOT-RIV-1968 o HIN" style="padding:8px 12px;border:1px solid var(--gray-light);font-size:0.76rem;font-family:'DM Sans',sans-serif;outline:none;width:220px;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gray-light)'">
-          <button class="btn btn-primary btn-sm" onclick="showToast('Barca trovata e aggiunta alla watchlist')">Aggiungi</button>
+          <input type="text" id="wl-hullid-input" placeholder="Es. BOT-RIV-1968 o HIN" style="padding:8px 12px;border:1px solid var(--gray-light);font-size:0.76rem;font-family:'DM Sans',sans-serif;outline:none;width:220px;" onfocus="this.style.borderColor='var(--gold)'" onblur="this.style.borderColor='var(--gray-light)'" onkeydown="if(event.key==='Enter') addToWatchlistByHullId()">
+          <button class="btn btn-primary btn-sm" onclick="addToWatchlistByHullId()">Aggiungi</button>
         </div>
       </div>
     </div>
-
-      <!-- BARCHE SEGUITE -->
-      <div style="margin-bottom:32px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-          <div style="font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;">Barche seguite</div>
-          <div style="font-size:0.74rem;color:var(--gray);">2 barche monitorate</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:12px;">
-
-          <!-- Barca 1 -->
-          <div style="background:#fff;border:1px solid var(--gray-light);padding:18px 20px;display:flex;align-items:center;gap:16px;">
-            <div style="width:56px;height:56px;background:var(--navy-mid);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:1.2rem;">⚓</div>
-            <div style="flex:1;">
-              <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--navy);margin-bottom:2px;">Riva Aquarama 27</div>
-              <div style="font-size:0.72rem;color:var(--gray);">Riva Cantieri · 1969 · Palermo</div>
-              <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
-                <span style="font-size:0.65rem;padding:2px 8px;border:1px solid var(--gray-light);color:var(--gray);">Storica</span>
-                <span style="font-size:0.65rem;padding:2px 8px;border:1px solid rgba(201,168,76,0.4);color:var(--gold);">⭐ Seguita dal 12 Gen 2026</span>
-              </div>
-            </div>
-            <div style="text-align:right;flex-shrink:0;">
-              <div style="font-size:0.7rem;color:var(--gray);margin-bottom:4px;">Nessuna novità</div>
-              <button onclick="showToast('Barca rimossa dalla watchlist')" style="font-size:0.68rem;padding:4px 10px;background:none;border:1px solid var(--gray-light);color:var(--gray);cursor:pointer;font-family:'DM Sans',sans-serif;">Rimuovi</button>
-            </div>
-          </div>
-
-          <!-- Barca 2 — con notifica -->
-          <div style="background:#fff;border:1px solid rgba(201,168,76,0.35);padding:18px 20px;display:flex;align-items:center;gap:16px;position:relative;">
-            <div style="position:absolute;top:12px;right:12px;width:8px;height:8px;border-radius:50%;background:var(--gold);"></div>
-            <div style="width:56px;height:56px;background:var(--navy-mid);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:1.2rem;">⚓</div>
-            <div style="flex:1;">
-              <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--navy);margin-bottom:2px;">Bertram 31 Sportfish</div>
-              <div style="font-size:0.72rem;color:var(--gray);">Bertram Yacht · 1971 · Napoli</div>
-              <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
-                <span style="font-size:0.65rem;padding:2px 8px;border:1px solid rgba(45,138,94,0.4);color:var(--green);">🏷 In vendita</span>
-                <span style="font-size:0.65rem;padding:2px 8px;border:1px solid rgba(201,168,76,0.4);color:var(--gold);">↓ Prezzo ridotto — €68.000</span>
-              </div>
-            </div>
-            <div style="text-align:right;flex-shrink:0;">
-              <div style="font-size:0.7rem;color:var(--gold);margin-bottom:4px;font-weight:500;">Aggiornamento!</div>
-              <button onclick="showToast('Barca rimossa dalla watchlist')" style="font-size:0.68rem;padding:4px 10px;background:none;border:1px solid var(--gray-light);color:var(--gray);cursor:pointer;font-family:'DM Sans',sans-serif;">Rimuovi</button>
-            </div>
-          </div>
-
-        </div>
-        <div style="margin-top:12px;">
-          <a href="hullid_demo.html#barche-soci" style="font-size:0.76rem;color:var(--gold);text-decoration:none;border-bottom:1px solid rgba(201,168,76,0.3);">+ Sfoglia il registro e aggiungi barche →</a>
-        </div>
-      </div>
 
       <!-- BROKER SEGUITI -->
       <div>
@@ -1170,8 +950,8 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
 <div class="slide-panel" id="slidePanel">
   <div class="panel-header">
     <div>
-      <div class="panel-title">Modifica Bertram 28 FBC</div>
-      <div class="panel-sub">BOT-BER28-1998 · I campi 🔒 sono permanenti — contatta HullID per correzioni</div>
+      <div class="panel-title" id="slide-panel-title">Modifica barca</div>
+      <div class="panel-sub" id="slide-panel-sub">I campi 🔒 sono permanenti — contatta HullID per correzioni</div>
     </div>
     <button class="panel-close" onclick="closeSlide()">✕</button>
   </div>
@@ -1203,33 +983,38 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
     </div>
     <div class="form-section-title">Campi bloccati</div>
     <div class="form-grid" style="margin-bottom:20px;">
-      <div class="form-group"><label style="color:#c0392b;">🔒 HIN</label><input disabled value="BTRFD273H898"></div>
-      <div class="form-group"><label style="color:#c0392b;">🔒 Boat ID</label><input disabled value="BOT-BER28-1998"></div>
-      <div class="form-group"><label style="color:#c0392b;">🔒 Anno varo</label><input disabled value="1998"></div>
-      <div class="form-group"><label style="color:#c0392b;">🔒 Cantiere</label><input disabled value="Bertram Yacht"></div>
+      <div class="form-group"><label style="color:#c0392b;">🔒 HIN</label><input id="e-hin" disabled></div>
+      <div class="form-group"><label style="color:#c0392b;">🔒 Boat ID</label><input id="e-boat-id" disabled></div>
+      <div class="form-group"><label style="color:#c0392b;">🔒 Anno varo</label><input id="e-anno" disabled></div>
+      <div class="form-group"><label style="color:#c0392b;">🔒 Cantiere</label><input id="e-cantiere" disabled></div>
     </div>
     <div class="form-section-title">Campi modificabili</div>
     <div class="form-grid">
-      <div class="form-group form-grid-1"><label>Nome barca</label><input id="e-nome" value="Bertram 28 FBC"></div>
+      <div class="form-group form-grid-1"><label>Nome barca</label><input id="e-nome"></div>
       <div class="form-group form-grid-1">
         <label>Tipologia</label>
         <select id="e-tipologia">
+          <option value="">Seleziona tipologia…</option>
           <option>Motoscafo open</option>
-          <option selected>Barca da pesca sportiva</option>
+          <option>Powerboat</option>
           <option>Motoryacht cabinato</option>
           <option>Barca a vela — sloop</option>
+          <option>Barca a vela — ketch</option>
+          <option>Barca a vela — yawl</option>
           <option>Gozzo tradizionale</option>
+          <option>Gozzovelico</option>
           <option>Entrobordo classico</option>
           <option>Fuoribordo</option>
           <option>RIB / Pneumatico</option>
+          <option>Fisherman</option>
           <option>Altro</option>
         </select>
       </div>
-      <div class="form-group"><label>Porto base</label><input id="e-porto" value="Genova"></div>
+      <div class="form-group"><label>Porto base</label><input id="e-porto"></div>
       <div class="form-group">
         <label>Bandiera</label>
         <select id="e-bandiera">
-          <option selected>🇮🇹 Italia</option>
+          <option>🇮🇹 Italia</option>
           <option>🇫🇷 Francia</option>
           <option>🇲🇹 Malta</option>
           <option>🇬🇧 Gran Bretagna</option>
@@ -1237,7 +1022,7 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
         </select>
       </div>
       <div class="form-group form-grid-1"><label>Descrizione pubblica</label>
-        <textarea id="e-descrizione" style="height:80px;" placeholder="Racconta la storia e le caratteristiche speciali della tua barca…">Bertram 28 del 1998 in ottime condizioni. Restauro completo opera viva 2019. Motori revisionati 2022.</textarea>
+        <textarea id="e-descrizione" style="height:80px;" placeholder="Racconta la storia e le caratteristiche speciali della tua barca…"></textarea>
       </div>
     </div>
   </div>
@@ -1247,17 +1032,17 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
   <div class="tab-content" id="tab-t-tecnica">
     <div class="form-section-title">Dimensioni</div>
     <div class="form-grid" style="margin-bottom:20px;">
-      <div class="form-group"><label>Lunghezza f.t. (m)</label><input type="number" value="9.32" step="0.01"></div>
-      <div class="form-group"><label>Larghezza max (m)</label><input type="number" value="3.20" step="0.01"></div>
-      <div class="form-group"><label>Pescaggio (m)</label><input type="number" value="0.84" step="0.01"></div>
-      <div class="form-group"><label>Dislocamento (kg)</label><input type="number" value="3200"></div>
+      <div class="form-group"><label>Lunghezza f.t. (m)</label><input id="t-loa" type="number" placeholder="m" step="0.01"></div>
+      <div class="form-group"><label>Larghezza max (m)</label><input id="t-larghezza" type="number" placeholder="m" step="0.01"></div>
+      <div class="form-group"><label>Pescaggio (m)</label><input id="t-pescaggio" type="number" placeholder="m" step="0.01"></div>
+      <div class="form-group"><label>Dislocamento (kg)</label><input id="t-dislocamento" type="number" placeholder="kg"></div>
     </div>
     <div class="form-section-title">Struttura</div>
     <div class="form-grid" style="margin-bottom:20px;">
       <div class="form-group">
         <label>Materiale scafo</label>
-        <select>
-          <option selected>Vetroresina / GRP</option>
+        <select id="t-materiale">
+          <option>Vetroresina / GRP</option>
           <option>Legno massello</option>
           <option>Legno compensato</option>
           <option>Alluminio</option>
@@ -1267,22 +1052,56 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
       </div>
       <div class="form-group">
         <label>Forma carena</label>
-        <select>
-          <option selected>Planante — V profondo</option>
+        <select id="t-carena">
+          <option>Planante — V profondo</option>
           <option>Planante — V moderato</option>
           <option>Semidislocante</option>
           <option>Dislocante</option>
           <option>Catamarano</option>
         </select>
       </div>
-      <div class="form-group"><label>N° posti letto</label><input type="number" value="4" min="0" max="20"></div>
-      <div class="form-group"><label>N° bagni</label><input type="number" value="1" min="0" max="5"></div>
+      <div class="form-group"><label>N° cabine</label><input id="t-cabine" type="number" placeholder="0" min="0" max="10"></div>
+      <div class="form-group"><label>N° cuccette</label><input id="t-cuccette" type="number" placeholder="0" min="0" max="20"></div>
+      <div class="form-group"><label>N° bagni</label><input id="t-bagni" type="number" placeholder="0" min="0" max="5"></div>
+      <div class="form-group">
+        <label>Bandiera</label>
+        <select id="t-bandiera">
+          <option value="">—</option>
+          <option>ITA</option><option>FRA</option><option>GBR</option><option>GER</option>
+          <option>ESP</option><option>GRE</option><option>MLT</option><option>CYP</option>
+          <option>USA</option><option>CRO</option><option>MNE</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Omologazione</label>
+        <select id="t-omologazione">
+          <option value="">—</option>
+          <option>Acque protette (0 miglia)</option>
+          <option>Entro 3 miglia</option>
+          <option>Entro 6 miglia</option>
+          <option>Entro 12 miglia</option>
+          <option>Oltre 12 miglia</option>
+          <option>Navigazione d'altura</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-section-title">Struttura scafo</div>
+    <div class="form-grid" style="margin-bottom:20px;">
+      <div class="form-group"><label>Costruzione</label><input id="t-costruzione" placeholder="Es. Hand lay-up, infusione"></div>
+      <div class="form-group"><label>Bottazzo</label><input id="t-bottazzo" placeholder="Es. Rifatto 2022 — resina epossidica"></div>
+      <div class="form-group"><label>Opera viva</label><input id="t-opera-viva" placeholder="Es. Antivegetativa 2024"></div>
+      <div class="form-group"><label>Coperta</label><input id="t-coperta" placeholder="Es. Antiscivolo originale"></div>
+      <div class="form-group"><label>Pozzetto</label><input id="t-pozzetto" placeholder="Es. Teak completo — nuovo 2021"></div>
+      <div class="form-group"><label>Ultima ispezione scafo</label><input id="t-ispezione" placeholder="Es. Feb 2026"></div>
     </div>
     <div class="form-section-title">Serbatoi</div>
-    <div class="form-grid">
-      <div class="form-group"><label>Carburante (litri)</label><input type="number" value="400"></div>
-      <div class="form-group"><label>Acqua dolce (litri)</label><input type="number" value="120"></div>
-      <div class="form-group"><label>Acque nere (litri)</label><input type="number" value="60"></div>
+    <div class="form-grid" style="margin-bottom:20px;">
+      <div class="form-group"><label>Carburante (litri)</label><input id="t-carb" type="number" placeholder="litri"></div>
+      <div class="form-group"><label>Acqua dolce (litri)</label><input id="t-acqua" type="number" placeholder="litri"></div>
+      <div class="form-group"><label>Acque nere (litri)</label><input id="t-nere" type="number" placeholder="litri"></div>
+    </div>
+    <div style="padding-top:16px;border-top:1px solid var(--gray-light);display:flex;gap:8px;">
+      <button onclick="saveTecnica()" class="btn btn-gold">Salva dati tecnici</button>
     </div>
   </div>
 
@@ -1299,136 +1118,103 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
     <div id="motoreFields">
       <div class="form-section-title">Motore 1</div>
       <div class="form-grid" style="margin-bottom:16px;">
-        <div class="form-group"><label>Marca</label><input value="Volvo Penta"></div>
-        <div class="form-group"><label>Modello</label><input value="TAMD41A"></div>
-        <div class="form-group"><label>Potenza (CV)</label><input type="number" value="350"></div>
-        <div class="form-group"><label>Anno installazione</label><input type="number" value="1998"></div>
-        <div class="form-group"><label>Ore di moto</label><input type="number" value="1240"></div>
-        <div class="form-group"><label>Ultimo service</label><input type="text" value="Marzo 2024"></div>
+        <div class="form-group"><label>Marca</label><input id="m1-marca" placeholder="Es. Volvo Penta"></div>
+        <div class="form-group"><label>Modello</label><input id="m1-modello" placeholder="Es. TAMD41A"></div>
+        <div class="form-group"><label>Potenza unitaria (CV)</label><input id="m1-cv" type="number" placeholder="CV"></div>
+        <div class="form-group"><label>Anno installazione</label><input id="m1-anno" type="number" placeholder="Anno"></div>
+        <div class="form-group"><label>Ore motore SX</label><input id="m1-ore-sx" type="number" placeholder="h"></div>
+        <div class="form-group"><label>Ore motore DX</label><input id="m1-ore-dx" type="number" placeholder="h"></div>
+        <div class="form-group"><label>Ultimo service</label><input id="m1-service" type="text" placeholder="Es. Marzo 2024"></div>
+        <div class="form-group">
+          <label>Carburante</label>
+          <select id="m1-carburante">
+            <option value="">—</option>
+            <option>Gasolio</option>
+            <option>Benzina</option>
+            <option>Elettrico</option>
+            <option>Ibrido</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Raffreddamento</label><input id="m1-raffreddamento" placeholder="Es. Circuito chiuso parziale"></div>
+        <div class="form-group"><label>Trasmissione</label><input id="m1-trasmissione" placeholder="Es. Assi — eliche 4 pali"></div>
       </div>
-      <div class="form-section-title">Motore 2 (se bimotore)</div>
-      <div class="form-grid">
-        <div class="form-group"><label>Marca</label><input value="Volvo Penta"></div>
-        <div class="form-group"><label>Modello</label><input value="TAMD41A"></div>
-        <div class="form-group"><label>Potenza (CV)</label><input type="number" value="350"></div>
-        <div class="form-group"><label>Ore di moto</label><input type="number" value="1210"></div>
+      <div class="form-section-title">Accessori propulsione</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" id="m-elica-prua" style="accent-color:var(--gold)"> Elica di prua (bow thruster)</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" id="m-antincendio" style="accent-color:var(--gold)"> Impianto antincendio vano motori</label>
+        <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" id="m-manette-elet" style="accent-color:var(--gold)"> Manette elettroniche</label>
+        <div class="form-group" style="margin:0;"><label>Pompe di sentina</label><input id="m-pompe" type="number" placeholder="N°" min="0" max="10" style="width:80px;"></div>
       </div>
+      <div class="form-group" style="margin-bottom:16px;">
+        <label>Nota tecnica (visibile in scheda)</label>
+        <textarea id="m1-nota" rows="3" placeholder="Es. Motori sostituiti integralmente nel 2019. Libretto disponibile." style="width:100%;padding:8px;border:1px solid var(--gray-light);border-radius:4px;font-size:0.8rem;resize:vertical;"></textarea>
+      </div>
+    </div><!-- /motoreFields -->
+    <div style="padding-top:16px;border-top:1px solid var(--gray-light);display:flex;gap:8px;">
+      <button onclick="saveMotore()" class="btn btn-gold">Salva motore</button>
     </div>
   </div>
 
   <!-- TAB: DOTAZIONI -->
-
   <div class="tab-content" id="tab-t-dotaz">
-    <div class="form-section-title">Sicurezza</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;">
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" checked style="accent-color:var(--gold)"> Zattera di salvataggio</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" checked style="accent-color:var(--gold)"> Giubbotti salvagente</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" checked style="accent-color:var(--gold)"> Estintori</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" style="accent-color:var(--gold)"> EPIRB</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" style="accent-color:var(--gold)"> AIS transponder</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" style="accent-color:var(--gold)"> Luce di fonda</label>
+    <div style="font-size:0.7rem;color:var(--gray);margin-bottom:16px;line-height:1.6;">
+      Aggiungi liberamente ogni dotazione, accessorio o caratteristica della barca. Saranno visibili nella scheda pubblica.
     </div>
-    <div class="form-section-title">Coperta e manovra</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;">
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" checked style="accent-color:var(--gold)"> Verricello elettrico</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" checked style="accent-color:var(--gold)"> Ancora e catena</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" style="accent-color:var(--gold)"> Verricello ormeggio</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" style="accent-color:var(--gold)"> Bow thruster</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" style="accent-color:var(--gold)"> Stern thruster</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" checked style="accent-color:var(--gold)"> Boma e randa (vela)</label>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <input id="dot-input" placeholder="Es. Webasto aria calda e fredda, Passarella idraulica…" style="flex:1;padding:9px 12px;border:1px solid var(--gray-light);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();addVoce('dot');}">
+      <button onclick="addVoce('dot')" class="btn btn-gold" style="white-space:nowrap;">+ Aggiungi</button>
     </div>
-    <div class="form-section-title">Comfort</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" checked style="accent-color:var(--gold)"> Aria condizionata</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" checked style="accent-color:var(--gold)"> Riscaldamento</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" style="accent-color:var(--gold)"> Generatore</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" checked style="accent-color:var(--gold)"> Cucina / Cambusa</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" style="accent-color:var(--gold)"> Lavastoviglie</label>
-      <label style="display:flex;align-items:center;gap:8px;font-size:0.76rem;text-transform:none;letter-spacing:0;cursor:pointer;font-weight:400;"><input type="checkbox" style="accent-color:var(--gold)"> Lavatrice</label>
+    <div id="dot-list" style="display:flex;flex-wrap:wrap;gap:8px;min-height:40px;margin-bottom:20px;"></div>
+    <div style="padding-top:16px;border-top:1px solid var(--gray-light);display:flex;gap:8px;">
+      <button onclick="saveDotazioni()" class="btn btn-gold">Salva dotazioni</button>
     </div>
   </div>
 
   <!-- TAB: ELETTRONICA -->
-
   <div class="tab-content" id="tab-t-elett">
-    <div class="form-section-title">Navigazione</div>
-    <div class="form-grid" style="margin-bottom:20px;">
-      <div class="form-group"><label>Chartplotter</label><input placeholder="Es. Garmin GPSMAP 8612"></div>
-      <div class="form-group"><label>VHF / DSC</label><input placeholder="Es. Standard Horizon GX1800G"></div>
-      <div class="form-group"><label>Radar</label><input placeholder="Es. Garmin GMR 18 xHD"></div>
-      <div class="form-group"><label>Autopilota</label><input placeholder="Es. Simrad AP44"></div>
-      <div class="form-group"><label>Sonda / Ecoscandaglio</label><input placeholder="Es. Lowrance HDS-9 Live"></div>
-      <div class="form-group"><label>AIS</label><input placeholder="Es. B&G Triton2"></div>
+    <div style="font-size:0.7rem;color:var(--gray);margin-bottom:16px;line-height:1.6;">
+      Inserisci ogni strumento o apparato elettronico. Puoi scrivere marca e modello per massima precisione.
     </div>
-    <div class="form-section-title">Intrattenimento &amp; comunicazioni</div>
-    <div class="form-grid">
-      <div class="form-group"><label>Stereo / Audio</label><input placeholder="Es. JL Audio MV800/8i"></div>
-      <div class="form-group"><label>TV / Schermo</label><input placeholder="Es. Fusion Apollo RA670"></div>
-      <div class="form-group"><label>Wifi a bordo</label>
-        <select><option>No</option><option>Sì — router marino</option><option>Sì — hotspot</option></select>
-      </div>
-      <div class="form-group"><label>Satellite / VSAT</label>
-        <select><option>No</option><option>Sì — Inmarsat</option><option>Sì — Starlink</option></select>
-      </div>
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <input id="el-input" placeholder="Es. Chartplotter Raymarine Axiom 9, VHF Standard Horizon GX2200…" style="flex:1;padding:9px 12px;border:1px solid var(--gray-light);font-family:'DM Sans',sans-serif;font-size:0.8rem;outline:none;"
+        onkeydown="if(event.key==='Enter'){event.preventDefault();addVoce('el');}">
+      <button onclick="addVoce('el')" class="btn btn-gold" style="white-space:nowrap;">+ Aggiungi</button>
+    </div>
+    <div id="el-list" style="display:flex;flex-wrap:wrap;gap:8px;min-height:40px;margin-bottom:20px;"></div>
+    <div style="padding-top:16px;border-top:1px solid var(--gray-light);display:flex;gap:8px;">
+      <button onclick="saveElettronica()" class="btn btn-gold">Salva elettronica</button>
     </div>
   </div>
 
   <!-- TAB: FOTO -->
 
   <div class="tab-content" id="tab-t-foto">
-    <div class="form-section-title">Foto attuali (3 di 30 disponibili)</div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
-      <div style="aspect-ratio:4/3;background:var(--bg-light);border:1px solid var(--gray-light);display:flex;align-items:center;justify-content:center;position:relative;">
-        <span style="font-size:2rem;opacity:0.3;">🚢</span>
-        <div style="position:absolute;bottom:0;left:0;right:0;background:rgba(201,168,76,0.85);color:var(--navy);font-size:0.55rem;padding:2px 6px;text-align:center;letter-spacing:0.1em;">COPERTINA</div>
-      </div>
-      <div style="aspect-ratio:4/3;background:var(--bg-light);border:1px solid var(--gray-light);display:flex;align-items:center;justify-content:center;"><span style="font-size:2rem;opacity:0.3;">🚢</span></div>
-      <div style="aspect-ratio:4/3;background:var(--bg-light);border:1px solid var(--gray-light);display:flex;align-items:center;justify-content:center;"><span style="font-size:2rem;opacity:0.3;">🚢</span></div>
+    <div class="form-section-title">Foto barca <span style="font-size:0.65rem;color:var(--gray);font-weight:400;">— trascina per riordinare · la prima è la copertina</span></div>
+    <div id="foto-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;min-height:40px;">
+      <div style="color:var(--gray);font-size:0.75rem;grid-column:1/-1;text-align:center;padding:12px;">Caricamento foto…</div>
     </div>
-    <div style="border:2px dashed var(--gray-light);padding:28px;text-align:center;cursor:pointer;background:var(--bg-light);" onclick="showToast('Upload foto — disponibile nel backend')">
+    <label style="display:block;border:2px dashed var(--gray-light);padding:28px;text-align:center;cursor:pointer;background:var(--bg-light);transition:border-color 0.2s;" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--gray-light)'">
+      <input type="file" id="foto-input" accept="image/*" multiple style="display:none;" onchange="uploadFoto(this.files)">
       <div style="font-size:1.6rem;margin-bottom:6px;opacity:0.5;">📷</div>
-      <div style="font-size:0.8rem;color:var(--ink);">Carica altre foto</div>
+      <div style="font-size:0.8rem;color:var(--ink);">Carica foto</div>
       <div style="font-size:0.66rem;color:var(--gray);margin-top:3px;">JPG, PNG, HEIC · max 20MB · fino a 30 foto</div>
-    </div>
+    </label>
+    <div id="foto-upload-status" style="font-size:0.72rem;color:var(--gold);margin-top:8px;min-height:16px;"></div>
   </div>
 
   <!-- TAB: DOCUMENTI -->
 
   <div class="tab-content" id="tab-t-docs">
     <div class="form-section-title">Documenti caricati</div>
-    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid var(--gray-light);background:#fff;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:1.1rem;">📄</span>
-          <div>
-            <div style="font-size:0.82rem;font-weight:500;">Atto di proprietà</div>
-            <div style="font-size:0.66rem;color:var(--gray);">PDF · 2.1 MB · caricato 12 Gen 2026</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:6px;">
-          <button class="btn btn-outline btn-sm" onclick="showToast('Documento scaricato')">↓</button>
-          <button class="btn btn-outline btn-sm" onclick="showToast('Documento eliminato')" style="color:var(--red,#c0392b);">✕</button>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid var(--gray-light);background:#fff;">
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="font-size:1.1rem;">📋</span>
-          <div>
-            <div style="font-size:0.82rem;font-weight:500;">Polizza assicurativa 2025</div>
-            <div style="font-size:0.66rem;color:var(--gray);">PDF · 890 KB · caricato 3 Feb 2026</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:6px;">
-          <button class="btn btn-outline btn-sm" onclick="showToast('Documento scaricato')">↓</button>
-          <button class="btn btn-outline btn-sm" onclick="showToast('Documento eliminato')" style="color:var(--red,#c0392b);">✕</button>
-        </div>
-      </div>
+    <div id="docs-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;">
+      <div style="font-size:0.75rem;color:var(--gray);padding:8px 0;">Caricamento…</div>
     </div>
     <div class="form-section-title">Carica nuovo documento</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
       <div>
         <label style="font-size:0.62rem;letter-spacing:0.1em;color:var(--ink2);display:block;margin-bottom:5px;text-transform:uppercase;">Tipo documento</label>
-        <select style="width:100%;padding:9px 12px;border:1px solid var(--gray-light);font-size:0.78rem;outline:none;">
+        <select id="doc-tipo" style="width:100%;padding:9px 12px;border:1px solid var(--gray-light);font-size:0.78rem;outline:none;">
           <option>Atto di proprietà</option>
           <option>Polizza assicurativa</option>
           <option>Certificato navigabilità</option>
@@ -1440,12 +1226,13 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
       </div>
       <div>
         <label style="font-size:0.62rem;letter-spacing:0.1em;color:var(--ink2);display:block;margin-bottom:5px;text-transform:uppercase;">Anno documento</label>
-        <input type="number" value="2026" style="width:100%;padding:9px 12px;border:1px solid var(--gray-light);font-size:0.78rem;outline:none;">
+        <input id="doc-anno" type="number" value="2026" style="width:100%;padding:9px 12px;border:1px solid var(--gray-light);font-size:0.78rem;outline:none;">
       </div>
     </div>
-    <div style="border:2px dashed var(--gray-light);padding:24px;text-align:center;cursor:pointer;background:var(--bg-light);" onclick="showToast('Upload documento — disponibile nel backend')">
+    <input type="file" id="doc-file-input" accept=".pdf,.jpg,.jpeg,.png" style="display:none;" onchange="uploadDoc(this.files)">
+    <div style="border:2px dashed var(--gray-light);padding:24px;text-align:center;cursor:pointer;background:var(--bg-light);" onclick="document.getElementById('doc-file-input').click()">
       <div style="font-size:1.4rem;margin-bottom:5px;opacity:0.5;">📎</div>
-      <div style="font-size:0.78rem;color:var(--ink);">Carica documento</div>
+      <div style="font-size:0.78rem;color:var(--ink);">Clicca per caricare documento</div>
       <div style="font-size:0.64rem;color:var(--gray);margin-top:2px;">PDF, JPG, PNG · max 10MB</div>
     </div>
   </div>
@@ -1460,21 +1247,21 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
       <div class="form-group">
         <label class="form-label">Valore perizia (€)</label>
-        <input class="form-input" type="number" id="e-perizia" value="28500" placeholder="Es. 28000">
+        <input class="form-input" type="number" id="e-perizia" placeholder="Es. 28000">
         <div style="font-size:0.6rem;color:var(--gray);margin-top:3px;">Basato su perizia formale o stima personale</div>
       </div>
       <div class="form-group">
         <label class="form-label">Anno della perizia/stima</label>
-        <input class="form-input" type="number" id="e-anno-perizia" value="2025" placeholder="Es. 2025">
+        <input class="form-input" type="number" id="e-anno-perizia" placeholder="Es. 2025">
       </div>
       <div class="form-group">
         <label class="form-label">Costo refitting totale (€)</label>
-        <input class="form-input" type="number" id="e-refitting" value="42000" placeholder="Es. 35000">
+        <input class="form-input" type="number" id="e-refitting" placeholder="Es. 35000">
         <div style="font-size:0.6rem;color:var(--gray);margin-top:3px;">Somma degli interventi documentati in timeline</div>
       </div>
       <div class="form-group">
         <label class="form-label">Periodo refitting</label>
-        <input class="form-input" id="e-periodo-refitting" value="2019–2024" placeholder="Es. 2020–2024">
+        <input class="form-input" id="e-periodo-refitting" placeholder="Es. 2020–2024">
       </div>
     </div>
 
@@ -1585,7 +1372,7 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
         <input type="checkbox" id="st-mostra-prezzo" style="margin-top:3px;accent-color:var(--gold);">
         <div>
           <div style="font-size:0.78rem;font-weight:600;color:var(--navy);">Mostra prezzo di acquisto/vendita nella scheda</div>
-          <div style="font-size:0.62rem;color:var(--gray);margin-top:2px;">Se spuntato, il prezzo appare nella timeline pubblica. In ogni caso viene registrato nel database HullID per statistiche di mercato anonime.</div>
+          <div style="font-size:0.62rem;color:var(--gray);margin-top:2px;">Se spuntato, il prezzo appare nella timeline pubblica.</div>
         </div>
       </label>
 
@@ -1616,7 +1403,7 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
 
     <div class="form-section-title">Stato barca</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;">
-      <div style="padding:14px;border:2px solid var(--gray-light);cursor:pointer;text-align:center;transition:all 0.15s;" id="stato-possessore" onclick="selectStato('possessore')" style="border-color:var(--gold);background:rgba(201,168,76,0.06);">
+      <div style="padding:14px;border:2px solid var(--gray-light);cursor:pointer;text-align:center;transition:all 0.15s;" id="stato-possessore" onclick="selectStato('possessore')">
         <div style="font-size:1.2rem;margin-bottom:4px;">⚓</div>
         <div style="font-size:0.76rem;font-weight:600;color:var(--navy);">Felice possessore</div>
         <div style="font-size:0.62rem;color:var(--gray);margin-top:2px;">Non in vendita</div>
@@ -1637,54 +1424,12 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
 
     <div class="form-section-title">Timeline storica</div>
     <div style="font-size:0.7rem;color:var(--gray);margin-bottom:16px;line-height:1.6;">
-      Aggiungi eventi alla storia della barca. Ogni evento viene verificato da HullID e appare nella scheda pubblica.
+      Aggiungi eventi alla storia della barca.
     </div>
 
-    <!-- Lista eventi esistenti -->
+    <!-- Lista eventi — caricata dinamicamente da openBoatEdit -->
     <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px;" id="timeline-list-edit">
-
-      <div style="display:flex;gap:12px;padding:12px 14px;background:#fff;border:1px solid var(--gray-light);align-items:flex-start;">
-        <div style="width:8px;height:8px;border-radius:50%;background:var(--gold);margin-top:5px;flex-shrink:0;"></div>
-        <div style="flex:1;">
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div style="font-size:0.78rem;font-weight:600;color:var(--navy);">Restauro completo carena</div>
-            <div style="display:flex;gap:4px;">
-              <span style="font-size:0.58rem;padding:2px 7px;background:rgba(45,122,90,0.1);color:#2d7a5a;border:1px solid rgba(45,122,90,0.2);">✓ Verificato</span>
-              <button onclick="showToast('Modifica evento — disponibile nel backend')" style="padding:3px 8px;font-size:0.6rem;background:transparent;border:1px solid var(--gray-light);cursor:pointer;">✎</button>
-            </div>
-          </div>
-          <div style="font-size:0.66rem;color:var(--gray);margin-top:2px;">Manutenzione · Ago 2022 · € 8.500</div>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:12px;padding:12px 14px;background:#fff;border:1px solid var(--gray-light);align-items:flex-start;">
-        <div style="width:8px;height:8px;border-radius:50%;background:var(--navy);margin-top:5px;flex-shrink:0;"></div>
-        <div style="flex:1;">
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div style="font-size:0.78rem;font-weight:600;color:var(--navy);">Sostituzione motori Mercury Verado</div>
-            <div style="display:flex;gap:4px;">
-              <span style="font-size:0.58rem;padding:2px 7px;background:rgba(45,122,90,0.1);color:#2d7a5a;border:1px solid rgba(45,122,90,0.2);">✓ Verificato</span>
-              <button onclick="showToast('Modifica evento')" style="padding:3px 8px;font-size:0.6rem;background:transparent;border:1px solid var(--gray-light);cursor:pointer;">✎</button>
-            </div>
-          </div>
-          <div style="font-size:0.66rem;color:var(--gray);margin-top:2px;">Upgrade motorizzazione · Mar 2019 · € 28.000</div>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:12px;padding:12px 14px;background:#fff;border:1px solid var(--gray-light);align-items:flex-start;">
-        <div style="width:8px;height:8px;border-radius:50%;background:var(--gray-light);margin-top:5px;flex-shrink:0;"></div>
-        <div style="flex:1;">
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <div style="font-size:0.78rem;font-weight:600;color:var(--navy);">Acquisto barca</div>
-            <div style="display:flex;gap:4px;">
-              <span style="font-size:0.58rem;padding:2px 7px;background:rgba(138,144,150,0.1);color:var(--gray);border:1px solid rgba(138,144,150,0.2);">In verifica</span>
-              <button onclick="showToast('Modifica evento')" style="padding:3px 8px;font-size:0.6rem;background:transparent;border:1px solid var(--gray-light);cursor:pointer;">✎</button>
-            </div>
-          </div>
-          <div style="font-size:0.66rem;color:var(--gray);margin-top:2px;">Acquisto · Gen 2015</div>
-        </div>
-      </div>
-
+      <div style="font-size:0.75rem;color:var(--gray);padding:8px 0;">Caricamento eventi…</div>
     </div>
 
     <!-- Aggiungi nuovo evento -->
@@ -1694,33 +1439,34 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
       <div class="form-grid" style="margin-bottom:12px;">
         <div class="form-group">
           <label>Tipo evento</label>
-          <select style="padding:9px 11px;border:1px solid var(--gray-light);font-family:'DM Sans',sans-serif;font-size:0.78rem;outline:none;background:#fff;">
-            <option>Manutenzione ordinaria</option>
-            <option>Restauro / Refitting</option>
-            <option>Upgrade motorizzazione</option>
-            <option>Cambio elettronica</option>
-            <option>Incidente / Riparazione</option>
-            <option>Varo / Prima uscita</option>
-            <option>Acquisto</option>
-            <option>Cambio porto</option>
-            <option>Altro</option>
+          <select id="slide-evt-tipo" style="padding:9px 11px;border:1px solid var(--gray-light);font-family:'DM Sans',sans-serif;font-size:0.78rem;outline:none;background:#fff;">
+            <option value="manutenzione">Manutenzione</option>
+            <option value="refitting">Refitting</option>
+            <option value="restauro">Restauro</option>
+            <option value="upgrade">Upgrade</option>
+            <option value="incidente">Incidente / Riparazione</option>
+            <option value="varo">Varo / Prima uscita</option>
+            <option value="acquisto">Acquisto</option>
+            <option value="cambio_porto">Cambio porto</option>
+            <option value="cambio_proprieta">Cambio proprietà</option>
+            <option value="altro">Altro</option>
           </select>
         </div>
         <div class="form-group">
           <label>Data evento</label>
-          <input type="date" style="padding:9px 11px;border:1px solid var(--gray-light);font-family:'DM Sans',sans-serif;font-size:0.78rem;outline:none;">
+          <input id="slide-evt-data" type="date" style="padding:9px 11px;border:1px solid var(--gray-light);font-family:'DM Sans',sans-serif;font-size:0.78rem;outline:none;">
         </div>
         <div class="form-group form-grid-1" style="grid-column:1/-1;">
           <label>Titolo evento</label>
-          <input placeholder="Es. Sostituzione pompa carburante" style="padding:9px 11px;border:1px solid var(--gray-light);font-family:'DM Sans',sans-serif;font-size:0.78rem;outline:none;">
+          <input id="slide-evt-titolo" placeholder="Es. Sostituzione pompa carburante" style="padding:9px 11px;border:1px solid var(--gray-light);font-family:'DM Sans',sans-serif;font-size:0.78rem;outline:none;">
         </div>
         <div class="form-group" style="grid-column:1/-1;">
           <label>Descrizione (opzionale)</label>
-          <textarea style="padding:9px 11px;border:1px solid var(--gray-light);font-family:'DM Sans',sans-serif;font-size:0.78rem;outline:none;resize:vertical;min-height:70px;" placeholder="Dettagli sull'intervento, fornitore, note…"></textarea>
+          <textarea id="slide-evt-desc" style="padding:9px 11px;border:1px solid var(--gray-light);font-family:'DM Sans',sans-serif;font-size:0.78rem;outline:none;resize:vertical;min-height:70px;" placeholder="Dettagli sull'intervento, fornitore, note…"></textarea>
         </div>
         <div class="form-group">
           <label>Importo (€) — opzionale</label>
-          <input type="number" placeholder="Es. 1200" style="padding:9px 11px;border:1px solid var(--gray-light);font-family:'DM Sans',sans-serif;font-size:0.78rem;outline:none;">
+          <input id="slide-evt-importo" type="number" placeholder="Es. 1200" style="padding:9px 11px;border:1px solid var(--gray-light);font-family:'DM Sans',sans-serif;font-size:0.78rem;outline:none;">
         </div>
         <div class="form-group">
           <label>Documento di supporto</label>
@@ -1731,7 +1477,7 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
       </div>
 
       <div style="display:flex;gap:8px;">
-        <button onclick="showToast('✓ Evento aggiunto — in attesa verifica HullID')" class="btn btn-gold">+ Aggiungi evento</button>
+        <button onclick="submitSlideEvent()" class="btn btn-gold">+ Aggiungi evento</button>
         <button onclick="switchTab('t-info')" class="btn btn-outline">Annulla</button>
       </div>
     </div>
@@ -1749,27 +1495,25 @@ input:disabled{background:#f8f8f8;color:var(--gray);cursor:not-allowed;font-fami
   <div class="modal" style="width:560px;max-width:98vw;">
     <div class="modal-header"><div class="modal-title">Aggiungi evento timeline</div><button class="modal-close" onclick="closeModal('addEvent')">✕</button></div>
     <div class="modal-body" style="max-height:70vh;overflow-y:auto;">
-      <div style="background:rgba(201,168,76,0.06);border:1px solid rgba(201,168,76,0.2);padding:11px 14px;margin-bottom:16px;font-size:0.75rem;color:#7a6020;line-height:1.5;">
-        Gli eventi appaiono come <strong>"In attesa di verifica"</strong> fino all'approvazione HullID. Allegare documenti accelera il processo. I campi con <span style="color:var(--gold);">*</span> sono obbligatori.
-      </div>
+
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
         <div class="form-group">
           <label>Data Evento <span style="color:var(--gold);">*</span></label>
-          <input type="date" id="evt-data" value="2026-02-26">
+          <input type="date" id="evt-data">
         </div>
         <div class="form-group">
           <label>Tipo Evento <span style="color:var(--gold);">*</span></label>
           <select id="evt-tipo">
-            <option>Varo</option>
-            <option>Manutenzione</option>
-            <option selected>Refitting</option>
-            <option>Elettronica</option>
-            <option>Restauro</option>
-            <option>Passaggio Proprietà</option>
-            <option>Cambio Porto</option>
-            <option>Tagliando</option>
-            <option>Perizia</option>
-            <option>Altro</option>
+            <option value="varo">Varo</option>
+            <option value="manutenzione">Manutenzione</option>
+            <option value="refitting" selected>Refitting</option>
+            <option value="restauro">Restauro</option>
+            <option value="upgrade">Upgrade</option>
+            <option value="incidente">Incidente / Riparazione</option>
+            <option value="acquisto">Acquisto</option>
+            <option value="cambio_porto">Cambio porto</option>
+            <option value="cambio_proprieta">Cambio proprietà</option>
+            <option value="altro">Altro</option>
           </select>
         </div>
         <div class="form-group">
@@ -1958,35 +1702,139 @@ function removeDotazioneItem(btn){
 }
 
 // ── ADD EVENT ──
-async function submitAddEvent(){
-  const data_evt = document.getElementById('evt-data')?.value;
-  const tipo     = document.getElementById('evt-tipo')?.value;
-  const desc     = document.getElementById('evt-desc')?.value;
-  const importo  = parseFloat(document.getElementById('evt-importo')?.value) || null;
-  if(!data_evt||!tipo||!desc){showToast('Compila i campi obbligatori (Data, Tipo, Descrizione)');return;}
-
+async function submitSlideEvent(){
+  const boatId = window._currentEditBoatId;
+  if (!boatId) { showToast('Nessuna barca selezionata'); return; }
+  const tipo    = document.getElementById('slide-evt-tipo')?.value;
+  const data_e  = document.getElementById('slide-evt-data')?.value;
+  const titolo  = document.getElementById('slide-evt-titolo')?.value?.trim();
+  const desc    = document.getElementById('slide-evt-desc')?.value?.trim();
+  const importo = parseFloat(document.getElementById('slide-evt-importo')?.value) || null;
+  if (!tipo || !data_e || !titolo) { showToast('Compila Tipo, Data e Titolo'); return; }
   const { error } = await sb.from('timeline_eventi').insert({
-    barca_id:    BARCA_ID,
+    barca_id:    boatId,
     tipo:        tipo,
-    titolo:      desc,
-    descrizione: desc,
-    data_evento: data_evt,
+    titolo:      titolo,
+    descrizione: desc || null,
+    data_evento: data_e,
     importo:     importo,
     verificato:  false,
-    created_by:  currentUser?.id
+    created_by:  currentUser?.id,
+  });
+  if (error) { showToast('Errore: ' + error.message); console.error(error); return; }
+  // Reset campi
+  document.getElementById('slide-evt-data').value = '';
+  document.getElementById('slide-evt-titolo').value = '';
+  document.getElementById('slide-evt-desc').value = '';
+  document.getElementById('slide-evt-importo').value = '';
+  showToast('✓ Evento aggiunto');
+  loadTimelineEdit(boatId);
+}
+
+async function submitAddEvent(){
+  const data_evt  = document.getElementById('evt-data')?.value;
+  const tipo      = document.getElementById('evt-tipo')?.value;
+  const desc      = document.getElementById('evt-desc')?.value;
+  const costo     = parseFloat(document.getElementById('evt-costo')?.value) || null;
+  const titolo    = desc;
+
+  if(!data_evt||!tipo||!desc){showToast('Compila i campi obbligatori (Data, Tipo, Descrizione)');return;}
+
+  const boatId = window._currentEditBoatId;
+  if (!boatId) { showToast('Nessuna barca selezionata'); return; }
+
+  const { error } = await sb.from('timeline_eventi').insert({
+    barca_id:    boatId,
+    tipo:        tipo,
+    titolo:      titolo,
+    descrizione: desc,
+    data_evento: data_evt,
+    importo:     costo,
+    verificato:  false,
+    created_by:  currentUser?.id,
   });
 
   if (error) { showToast('Errore: ' + error.message); return; }
+
+  // Reset form
+  document.getElementById('evt-data').value = '';
+  document.getElementById('evt-desc').value = '';
+  document.getElementById('evt-costo').value = '';
+  document.getElementById('evt-cantiere').value = '';
+
   closeModal('addEvent');
-  showToast('✓ Evento aggiunto — in attesa verifica HullID');
+  showToast('✓ Evento aggiunto');
+  loadTimelineEdit(boatId);
 }
 
-function openBoatEdit(){
+async function openBoatEdit(boatId){
   document.getElementById('slideOverlay').classList.add('open');
   document.getElementById('slidePanel').classList.add('open');
   switchTab('t-info');
   document.body.style.overflow='hidden';
   setTimeout(checkTabsOverflow, 350);
+
+  if (!boatId) return;
+  window._currentEditBoatId = boatId;
+
+  // Carica dati barca nel pannello
+  const { data: b } = await sb.from('barche').select('*').eq('id', boatId).single();
+  if (!b) return;
+  const setV = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+  setV('e-nome', b.nome);
+  setV('e-porto', b.porto);
+  setV('e-loa', b.loa);
+  setV('e-cantiere', b.cantiere);
+  setV('e-modello', b.modello);
+  setV('e-anno', b.anno);
+  setV('e-hin', b.hin);
+  // Aggiorna titolo e sottotitolo del pannello
+  const titleEl = document.getElementById('slide-panel-title');
+  if (titleEl) titleEl.textContent = 'Modifica — ' + (b.nome || b.modello || b.id);
+  const subEl = document.getElementById('slide-panel-sub');
+  if (subEl) subEl.textContent = b.id + ' · I campi 🔒 sono permanenti — contatta HullID per correzioni';
+  setV('e-boat-id', b.id);
+  setV('e-descrizione', b.descrizione);
+  // Tipologia
+  const tipEl = document.getElementById('e-tipologia');
+  if (tipEl && b.tipo) {
+    const opt = Array.from(tipEl.options).find(o => o.value === b.tipo || o.text === b.tipo);
+    if (opt) tipEl.value = opt.value;
+  }
+
+  // Carica tutti i tab con i dati reali della barca
+  loadTecnica(b);
+  loadMotore(b);
+  loadDotazioni(b);
+  loadElettronica(b);
+  loadFoto(boatId);
+  loadDocs(boatId);
+  loadTimelineEdit(boatId);
+  // Valori vendita
+  const setValV = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+  setValV('e-perizia',          b.valore_perizia);
+  setValV('e-anno-perizia',     b.anno_perizia);
+  setValV('e-refitting',        b.costo_refitting);
+  setValV('e-periodo-refitting',b.periodo_refitting);
+  if (b.in_vendita) {
+    document.getElementById('e-in-vendita').checked = true;
+    document.getElementById('vendita-fields').style.display = 'block';
+    setValV('e-prezzo-vendita', b.prezzo_vendita);
+    const tratEl = document.getElementById('e-trattativa');
+    if (tratEl && b.in_trattativa) tratEl.value = b.in_trattativa;
+  }
+  // Stato e privacy
+  const setCk = (id, val) => { const el = document.getElementById(id); if (el) el.checked = !!val; };
+  setCk('st-pubblica', b.pubblica ?? true);
+  setCk('st-ricerca',  b.mostra_in_ricerca ?? true);
+  setCk('st-broker',   b.accetta_messaggi_broker ?? true);
+  setCk('st-mostra-prezzo',    !b.privacy_prezzo);
+  setCk('st-mostra-perizia',   !(b.privacy_perizia ?? false));
+  setCk('st-mostra-refitting', !b.privacy_refitting);
+  setCk('st-mostra-porto',     !(b.privacy_porto ?? false));
+  // Evidenzia stato barca corrente
+  _statoCorrente = b.in_vendita ? 'vendita' : 'possessore';
+  selectStato(_statoCorrente);
 }
 function selectPropDash(type, btn) {
   document.querySelectorAll('.sel-prop').forEach(b => b.classList.remove('active-prop'));
@@ -1998,22 +1846,242 @@ function closeSlide(){
   document.getElementById('slidePanel').classList.remove('open');
   document.body.style.overflow='';
 }
+
+async function loadTimelineEdit(boatId) {
+  const wrap = document.getElementById('timeline-list-edit');
+  if (!wrap || !boatId) return;
+  wrap.innerHTML = '<div style="font-size:0.75rem;color:var(--gray);padding:8px 0;">Caricamento…</div>';
+  const { data: eventi, error } = await sb.from('timeline_eventi')
+    .select('*').eq('barca_id', boatId).order('data_evento', { ascending: false });
+  if (error || !eventi?.length) {
+    wrap.innerHTML = '<div style="font-size:0.75rem;color:var(--gray);padding:8px 0;">Nessun evento registrato.</div>';
+    return;
+  }
+  wrap.innerHTML = eventi.map(e => {
+    const dotColor = e.verificato ? 'var(--gold)' : 'var(--gray-light)';
+    const badge = e.verificato
+      ? '<span style="font-size:0.58rem;padding:2px 7px;background:rgba(45,122,90,0.1);color:#2d7a5a;border:1px solid rgba(45,122,90,0.2);">✓ Verificato</span>'
+      : '';
+    const meta = [e.tipo, e.data_evento, e.importo ? '€ ' + Number(e.importo).toLocaleString('it-IT') : null].filter(Boolean).join(' · ');
+    return `<div style="display:flex;gap:12px;padding:12px 14px;background:#fff;border:1px solid var(--gray-light);align-items:flex-start;">
+      <div style="width:8px;height:8px;border-radius:50%;background:${dotColor};margin-top:5px;flex-shrink:0;"></div>
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-size:0.78rem;font-weight:600;color:var(--navy);">${e.titolo || '—'}</div>
+          <div style="display:flex;gap:4px;">${badge}</div>
+        </div>
+        <div style="font-size:0.66rem;color:var(--gray);margin-top:2px;">${meta}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+// ══ LOAD/SAVE TAB: DATI TECNICI ══
+  async function loadTecnica(b) {
+    const setV = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+    setV('t-loa', b.loa);
+    setV('t-larghezza', b.larghezza);
+    setV('t-pescaggio', b.pescaggio);
+    const c = b.carena || {};
+    setV('t-dislocamento', c.dislocamento);
+    setV('t-cabine', c.cabine);
+    setV('t-cuccette', c.cuccette);
+    setV('t-bagni', c.bagni);
+    setV('t-carb', c.carb);
+    setV('t-acqua', c.acqua);
+    setV('t-nere', c.nere);
+    setV('t-costruzione', c.costruzione);
+    setV('t-bottazzo', c.bottazzo);
+    setV('t-opera-viva', c.opera_viva);
+    setV('t-coperta', c.coperta);
+    setV('t-pozzetto', c.pozzetto);
+    setV('t-ispezione', c.ispezione);
+    const matEl = document.getElementById('t-materiale');
+    if (matEl && c.materiale) matEl.value = c.materiale;
+    const carEl = document.getElementById('t-carena');
+    if (carEl && c.forma_carena) carEl.value = c.forma_carena;
+    const bandEl = document.getElementById('t-bandiera');
+    if (bandEl && c.bandiera) bandEl.value = c.bandiera;
+    const omoEl = document.getElementById('t-omologazione');
+    if (omoEl && c.omologazione) omoEl.value = c.omologazione;
+  }
+
+  async function saveTecnica() {
+    const boatId = window._currentEditBoatId;
+    if (!boatId) { showToast('Nessuna barca selezionata'); return; }
+    const carena = {
+      dislocamento: parseFloat(document.getElementById('t-dislocamento')?.value) || null,
+      cabine:       parseInt(document.getElementById('t-cabine')?.value) || null,
+      cuccette:     parseInt(document.getElementById('t-cuccette')?.value) || null,
+      bagni:        parseInt(document.getElementById('t-bagni')?.value) || null,
+      carb:         parseInt(document.getElementById('t-carb')?.value) || null,
+      acqua:        parseInt(document.getElementById('t-acqua')?.value) || null,
+      nere:         parseInt(document.getElementById('t-nere')?.value) || null,
+      materiale:    document.getElementById('t-materiale')?.value || null,
+      forma_carena: document.getElementById('t-carena')?.value || null,
+      bandiera:     document.getElementById('t-bandiera')?.value || null,
+      omologazione: document.getElementById('t-omologazione')?.value || null,
+      costruzione:  document.getElementById('t-costruzione')?.value || null,
+      bottazzo:     document.getElementById('t-bottazzo')?.value || null,
+      opera_viva:   document.getElementById('t-opera-viva')?.value || null,
+      coperta:      document.getElementById('t-coperta')?.value || null,
+      pozzetto:     document.getElementById('t-pozzetto')?.value || null,
+      ispezione:    document.getElementById('t-ispezione')?.value || null,
+    };
+    const dati = {
+      loa:       parseFloat(document.getElementById('t-loa')?.value) || null,
+      larghezza: parseFloat(document.getElementById('t-larghezza')?.value) || null,
+      pescaggio: parseFloat(document.getElementById('t-pescaggio')?.value) || null,
+      carena,
+      updated_at: new Date().toISOString(),
+    };
+    const { error } = await sb.from('barche').update(dati).eq('id', boatId);
+    if (error) { showToast('Errore: ' + error.message); return; }
+    showToast('✓ Dati tecnici salvati');
+  }
+
+  // ══ LOAD/SAVE TAB: MOTORE ══
+  async function loadMotore(b) {
+    const m = b.motori || {};
+    const setV = (id, val) => { const el = document.getElementById(id); if (el && val != null) el.value = val; };
+    setV('m1-marca',        m.marca);
+    setV('m1-modello',      m.modello);
+    setV('m1-cv',           m.cv);
+    setV('m1-anno',         m.anno_inst);
+    setV('m1-ore-sx',       m.ore_sx);
+    setV('m1-ore-dx',       m.ore_dx);
+    setV('m1-service',      m.service);
+    setV('m1-raffreddamento', m.raffreddamento);
+    setV('m1-trasmissione', m.trasmissione);
+    setV('m-pompe',         m.pompe_sentina);
+    setV('m1-nota',         m.nota_tecnica);
+    const carbEl = document.getElementById('m1-carburante');
+    if (carbEl && m.carburante) carbEl.value = m.carburante;
+    if (m.elica_prua)   { const el = document.getElementById('m-elica-prua');   if (el) el.checked = true; }
+    if (m.antincendio)  { const el = document.getElementById('m-antincendio');  if (el) el.checked = true; }
+    if (m.manette_elet) { const el = document.getElementById('m-manette-elet'); if (el) el.checked = true; }
+    // propulsione button
+    if (m.propulsione) {
+      document.querySelectorAll('.sel-prop').forEach(btn => {
+        btn.classList.toggle('active-prop', btn.textContent.trim() === m.propulsione);
+      });
+    }
+  }
+
+  async function saveMotore() {
+    const boatId = window._currentEditBoatId;
+    if (!boatId) { showToast('Nessuna barca selezionata'); return; }
+    const ore_sx = parseInt(document.getElementById('m1-ore-sx')?.value) || null;
+    const ore_dx = parseInt(document.getElementById('m1-ore-dx')?.value) || null;
+    const motori = {
+      propulsione:    document.querySelector('.sel-prop.active-prop')?.textContent?.trim() || null,
+      marca:          document.getElementById('m1-marca')?.value || null,
+      modello:        document.getElementById('m1-modello')?.value || null,
+      cv:             parseInt(document.getElementById('m1-cv')?.value) || null,
+      anno_inst:      parseInt(document.getElementById('m1-anno')?.value) || null,
+      ore_sx,
+      ore_dx,
+      ore:            (ore_sx && ore_dx) ? ore_sx + ore_dx : (ore_sx || ore_dx || null),
+      service:        document.getElementById('m1-service')?.value || null,
+      carburante:     document.getElementById('m1-carburante')?.value || null,
+      raffreddamento: document.getElementById('m1-raffreddamento')?.value || null,
+      trasmissione:   document.getElementById('m1-trasmissione')?.value || null,
+      elica_prua:     document.getElementById('m-elica-prua')?.checked || false,
+      antincendio:    document.getElementById('m-antincendio')?.checked || false,
+      manette_elet:   document.getElementById('m-manette-elet')?.checked || false,
+      pompe_sentina:  parseInt(document.getElementById('m-pompe')?.value) || null,
+      nota_tecnica:   document.getElementById('m1-nota')?.value || null,
+    };
+    const { error } = await sb.from('barche').update({ motori, updated_at: new Date().toISOString() }).eq('id', boatId);
+    if (error) { showToast('Errore: ' + error.message); return; }
+    showToast('✓ Dati motore salvati');
+  }
+
+  // ══ LOAD/SAVE TAB: DOTAZIONI ══
+  const DOTAZIONI_KEYS = []; // mantenuto vuoto per compatibilità
+
+  function renderChip(containerId, testo, onRemove) {
+    const chip = document.createElement('div');
+    chip.style.cssText = 'display:inline-flex;align-items:center;gap:6px;padding:5px 10px;background:rgba(201,168,76,0.08);border:1px solid rgba(201,168,76,0.25);font-size:0.74rem;color:var(--navy);';
+    chip.innerHTML = `<span>${testo}</span><span onclick="this.parentElement.remove()" style="cursor:pointer;color:var(--gray);font-size:0.9rem;line-height:1;">✕</span>`;
+    document.getElementById(containerId).appendChild(chip);
+  }
+
+  function addVoce(tipo) {
+    const inputId = tipo === 'dot' ? 'dot-input' : 'el-input';
+    const listId  = tipo === 'dot' ? 'dot-list'  : 'el-list';
+    const input = document.getElementById(inputId);
+    const val = input.value.trim();
+    if (!val) return;
+    renderChip(listId, val, null);
+    input.value = '';
+    input.focus();
+  }
+
+  function getVoci(listId) {
+    return Array.from(document.getElementById(listId).children)
+      .map(chip => chip.querySelector('span')?.textContent?.trim())
+      .filter(Boolean);
+  }
+
+  async function loadDotazioni(b) {
+    const list = document.getElementById('dot-list');
+    if (!list) return;
+    list.innerHTML = '';
+    const voci = Array.isArray(b.dotazioni) ? b.dotazioni : [];
+    voci.forEach(v => renderChip('dot-list', v, null));
+  }
+
+  async function saveDotazioni() {
+    const boatId = window._currentEditBoatId;
+    if (!boatId) { showToast('Nessuna barca selezionata'); return; }
+    const dotazioni = getVoci('dot-list');
+    const { error } = await sb.from('barche').update({ dotazioni, updated_at: new Date().toISOString() }).eq('id', boatId);
+    if (error) { showToast('Errore: ' + error.message); return; }
+    showToast('✓ Dotazioni salvate');
+  }
+
+  // ══ LOAD/SAVE TAB: ELETTRONICA ══
+  async function loadElettronica(b) {
+    const list = document.getElementById('el-list');
+    if (!list) return;
+    list.innerHTML = '';
+    const voci = Array.isArray(b.elettronica) ? b.elettronica : [];
+    voci.forEach(v => renderChip('el-list', v, null));
+  }
+
+  async function saveElettronica() {
+    const boatId = window._currentEditBoatId;
+    if (!boatId) { showToast('Nessuna barca selezionata'); return; }
+    const elettronica = getVoci('el-list');
+    const { error } = await sb.from('barche').update({ elettronica, updated_at: new Date().toISOString() }).eq('id', boatId);
+    if (error) { showToast('Errore: ' + error.message); return; }
+    showToast('✓ Elettronica salvata');
+  }
+
 async function saveSlide(){
+  const boatId = window._currentEditBoatId;
+  if (!boatId) { showToast('Nessuna barca selezionata'); return; }
+
   const dati = {};
   const nome  = document.getElementById('e-nome')?.value;
   const porto = document.getElementById('e-porto')?.value;
   const loa   = document.getElementById('e-loa')?.value;
+  const tipo  = document.getElementById('e-tipologia')?.value;
+  const desc  = document.getElementById('e-descrizione')?.value;
   if(nome)  dati.nome  = nome;
   if(porto) dati.porto = porto;
   if(loa)   dati.loa   = parseFloat(loa);
+  if(tipo)  dati.tipo  = tipo;
+  if(desc !== undefined) dati.descrizione = desc;
   dati.updated_at = new Date().toISOString();
 
-  const { error } = await sb.from('barche').update(dati).eq('id', BARCA_ID);
+  const { error } = await sb.from('barche').update(dati).eq('id', boatId);
   if(error){ showToast('Errore: ' + error.message); return; }
 
   const s = document.getElementById('slideSaveStatus');
   if(s){ s.textContent='✓ Salvato — '+new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'}); s.classList.add('saved'); }
   showToast('✓ Modifiche salvate');
+  loadBarche(); // aggiorna la griglia
 }
 function switchTab(name){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -2171,6 +2239,8 @@ async function submitTrasferimentoDashboard() {
 }
 
 async function saveValori() {
+  const boatId = window._currentEditBoatId;
+  if (!boatId) { showToast('Nessuna barca selezionata'); return; }
   const dati = {
     valore_perizia:    parseFloat(document.getElementById('e-perizia')?.value) || null,
     anno_perizia:      parseInt(document.getElementById('e-anno-perizia')?.value) || null,
@@ -2178,12 +2248,10 @@ async function saveValori() {
     periodo_refitting: document.getElementById('e-periodo-refitting')?.value || null,
     in_vendita:        document.getElementById('e-in-vendita')?.checked || false,
     prezzo_vendita:    parseFloat(document.getElementById('e-prezzo-vendita')?.value) || null,
-    in_trattativa:     document.getElementById('e-trattativa')?.value || 'no',
+    in_trattativa:     document.getElementById('e-trattativa')?.value || 'no',    updated_at:        new Date().toISOString(),
   };
-  if (currentUser) {
-    const { error } = await sb.from('barche').update(dati).eq('id', BARCA_ID);
-    if (error) { showToast('Errore: ' + error.message); return; }
-  }
+  const { error } = await sb.from('barche').update(dati).eq('id', boatId);
+  if (error) { showToast('Errore: ' + error.message); return; }
   showToast('✓ Valori salvati');
 }
 
@@ -2196,27 +2264,55 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ── Tab Stato ──
+let _statoCorrente = 'possessore'; // traccia stato selezionato
+
 function selectStato(tipo) {
+  _statoCorrente = tipo;
   ['possessore','vendita'].forEach(t => {
     const el = document.getElementById('stato-' + t);
-    if (el) { el.style.borderColor = t === tipo ? 'var(--gold)' : 'var(--gray-light)'; el.style.background = t === tipo ? 'rgba(201,168,76,0.06)' : ''; }
+    if (el) {
+      el.style.borderColor = t === tipo ? 'var(--gold)' : 'var(--gray-light)';
+      el.style.background  = t === tipo ? 'rgba(201,168,76,0.06)' : '';
+    }
   });
+  const cb = document.getElementById('e-in-vendita');
+  if (cb) { cb.checked = tipo === 'vendita'; cb.dispatchEvent(new Event('change')); }
 }
 async function saveStato() {
+  const boatId = window._currentEditBoatId;
+  if (!boatId) { showToast('Nessuna barca selezionata'); return; }
+
+  const inVendita = _statoCorrente === 'vendita';
+
   const dati = {
-    pubblica:               document.getElementById('st-pubblica')?.checked ?? true,
-    mostra_in_ricerca:      document.getElementById('st-ricerca')?.checked ?? true,
-    accetta_messaggi_broker:document.getElementById('st-broker')?.checked ?? true,
-    privacy_prezzo:         !(document.getElementById('st-mostra-prezzo')?.checked ?? false),
-    privacy_perizia:        !(document.getElementById('st-mostra-perizia')?.checked ?? false),
-    privacy_refitting:      !(document.getElementById('st-mostra-refitting')?.checked ?? false),
-    privacy_porto:          !(document.getElementById('st-mostra-porto')?.checked ?? true),
+    pubblica:                document.getElementById('st-pubblica')?.checked ?? true,
+    mostra_in_ricerca:       document.getElementById('st-ricerca')?.checked ?? true,
+    accetta_messaggi_broker: document.getElementById('st-broker')?.checked ?? true,
+    privacy_prezzo:          !(document.getElementById('st-mostra-prezzo')?.checked ?? false),
+    privacy_perizia:         !(document.getElementById('st-mostra-perizia')?.checked ?? true),
+    privacy_refitting:       !(document.getElementById('st-mostra-refitting')?.checked ?? false),
+    privacy_porto:           !(document.getElementById('st-mostra-porto')?.checked ?? true),
+    in_vendita:              inVendita,
+    status:                  inVendita ? 'vendita' : 'felice_possessore',
+    updated_at:              new Date().toISOString(),
   };
-  if (currentUser) {
-    const { error } = await sb.from('barche').update(dati).eq('id', BARCA_ID);
-    if (error) { showToast('Errore: ' + error.message); return; }
+
+  let { error } = await sb.from('barche').update(dati).eq('id', boatId);
+
+  // Se status dà errore (check constraint), riprova senza status
+  if (error && (error.message?.includes('status') || error.code === '23514')) {
+    delete dati.status;
+    const res2 = await sb.from('barche').update(dati).eq('id', boatId);
+    error = res2.error;
   }
-  showToast('✓ Impostazioni privacy salvate');
+
+  if (error) {
+    console.error('saveStato error:', JSON.stringify(error));
+    showToast('Errore: ' + (error.message || error.details || error.hint || JSON.stringify(error)));
+    return;
+  }
+  showToast('✓ Impostazioni salvate');
+  loadBarche();
 }
 
 // Tab scroll check
@@ -2236,27 +2332,358 @@ function checkTabsOverflow() {
 </script>
 
   <script>
-  // ══ AUTH GUARD + LOGOUT ══
+  // ══ AUTH GUARD + DASHBOARD INIT ══
   let currentUser = null;
   let currentProfilo = null;
+  let _notifCache = [];
+  let _notifFilter = 'all';
 
   (async function authGuard() {
-    if (typeof supabase === 'undefined') return;
-    const { data: { session } } = await supabase.auth.getSession();
+    if (typeof sb === 'undefined') return;
+    const { data: { session } } = await sb.auth.getSession();
     if (!session) { window.location.href = 'login.html'; return; }
     currentUser = session.user;
-    const { data: profilo } = await supabase.from('utenti_profili').select('*').eq('id', currentUser.id).single();
+
+    // Carica profilo
+    const { data: profilo } = await sb.from('utenti_profili').select('*').eq('id', currentUser.id).single();
     currentProfilo = profilo;
-    const nomeEl = document.getElementById('user-nome') || document.querySelector('.user-name, .sidebar-name, [data-user-name]');
-    if (nomeEl && profilo) nomeEl.textContent = (profilo.nome || '') + ' ' + (profilo.cognome || '');
-    const emailEl = document.getElementById('user-email') || document.querySelector('.user-email, .sidebar-email');
+
+    // Aggiorna sidebar nome/avatar
+    const nomeCompleto = ((profilo?.nome || '') + ' ' + (profilo?.cognome || '')).trim() || currentUser.email;
+    const nomeEl = document.getElementById('user-nome') || document.querySelector('.user-name-sm');
+    if (nomeEl) nomeEl.textContent = nomeCompleto;
+    const nomeSmEl = document.getElementById('user-nome-sm');
+    if (nomeSmEl) nomeSmEl.textContent = nomeCompleto;
+    const topbarNome = document.getElementById('topbar-nome');
+    if (topbarNome) topbarNome.textContent = profilo?.nome || nomeCompleto.split(' ')[0] || '—';
+    const emailEl = document.getElementById('user-email') || document.querySelector('.user-since');
     if (emailEl) emailEl.textContent = currentUser.email || '';
+    const avatarEl = document.querySelector('.user-avatar');
+    if (avatarEl && profilo) {
+      const i = (profilo.nome?.[0] || '').toUpperCase();
+      const j = (profilo.cognome?.[0] || '').toUpperCase();
+      avatarEl.textContent = i + j || '—';
+    }
+
+    // Aggiorna welcome banner nella home
+    const nomeEl2 = document.getElementById('wb-nome');
+    if (nomeEl2) nomeEl2.textContent = nomeCompleto;
+    const subEl = document.getElementById('wb-sub');
+    if (subEl && profilo?.citta) subEl.textContent = 'Armatore HullID · ' + profilo.citta;
+    const idEl = document.getElementById('wb-id');
+    if (idEl) idEl.textContent = 'ID: ' + (currentUser.id?.slice(0,8).toUpperCase() || '—');
+
+    // Badge watchlist
+    loadWatchlistBadge();
+    // Carica barche reali
+    loadBarche();
+    // Pre-carica profilo
+    loadProfilo();
+
     if (typeof initDashboard === 'function') initDashboard(currentUser, profilo);
     if (typeof loadDashboard === 'function') loadDashboard(currentUser, profilo);
   })();
 
+  // ══ WATCHLIST BADGE ══
+  async function loadWatchlistBadge() {
+    if (!currentUser) return;
+    const { data, error } = await sb.from('watchlist').select('id', { count: 'exact', head: true }).eq('utente_id', currentUser.id);
+    const badge = document.getElementById('watchlist-badge');
+    if (!badge) return;
+    if (error) { badge.textContent = '0'; return; }
+    badge.textContent = data?.length ?? 0;
+  }
+
+  // ══ WATCHLIST — AGGIUNGI PER HULLID ══
+  async function addToWatchlistByHullId() {
+    if (!currentUser) return;
+    const input = document.getElementById('wl-hullid-input');
+    const val = input?.value?.trim().toUpperCase();
+    if (!val) { showToast('Inserisci un HullID o matricola'); return; }
+
+    // Cerca la barca nel DB
+    const { data: barca, error } = await sb.from('barche').select('id, nome, modello').or(`id.eq.${val},matricola.eq.${val}`).single();
+    if (error || !barca) { showToast('Nessuna barca trovata con questo ID'); return; }
+
+    // Controlla se già in watchlist
+    const { data: exist } = await sb.from('watchlist').select('id').eq('utente_id', currentUser.id).eq('barca_id', barca.id).single();
+    if (exist) { showToast('Barca già nella watchlist'); return; }
+
+    const { error: insErr } = await sb.from('watchlist').insert({ utente_id: currentUser.id, barca_id: barca.id });
+    if (insErr) { showToast('Errore: ' + insErr.message); return; }
+    showToast('✓ ' + (barca.nome || barca.modello || barca.id) + ' aggiunta alla watchlist');
+    if (input) input.value = '';
+    loadWatchlistBadge();
+  }
+
+  // ══ BARCHE — CARICA ══
+  async function loadBarche() {
+    if (!currentUser) {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) return;
+      currentUser = session.user;
+    }
+    const grid = document.getElementById('boats-grid');
+    if (!grid) return;
+
+    const { data: barche, error } = await sb.from('barche')
+      .select('*').eq('armatore_id', currentUser.id).order('created_at', { ascending: false });
+
+    // Per ogni barca prendi la prima foto dallo Storage
+    const getCopertina = async (boatId) => {
+      const { data } = await sb.storage.from('hullid-media').list('barche/' + boatId, { limit: 1, sortBy: { column: 'name', order: 'asc' } });
+      if (!data?.length) return null;
+      const url = sb.storage.from('hullid-media').getPublicUrl('barche/' + boatId + '/' + data[0].name).data.publicUrl;
+      return url + '?t=' + Date.now();
+    };
+
+    let html = '';
+    if (!error && barche?.length) {
+      // Carica copertine in parallelo
+      const copertine = await Promise.all(barche.map(b => getCopertina(b.id)));
+
+      barche.forEach((b, idx) => {
+        const coverStyle = copertine[idx]
+          ? `background-image:url('${copertine[idx]}');background-size:cover;background-position:center;`
+          : '';
+        html += `
+        <div class="boat-card">
+          <div class="boat-card-img" style="${coverStyle}">
+            <div class="bc-overlay"></div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:rgba(255,255,255,0.25);position:relative;z-index:1;">${copertine[idx] ? '' : (b.nome || b.modello || '—')}</div>
+            <div class="bc-status" style="background:var(--navy-light);color:white;">⚓ Registrata</div>
+            <div class="bc-hullid">${b.id} ${b.verificato ? '· HullID ✓' : '· In verifica'}</div>
+          </div>
+          <div class="boat-card-body">
+            <div class="bc-name">${b.nome || b.modello || '—'}</div>
+            <div class="bc-meta">${[b.cantiere, b.anno, b.porto].filter(Boolean).join(' · ')}</div>
+            <div class="bc-specs">
+              ${b.loa ? `<div class="spec-block"><span class="spec-label">LOA</span><span class="spec-val">${b.loa} m</span></div>` : ''}
+              ${b.tipo ? `<div class="spec-block"><span class="spec-label">Tipo</span><span class="spec-val">${b.tipo}</span></div>` : ''}
+              ${b.porto ? `<div class="spec-block"><span class="spec-label">Porto</span><span class="spec-val">${b.porto}</span></div>` : ''}
+              <div class="spec-block"><span class="spec-label">Completamento</span><span class="spec-val" style="color:var(--gold);">${b.completamento || 0}%</span></div>
+            </div>
+            <div class="bc-actions">
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <a href="scheda_barca.html?id=${b.id}" target="_blank" class="btn btn-outline btn-sm" style="text-decoration:none;">↗ Vedi scheda</a>
+                <button class="btn btn-outline btn-sm" onclick="openBoatEdit('${b.id}')">✎ Modifica</button>
+                <button class="btn btn-sm" onclick="confirmDeleteBarca('${b.id}')" style="background:transparent;border:1px solid rgba(192,57,43,0.4);color:var(--red);font-size:0.62rem;letter-spacing:0.04em;cursor:pointer;">🗑 Elimina</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      });
+    }
+
+    html += `<div class="add-boat-card" onclick="handleAddBarca()">
+      <div class="add-icon">⚓</div>
+      <div class="add-text">${(!barche?.length) ? 'Registra la tua prima barca' : 'Registra un\'altra barca'}</div>
+      <div class="add-sub">Richiedi un nuovo HullID<br>per la tua imbarcazione</div>
+    </div>`;
+
+    grid.innerHTML = html;
+  }
+
+  // ══ ELIMINA BARCA ══
+  function confirmDeleteBarca(boatId) {
+    if (!confirm('Sei sicuro di voler eliminare questa barca da HullID? L\'operazione non è reversibile.')) return;
+    deleteBarca(boatId);
+  }
+
+  async function deleteBarca(boatId) {
+    if (!currentUser) return;
+    let id = boatId;
+    if (!id) {
+      const { data: barche } = await sb.from('barche').select('id').eq('armatore_id', currentUser.id).limit(1);
+      id = barche?.[0]?.id;
+    }
+    if (!id) { showToast('Nessuna barca trovata'); return; }
+    const { error } = await sb.from('barche').delete().eq('id', id);
+    if (error) { showToast('Errore eliminazione: ' + error.message); return; }
+    showToast('Barca eliminata.');
+    setTimeout(() => loadBarche(), 800);
+  }
+
+  let _fotoList = []; // array {name, url} ordinato
+
+  // ══ LOAD/UPLOAD/DELETE: DOCUMENTI ══
+  async function loadDocs(boatId) {
+    const list = document.getElementById('docs-list');
+    if (!list || !boatId) return;
+    list.innerHTML = '<div style="font-size:0.75rem;color:var(--gray);padding:8px 0;">Caricamento…</div>';
+    const { data, error } = await sb.storage.from('hullid-media').list('barche/' + boatId + '/docs', { sortBy: { column: 'name', order: 'asc' } });
+    if (error || !data?.length) {
+      list.innerHTML = '<div style="font-size:0.75rem;color:var(--gray);padding:8px 0;">Nessun documento caricato.</div>';
+      return;
+    }
+    list.innerHTML = data.map(f => {
+      const kb = f.metadata?.size ? Math.round(f.metadata.size / 1024) : '?';
+      const sizeStr = kb > 1024 ? (kb/1024).toFixed(1) + ' MB' : kb + ' KB';
+      const icon = f.name.endsWith('.pdf') ? '📄' : '🖼️';
+      // Decodifica tipo/anno dal nome file: tipo_anno_timestamp.ext
+      const parts = f.name.split('_');
+      const label = parts.length >= 2 ? decodeURIComponent(parts[0]) + (parts[1] ? ' · ' + parts[1] : '') : f.name;
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid var(--gray-light);background:#fff;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:1.1rem;">${icon}</span>
+          <div>
+            <div style="font-size:0.82rem;font-weight:500;">${label}</div>
+            <div style="font-size:0.66rem;color:var(--gray);">${sizeStr}</div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-outline btn-sm" onclick="downloadDoc('${boatId}','${f.name}')">↓</button>
+          <button class="btn btn-outline btn-sm" onclick="deleteDoc('${boatId}','${f.name}')" style="color:var(--red,#c0392b);">✕</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  async function uploadDoc(files) {
+    const boatId = window._currentEditBoatId;
+    if (!boatId || !files?.length) return;
+    const tipo = encodeURIComponent(document.getElementById('doc-tipo')?.value || 'documento');
+    const anno = document.getElementById('doc-anno')?.value || new Date().getFullYear();
+    const file = files[0];
+    const ext = file.name.split('.').pop();
+    const path = `barche/${boatId}/docs/${tipo}_${anno}_${Date.now()}.${ext}`;
+    showToast('Caricamento in corso…');
+    const { error } = await sb.storage.from('hullid-media').upload(path, file, { upsert: false });
+    if (error) { showToast('Errore upload: ' + error.message); return; }
+    showToast('✓ Documento caricato');
+    document.getElementById('doc-file-input').value = '';
+    loadDocs(boatId);
+  }
+
+  async function downloadDoc(boatId, fileName) {
+    const { data } = await sb.storage.from('hullid-media').createSignedUrl(`barche/${boatId}/docs/${fileName}`, 60);
+    if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+  }
+
+  async function deleteDoc(boatId, fileName) {
+    if (!confirm('Eliminare questo documento?')) return;
+    const { error } = await sb.storage.from('hullid-media').remove([`barche/${boatId}/docs/${fileName}`]);
+    if (error) { showToast('Errore: ' + error.message); return; }
+    showToast('✓ Documento eliminato');
+    loadDocs(boatId);
+  }
+
+  async function loadFoto(boatId) {
+    const grid = document.getElementById('foto-grid');
+    if (!grid || !boatId) return;
+    const { data, error } = await sb.storage.from('hullid-media').list('barche/' + boatId, { sortBy: { column: 'name', order: 'asc' } });
+    if (error || !data?.length) {
+      grid.innerHTML = '<div style="color:var(--gray);font-size:0.75rem;grid-column:1/-1;text-align:center;padding:12px;">Nessuna foto caricata</div>';
+      _fotoList = [];
+      return;
+    }
+    _fotoList = data.map(f => ({
+      name: f.name,
+      url: sb.storage.from('hullid-media').getPublicUrl('barche/' + boatId + '/' + f.name).data.publicUrl
+    }));
+    renderFotoGrid(boatId);
+  }
+
+  function renderFotoGrid(boatId) {
+    const grid = document.getElementById('foto-grid');
+    if (!grid) return;
+    grid.innerHTML = _fotoList.map((f, i) => `
+      <div class="foto-item" draggable="true" data-idx="${i}"
+        style="aspect-ratio:4/3;background:var(--bg-light);border:2px solid ${i===0?'var(--gold)':'var(--gray-light)'};position:relative;overflow:hidden;cursor:grab;transition:border-color 0.2s;"
+        ondragstart="fotoDragStart(event,${i})"
+        ondragover="fotoDragOver(event)"
+        ondrop="fotoDrop(event,${i},'${boatId}')"
+        ondragleave="this.style.borderColor='${i===0?'var(--gold)':'var(--gray-light)'}'">
+        <img src="${f.url}" style="width:100%;height:100%;object-fit:cover;pointer-events:none;">
+        ${i===0 ? '<div style="position:absolute;bottom:0;left:0;right:0;background:rgba(201,168,76,0.9);color:var(--navy);font-size:0.55rem;padding:2px 6px;text-align:center;font-weight:600;letter-spacing:0.08em;">★ COPERTINA</div>' : ''}
+        <button onclick="deleteFoto('${boatId}','${f.name}')" style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.55);border:none;color:#fff;cursor:pointer;font-size:0.65rem;padding:2px 6px;border-radius:2px;z-index:2;">✕</button>
+      </div>`).join('');
+  }
+
+  let _dragIdx = null;
+  function fotoDragStart(e, idx) { _dragIdx = idx; e.dataTransfer.effectAllowed = 'move'; }
+  function fotoDragOver(e) { e.preventDefault(); e.currentTarget.style.borderColor = 'var(--gold)'; }
+  async function fotoDrop(e, targetIdx, boatId) {
+    e.preventDefault();
+    if (_dragIdx === null || _dragIdx === targetIdx) return;
+    // Riordina array
+    const moved = _fotoList.splice(_dragIdx, 1)[0];
+    _fotoList.splice(targetIdx, 0, moved);
+    _dragIdx = null;
+    renderFotoGrid(boatId);
+    // Salva ordine rinominando i file con prefisso numerico
+    await saveFotoOrder(boatId);
+  }
+
+  async function saveFotoOrder(boatId) {
+    const status = document.getElementById('foto-upload-status');
+    if (status) status.textContent = 'Salvataggio ordine…';
+    // Scarica e ricarica con nomi ordinati
+    for (let i = 0; i < _fotoList.length; i++) {
+      const f = _fotoList[i];
+      const newName = String(i+1).padStart(2,'0') + '_' + f.name.replace(/^\d+_/, '');
+      if (f.name === newName) continue;
+      // Copia con nuovo nome
+      const res = await fetch(f.url);
+      const blob = await res.blob();
+      await sb.storage.from('hullid-media').upload('barche/' + boatId + '/' + newName, blob, { upsert: true });
+      await sb.storage.from('hullid-media').remove(['barche/' + boatId + '/' + f.name]);
+      _fotoList[i] = { name: newName, url: sb.storage.from('hullid-media').getPublicUrl('barche/' + boatId + '/' + newName).data.publicUrl };
+    }
+    if (status) status.textContent = '✓ Ordine salvato — copertina aggiornata';
+    renderFotoGrid(boatId);
+    setTimeout(() => loadBarche(), 800); // piccolo delay per CDN Supabase
+  }
+
+  async function uploadFoto(files) {
+    const boatId = window._currentEditBoatId;
+    if (!boatId) { showToast('Apri prima una barca'); return; }
+    const status = document.getElementById('foto-upload-status');
+    if (status) status.textContent = 'Caricamento in corso…';
+    let ok = 0;
+    for (const file of Array.from(files)) {
+      const ext = file.name.split('.').pop();
+      const path = `barche/${boatId}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await sb.storage.from('hullid-media').upload(path, file, { upsert: false });
+      if (!error) ok++;
+      else console.warn('Upload error:', error.message);
+    }
+    if (status) status.textContent = ok + ' foto caricata/e con successo';
+    showToast('✓ ' + ok + ' foto caricata/e');
+    loadFoto(boatId);
+  }
+
+  async function deleteFoto(boatId, filename) {
+    if (!confirm('Eliminare questa foto?')) return;
+    const { error } = await sb.storage.from('hullid-media').remove([`barche/${boatId}/${filename}`]);
+    if (error) { showToast('Errore: ' + error.message); return; }
+    showToast('Foto eliminata');
+    loadFoto(boatId);
+  }
+
+  async function handleAddBarca() {
+    if (!currentUser) return;
+    const tipo = currentProfilo?.tipo_account;
+
+    // Conta le barche esistenti
+    const { data: barche } = await sb.from('barche').select('id').eq('armatore_id', currentUser.id);
+    const nBarche = barche?.length || 0;
+
+    // armatore base: max 1 barca
+    if (tipo === 'armatore' || !tipo) {
+      if (nBarche >= 1) {
+        showToast('Piano base: puoi registrare solo 1 barca. Passa ad Armatore PRO per aggiungerne altre.');
+        setTimeout(() => { window.location.href = 'upgrade_piano.html'; }, 2000);
+        return;
+      }
+    }
+
+    // armatore_pro: nessun limite — vai all'onboarding
+    window.location.href = 'onboarding.html';
+  }
+
   function logout() {
-    if (typeof supabase !== 'undefined') supabase.auth.signOut().then(() => { window.location.href = 'login.html'; });
+    if (typeof sb !== 'undefined') sb.auth.signOut().then(() => { window.location.href = 'login.html'; });
     else window.location.href = 'login.html';
   }
 
@@ -2265,7 +2692,342 @@ function checkTabsOverflow() {
       el.addEventListener('click', e => { e.preventDefault(); logout(); });
     });
   });
+
+  // ══ PROFILO — CARICA ══
+  async function loadProfilo() {
+    // Aspetta currentUser se non ancora disponibile
+    if (!currentUser) {
+      const { data: { session } } = await sb.auth.getSession();
+      if (!session) return;
+      currentUser = session.user;
+    }
+    document.getElementById('profilo-loading').style.display = 'block';
+    document.getElementById('profilo-form').style.display = 'none';
+
+    const { data: p, error } = await sb.from('utenti_profili').select('*').eq('id', currentUser.id).single();
+    if (error || !p) {
+      document.getElementById('profilo-loading').textContent = 'Errore nel caricamento profilo.';
+      return;
+    }
+    currentProfilo = p;
+
+    // Avatar iniziali
+    const ini = ((p.nome?.[0] || '') + (p.cognome?.[0] || '')).toUpperCase() || '—';
+    const avEl = document.getElementById('profilo-avatar'); if (avEl) avEl.textContent = ini;
+    const pidEl = document.getElementById('profilo-id'); if (pidEl) pidEl.textContent = p.id?.substring(0,8).toUpperCase() || '—';
+
+    // Piano badge — usa tipo_account, non piano_attivo (colonna inesistente)
+    const pianoEl = document.getElementById('profilo-piano');
+    if (pianoEl) pianoEl.textContent = (p.tipo_account || 'armatore').replace('_pro',' PRO').toUpperCase();
+
+    // Campi form con helper sicuro
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+    setVal('p-nome', p.nome);
+    setVal('p-cognome', p.cognome);
+    const emailEl = document.getElementById('p-email'); if (emailEl) emailEl.value = currentUser.email || '';
+    setVal('p-telefono', p.telefono);
+    setVal('p-citta', p.citta);
+    setVal('p-tipo-barca', p.preferenza_tipo_barca);
+    setVal('p-zona', p.preferenza_zona);
+
+    // Barche reali
+    const barcheList = document.getElementById('p-barche-list');
+    if (barcheList) {
+      const { data: barche } = await sb.from('barche').select('id, nome, cantiere, verificato').eq('armatore_id', currentUser.id).order('created_at');
+      if (!barche?.length) {
+        barcheList.innerHTML = '<div style="font-size:0.75rem;color:var(--gray);">Nessuna barca registrata — <a href="onboarding.html" style="color:var(--gold);">Aggiungi ora →</a></div>';
+      } else {
+        barcheList.innerHTML = barche.map(b => `
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--gray-bg);border:1px solid var(--gray-light);font-size:0.78rem;">
+            <div>
+              <span style="font-weight:500;color:var(--navy);">${b.nome || b.cantiere || '—'}</span>
+              <span style="color:var(--gray);margin-left:8px;font-size:0.68rem;">${b.id}</span>
+            </div>
+            <span style="font-size:0.65rem;color:${b.verificato ? '#2d8a5e' : 'var(--gray)'};">${b.verificato ? '✓ Verificata' : 'In verifica'}</span>
+          </div>`).join('');
+      }
+    }
+    document.getElementById('p-tipo-barca').value = p.preferenza_tipo_barca || '';
+    document.getElementById('p-zona').value = p.preferenza_zona || '';
+
+    // Info account
+    const infoTipo = document.getElementById('info-tipo-account');
+    if (infoTipo) infoTipo.textContent = (p.tipo_account || 'armatore').charAt(0).toUpperCase() + (p.tipo_account || 'armatore').slice(1);
+    const infoPiano = document.getElementById('info-piano');
+    if (infoPiano) infoPiano.textContent = p.piano_attivo || 'FREE';
+    const infoMembro = document.getElementById('info-membro-dal');
+    if (infoMembro) {
+      const dataReg = p.created_at || p.data_registrazione || null;
+      if (dataReg) infoMembro.textContent = new Date(dataReg).toLocaleDateString('it-IT', {month:'long', year:'numeric'});
+      else infoMembro.textContent = '—';
+    }
+
+    document.getElementById('profilo-loading').style.display = 'none';
+    document.getElementById('profilo-form').style.display = 'block';
+  }
+
+  // ══ PROFILO — SALVA ══
+  async function saveProfilo() {
+    if (!currentUser) { showToast('Non sei autenticato'); return; }
+    const dati = {
+      nome:                   document.getElementById('p-nome').value.trim(),
+      cognome:                document.getElementById('p-cognome').value.trim(),
+      telefono:               document.getElementById('p-telefono').value.trim(),
+      citta:                  document.getElementById('p-citta').value.trim(),
+      preferenza_tipo_barca:  document.getElementById('p-tipo-barca').value.trim(),
+      preferenza_zona:        document.getElementById('p-zona').value.trim(),
+      updated_at:             new Date().toISOString()
+    };
+    const { error } = await sb.from('utenti_profili').update(dati).eq('id', currentUser.id);
+    if (error) { showToast('Errore: ' + error.message); return; }
+
+    // Aggiorna sidebar
+    const nomeEl = document.getElementById('user-nome') || document.querySelector('.user-name-sm');
+    if (nomeEl) nomeEl.textContent = (dati.nome + ' ' + dati.cognome).trim();
+    const ini = ((dati.nome[0] || '') + (dati.cognome[0] || '')).toUpperCase() || '—';
+    document.getElementById('profilo-avatar').textContent = ini;
+    const avatarSidebar = document.querySelector('.user-avatar');
+    if (avatarSidebar) avatarSidebar.textContent = ini;
+
+    showToast('✓ Profilo aggiornato');
+  }
+
+  // ══ BROKER — CARICA ══
+  async function loadBroker() {
+    if (!currentUser) return;
+    document.getElementById('broker-loading').style.display = 'block';
+    document.getElementById('broker-attivi-wrap').style.display = 'none';
+    document.getElementById('broker-empty').style.display = 'none';
+
+    // Carica operatori collegati a questo armatore (tramite utente_id o barche dell'armatore)
+    const { data: operatori, error } = await supabase
+      .from('operatori')
+      .select('*')
+      .eq('utente_id', currentUser.id)
+      .order('created_at', { ascending: false });
+
+    document.getElementById('broker-loading').style.display = 'none';
+
+    if (error || !operatori || operatori.length === 0) {
+      document.getElementById('broker-empty').style.display = 'block';
+      return;
+    }
+
+    const list = document.getElementById('broker-attivi-list');
+    list.innerHTML = '';
+
+    operatori.forEach(op => {
+      const ini = (op.nome || '?').substring(0, 2).toUpperCase();
+      const isApprovato = op.approvato === true;
+      const card = document.createElement('div');
+      card.className = 'broker-card';
+      card.innerHTML = `
+        <div class="broker-avatar-sq">${ini}</div>
+        <div class="broker-info">
+          <div class="broker-name-lg">${op.nome || '—'}</div>
+          <div class="broker-ref">${op.referente || ''}${op.zona ? ' · ' + op.zona : ''}</div>
+          <div class="broker-meta">
+            ${op.tipo || 'Broker'}
+            ${op.rating ? ' · ' + op.rating + '★' : ''}
+            ${op.created_at ? ' · Dal ' + new Date(op.created_at).toLocaleDateString('it-IT', {month:'short', year:'numeric'}) : ''}
+          </div>
+          <div class="perm-tags">
+            ${isApprovato ? '<span class="perm-tag perm-ok">✓ Approvato HullID</span>' : '<span class="perm-tag" style="color:var(--orange);border-color:var(--orange);">⏳ In attesa approvazione</span>'}
+            ${op.featured ? '<span class="perm-tag perm-ok">✓ Featured</span>' : ''}
+            ${(op.tags || []).slice(0,2).map(t => `<span class="perm-tag">${t}</span>`).join('')}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0;">
+          ${op.sito_web ? `<a href="${op.sito_web}" target="_blank" class="btn btn-outline btn-sm">↗ Sito</a>` : ''}
+          <button class="btn btn-outline btn-sm" onclick="openModal('permissions')">Permessi</button>
+          <button class="btn btn-danger btn-sm" onclick="revocaBroker('${op.id}', this)">Rimuovi</button>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+
+    document.getElementById('broker-attivi-wrap').style.display = 'block';
+  }
+
+  async function revocaBroker(operatoreId, btn) {
+    if (!confirm('Vuoi revocare l\'accesso a questo broker?')) return;
+    btn.disabled = true;
+    btn.textContent = '...';
+    // Per ora aggiorniamo approvato=false come "revocato"
+    const { error } = await sb.from('operatori').update({ approvato: false }).eq('id', operatoreId);
+    if (error) { showToast('Errore: ' + error.message); btn.disabled = false; btn.textContent = 'Rimuovi'; return; }
+    showToast('✓ Accesso broker revocato');
+    loadBroker();
+  }
+
+  // ══ NOTIFICHE — CARICA ══
+  async function loadNotifiche() {
+    if (!currentUser) return;
+    document.getElementById('notif-loading').style.display = 'block';
+    document.getElementById('notif-empty').style.display = 'none';
+    document.getElementById('notif-items-wrap').innerHTML = '';
+
+    const { data: notifiche, error } = await supabase
+      .from('notifiche')
+      .select('*')
+      .eq('utente_id', currentUser.id)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    document.getElementById('notif-loading').style.display = 'none';
+
+    if (error) {
+      // Tabella non esiste ancora — mostra istruzioni SQL
+      document.getElementById('notif-empty').style.display = 'block';
+      document.getElementById('notif-empty').innerHTML = `
+        <div style="font-size:1.5rem;margin-bottom:10px;">⚠️</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--navy);margin-bottom:8px;">Tabella notifiche mancante</div>
+        <div style="font-size:0.74rem;color:var(--gray);margin-bottom:14px;">Esegui questo SQL nel tuo Supabase SQL Editor per crearla:</div>
+        <textarea readonly onclick="this.select()" style="width:100%;height:180px;font-family:'DM Mono',monospace;font-size:0.64rem;padding:10px;border:1px solid var(--gray-light);background:#f9f9f9;resize:none;outline:none;text-align:left;">${SQL_NOTIFICHE}</textarea>
+      `;
+      return;
+    }
+
+    _notifCache = notifiche || [];
+    renderNotifiche();
+  }
+
+  function renderNotifiche() {
+    const wrap = document.getElementById('notif-items-wrap');
+    wrap.innerHTML = '';
+
+    const filtrate = _notifCache.filter(n => {
+      if (_notifFilter === 'unread') return !n.letta;
+      if (_notifFilter === 'all') return true;
+      return (n.tipo || '').toLowerCase() === _notifFilter;
+    });
+
+    const unread = _notifCache.filter(n => !n.letta).length;
+    document.getElementById('notif-count-unread').textContent = unread;
+    document.getElementById('notif-count-total').textContent = _notifCache.length;
+
+    // Aggiorna badge nella sidebar
+    const badge = document.querySelector('.nav-badge-orange');
+    if (badge) { badge.textContent = unread; badge.style.display = unread > 0 ? '' : 'none'; }
+
+    if (filtrate.length === 0) {
+      document.getElementById('notif-empty').style.display = 'block';
+      document.getElementById('notif-empty').innerHTML = `
+        <div style="font-size:2rem;margin-bottom:10px;opacity:0.3;">🔔</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gray);">Nessuna notifica</div>
+      `;
+      return;
+    }
+    document.getElementById('notif-empty').style.display = 'none';
+
+    const tipoIcon = { timeline:'📋', sistema:'⚙️', marketplace:'💰', broker:'🤝', default:'🔔' };
+    const tipoClass = { timeline:'tag-timeline', sistema:'tag-sistema', marketplace:'tag-marketplace', broker:'tag-sistema' };
+
+    filtrate.forEach(n => {
+      const isUnread = !n.letta;
+      const tipo = (n.tipo || 'default').toLowerCase();
+      const icon = tipoIcon[tipo] || tipoIcon.default;
+      const tagCls = tipoClass[tipo] || 'tag-sistema';
+      const timeStr = formatTimeAgo(n.created_at);
+
+      const row = document.createElement('div');
+      row.className = 'notif-row' + (isUnread ? ' unread' : '');
+      row.dataset.id = n.id;
+      row.dataset.type = tipo;
+      row.innerHTML = `
+        <div class="nr-indicator${isUnread ? '' : ' read'}"></div>
+        <div class="nr-icon" style="${isUnread ? 'background:rgba(201,168,76,0.1);border-color:rgba(201,168,76,0.25);' : 'opacity:0.6;'}">${icon}</div>
+        <div class="nr-body" style="${isUnread ? '' : 'opacity:0.6;'}">
+          <div class="nr-title">${n.titolo || ''}</div>
+          <div class="nr-sub">${n.testo || ''}</div>
+          <div class="nr-meta">
+            <span class="nr-time">${timeStr}</span>
+            <span class="nr-tag ${tagCls}">${tipo.charAt(0).toUpperCase() + tipo.slice(1)}</span>
+          </div>
+        </div>
+        <div class="nr-actions">
+          ${isUnread ? `<button class="btn btn-outline btn-sm" onclick="markRead('${n.id}')">Segna letta</button>` : ''}
+          <button class="nr-dismiss" onclick="dismissNotif('${n.id}')">✕</button>
+        </div>
+      `;
+      wrap.appendChild(row);
+    });
+  }
+
+  async function markRead(id) {
+    await sb.from('notifiche').update({ letta: true }).eq('id', id);
+    const n = _notifCache.find(x => x.id == id);
+    if (n) n.letta = true;
+    renderNotifiche();
+  }
+
+  async function markAllRead() {
+    if (!currentUser) return;
+    await sb.from('notifiche').update({ letta: true }).eq('utente_id', currentUser.id).eq('letta', false);
+    _notifCache.forEach(n => n.letta = true);
+    renderNotifiche();
+    showToast('✓ Tutte le notifiche segnate come lette');
+  }
+
+  async function dismissNotif(id) {
+    await sb.from('notifiche').delete().eq('id', id);
+    _notifCache = _notifCache.filter(x => x.id != id);
+    renderNotifiche();
+  }
+
+  function filterNotif(val) {
+    _notifFilter = val;
+    renderNotifiche();
+  }
+
+  async function savePreferenzeNotifiche() {
+    showToast('✓ Preferenze notifiche salvate');
+  }
+
+  // ══ UTILITÀ ══
+  function formatTimeAgo(isoStr) {
+    if (!isoStr) return '—';
+    const diff = Date.now() - new Date(isoStr).getTime();
+    const min = Math.floor(diff / 60000);
+    if (min < 2) return 'Adesso';
+    if (min < 60) return min + ' min fa';
+    const h = Math.floor(min / 60);
+    if (h < 24) return h + (h === 1 ? ' ora fa' : ' ore fa');
+    const d = Math.floor(h / 24);
+    if (d < 7) return d + (d === 1 ? ' giorno fa' : ' giorni fa');
+    return new Date(isoStr).toLocaleDateString('it-IT', { day:'numeric', month:'short', year:'numeric' });
+  }
+
+  // SQL per creare la tabella notifiche (mostrato se mancante)
+  const SQL_NOTIFICHE = `CREATE TABLE IF NOT EXISTS public.notifiche (
+  id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  utente_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  tipo text NOT NULL DEFAULT 'sistema',
+  titolo text NOT NULL,
+  testo text,
+  letta boolean NOT NULL DEFAULT false,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+ALTER TABLE public.notifiche ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Utente legge le sue notifiche"
+  ON public.notifiche FOR SELECT USING (auth.uid() = utente_id);
+CREATE POLICY "Utente aggiorna le sue notifiche"
+  ON public.notifiche FOR UPDATE USING (auth.uid() = utente_id);
+CREATE POLICY "Utente elimina le sue notifiche"
+  ON public.notifiche FOR DELETE USING (auth.uid() = utente_id);`;
+
+  // ══ HOOK su showSection per caricare dati al click ══
+  const _origShowSection = window.showSection;
+  // Override dopo DOMContentLoaded
+  document.addEventListener('DOMContentLoaded', () => {
+    const orig = window.showSection;
+    window.showSection = function(name, el) {
+      orig(name, el);
+      if (name === 'profilo') loadProfilo();
+      if (name === 'broker') loadBroker();
+      if (name === 'notifiche') loadNotifiche();
+    };
+  });
   </script>
-  <script src="js/hullid-persistence.js"></script>
 </body>
 </html>
